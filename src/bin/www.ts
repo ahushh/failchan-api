@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import { createConnection } from "typeorm";
+
 /**
  * Module dependencies.
  */
@@ -25,9 +27,11 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+createConnection().then(() => {
+  server.listen(port);
+  server.on('error', onError);
+  server.on('listening', onListening);
+});
 
 /**
  * Normalize a port into a number, string, or false.
