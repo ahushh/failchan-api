@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 
-import { createConnection } from "typeorm";
-
+import { createConnection, useContainer } from "typeorm";
+import { Container } from 'typedi';
+import { AutobindRoutesService } from "../services/autobind-routes";
+import { Post } from "../entity/post";
+import { autobindRoutes } from "../autobinds";
 /**
  * Module dependencies.
  */
@@ -27,7 +30,9 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
+useContainer(Container);
 createConnection().then(() => {
+  autobindRoutes(Container);
   server.listen(port);
   server.on('error', onError);
   server.on('listening', onListening);
