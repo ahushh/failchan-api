@@ -1,5 +1,5 @@
-import { postController } from "../controller/post";
-import { autoBindModelMiddleware } from "../middleware/autobind-model";
+import { postController } from '../controller/post';
+import { autoBindModelMiddleware } from '../middleware/autobind-model';
 
 import express from 'express';
 
@@ -11,10 +11,10 @@ import express from 'express';
 //   }
 // }
 
-const router = express.Router({mergeParams: true});
+const router = express.Router({ mergeParams: true });
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', (req, res, next) => {
   res.json({ title: 'Express' });
 });
 router.get('/posts', [autoBindModelMiddleware()], postController.index);
