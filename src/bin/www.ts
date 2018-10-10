@@ -2,16 +2,14 @@
 
 import { createConnection, useContainer } from "typeorm";
 import { Container } from 'typedi';
-import { AutobindRoutesService } from "../services/autobind-routes";
-import { Post } from "../entity/post";
 import { autobindRoutes } from "../autobinds";
 /**
  * Module dependencies.
  */
 
-var app = require('../app');
+import app from '../app';
 var debug = require('debug')('express:server');
-var http = require('http');
+import http from 'http';
 
 /**
  * Get port from environment and store in Express.

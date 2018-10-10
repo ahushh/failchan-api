@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
-import { ExtendedRequest } from "../../interfaces/extended-request";
 
 export async function postsGetAction(
-  request: ExtendedRequest,
+  request: Request,
   response: Response
 ) {
   const post = request.context.models.Post;

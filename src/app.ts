@@ -1,23 +1,29 @@
-import { postsRouter } from "./routes/posts";
-import { repoMiddleware } from "./middleware/repo";
 
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+import express from "express";
+import path from "path";
+import cookieParser from "cookie-parser";
+import logger from "morgan";
 
-var indexRouter = require('./routes/index');
+import indexRouter from "./routes/index";
 
-var app = express();
+declare global {
+  namespace Express {
+    export interface Request {
+       context: any;
+    }
+  }
+}
 
-app.use(logger('dev'));
+const app = express();
+
+app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 app.use(function(err, req, res, next) {
   res.status(500).json({ error: err });
 });
-app.use('/', indexRouter);
+app.use("/", indexRouter);
 
-module.exports = app;
+export default app;
