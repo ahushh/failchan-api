@@ -1,7 +1,4 @@
 import { Request, Response } from "express";
-import { getManager } from "typeorm";
-import { bindedEntities } from "../constants/binded-entities";
-import capitalize from "lodash/capitalize";
 import { Container } from "typedi";
 import { AutobindRoutesService } from "../services/autobind-routes";
 

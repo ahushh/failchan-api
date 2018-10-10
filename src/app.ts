@@ -6,14 +6,6 @@ import logger from "morgan";
 
 import indexRouter from "./routes/index";
 
-declare global {
-  namespace Express {
-    export interface Request {
-       context: any;
-    }
-  }
-}
-
 const app = express();
 
 app.use(logger("dev"));

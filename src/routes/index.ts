@@ -1,10 +1,16 @@
 import { postController } from "../controller/post";
 import { autoBindModelMiddleware } from "../middleware/autobind-model";
-import { Container } from 'typedi';
-import { Post } from '../entity/post';
-import { AutobindRoutesService } from '../services/autobind-routes';
 
 import express from 'express';
+
+// declare global {
+//   namespace Express {
+//     export interface Request {
+//        context: any;
+//     }
+//   }
+// }
+
 const router = express.Router({mergeParams: true});
 
 /* GET home page. */
