@@ -1,21 +1,21 @@
 
-import express from "express";
-import path from "path";
-import cookieParser from "cookie-parser";
-import logger from "morgan";
+import express from 'express';
+import path from 'path';
+import cookieParser from 'cookie-parser';
+import morgan from 'morgan';
 
-import indexRouter from "./routes/index";
+import routes from './routes';
 
 const app = express();
 
-app.use(logger("dev"));
+app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
-app.use(function(err, req, res, next) {
+app.use(express.static(path.join(__dirname, 'public')));
+app.use((err, req, res, next) => {
   res.status(500).json({ error: err });
 });
-app.use("/", indexRouter);
+app.use('/', routes);
 
 export default app;
