@@ -2,12 +2,11 @@
 
 import { createConnection, useContainer } from 'typeorm';
 import { Container } from 'typedi';
-import { autobindRoutes } from '../autobinds';
 /**
  * Module dependencies.
  */
 
-import app from '../app';
+import app from './app';
 const debug = require('debug')('express:server');
 import http from 'http';
 

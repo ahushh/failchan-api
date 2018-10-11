@@ -1,6 +1,6 @@
 import { EntityRepository, Repository, EntityManager } from 'typeorm';
-import { Board } from '../entity/board';
-import { IBoardRepository } from '../domain/board.repo.interface';
+import { Board } from '../../domain/entity/board';
+import { IBoardRepository } from '../../domain/board.repo.interface';
 
 @EntityRepository(Board)
 export class BoardRepository extends Repository<Board> implements IBoardRepository {

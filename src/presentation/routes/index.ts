@@ -1,12 +1,9 @@
 import { postController } from '../controller/post';
-import { autoBindModelMiddleware } from '../middleware/autobind-model';
 
 import express, { Router } from 'express';
 import { boardController } from '../controller/board';
-import { Board } from '../entity/board';
+
 import { threadController } from '../controller/thread';
-import { Thread } from '../entity/thread';
-import { RelationCountMetadata } from 'typeorm/metadata/RelationCountMetadata';
 
 const router: Router = express.Router({ mergeParams: true });
 

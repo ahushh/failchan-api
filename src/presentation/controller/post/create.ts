@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
-import { Post, IPost } from '../../entity/post';
 import { Container } from 'typedi';
-import { PostService } from '../../service/post.service';
+import { IPost } from '../../../domain/entity/post';
+import { PostService } from '../../../app/service/post.service';
 
 export async function postsCreateAction(request: Request, response: Response) {
   const threadId = request.params.threadId;
-  const postData: IPost = request.body;
+  const postData: IPost = request.body.post;
   const service = Container.get(PostService);
-  const createdPost = await service.create(threadId, postData);
+  const createdPost = await service.replyToThread(threadId, postData);
 
   response.json({ post: createdPost });
 }

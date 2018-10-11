@@ -1,10 +1,8 @@
 
 import { Service } from 'typedi';
 import { InjectRepository } from 'typeorm-typedi-extensions';
-import { Repository } from 'typeorm';
-import { Board } from '../entity/board';
-import { BoardRepository } from '../repository/board';
-import { Thread } from '../entity/thread';
+import { Board } from '../../domain/entity/board';
+import { BoardRepository } from '../../infra/repository/board.repo';
 
 @Service()
 export class BoardService {

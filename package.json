@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "ts-node src/bin/www.ts",
+    "start": "ts-node src/server.ts",
     "start:dev": "nodemon",
     "lint": "tslint --project . -c tslint.json src/**/*.ts src/*.ts",
     "lint:fix": "npm run lint -- --fix"

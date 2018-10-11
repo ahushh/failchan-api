@@ -1,11 +1,9 @@
 import { Service } from 'typedi';
 import { InjectRepository } from 'typeorm-typedi-extensions';
-import { Thread } from '../entity/thread';
 import { Repository } from 'typeorm';
-import { Board } from '../entity/board';
-import { Post, IPost } from '../entity/post';
-import { ThreadRepository } from '../repository/thread';
-import { IThreadRepository } from '../domain/thread.repo.interface';
+import { Post, IPost } from '../../domain/entity/post';
+import { Thread } from '../../domain/entity/thread';
+import { ThreadRepository } from '../../infra/repository/thread.repo';
 
 @Service()
 export class PostService {
@@ -17,7 +15,8 @@ export class PostService {
     this.threadRepo = threadRepo;
   }
 
-  async create(threadId: number, postData: IPost): Promise<Post> {
+  async replyToThread(threadId: number, postData: IPost): Promise<Post> {
+    console.log(threadId, postData);
     const thread = await this.threadRepo.findOneOrFail({ where: { id: threadId } });
     const post = new Post();
     post.thread = thread;

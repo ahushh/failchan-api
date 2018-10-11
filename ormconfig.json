@@ -5,7 +5,7 @@
   "username": "postgres",
   "password": "postgres",
   "database": "test",
-  "entities": ["src/entity/**/*.ts"],
+  "entities": ["src/domain/entity/**/*.ts"],
   "migrations": ["src/migration/**/*.ts"],
   "subscribers": ["src/subscriber/**/*.ts"],
   "logging": true,

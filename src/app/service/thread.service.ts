@@ -1,11 +1,12 @@
 import { Service } from 'typedi';
 import { InjectRepository } from 'typeorm-typedi-extensions';
-import { Thread } from '../entity/thread';
+
 import { Repository } from 'typeorm';
-import { Board } from '../entity/board';
-import { ThreadRepository } from '../repository/thread';
-import { BoardRepository } from '../repository/board';
-import { IPost, Post } from '../entity/post';
+import { Thread } from '../../domain/entity/thread';
+import { ThreadRepository } from '../../infra/repository/thread.repo';
+import { Board } from '../../domain/entity/board';
+import { BoardRepository } from '../../infra/repository/board.repo';
+import { Post, IPost } from '../../domain/entity/post';
 
 @Service()
 export class ThreadService {
