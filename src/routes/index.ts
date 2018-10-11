@@ -1,24 +1,54 @@
 import { postController } from '../controller/post';
 import { autoBindModelMiddleware } from '../middleware/autobind-model';
 
-import express from 'express';
+import express, { Router } from 'express';
+import { boardController } from '../controller/board';
+import { Board } from '../entity/board';
+import { threadController } from '../controller/thread';
+import { Thread } from '../entity/thread';
+import { RelationCountMetadata } from 'typeorm/metadata/RelationCountMetadata';
 
-// declare global {
-//   namespace Express {
-//     export interface Request {
-//        context: any;
-//     }
-//   }
-// }
+const router: Router = express.Router({ mergeParams: true });
 
-const router = express.Router({ mergeParams: true });
-
-/* GET home page. */
 router.get('/', (req, res, next) => {
   res.json({ title: 'Express' });
 });
-router.get('/posts', [autoBindModelMiddleware()], postController.index);
-router.post('/posts', [autoBindModelMiddleware()], postController.create);
-router.get('/posts/:postId', [autoBindModelMiddleware()], postController.get);
+
+router.post('/boards', boardController.create);
+router.get('/boards', boardController.list);
+
+router.get('/boards/:boardSlug/threads', threadController.listByBoard);
+router.post('/boards/:boardSlug/threads', threadController.create);
+
+router.post('/threads/:threadId/posts', postController.create);
+// router.post(
+//   '/boards/:boardSlug/threads',
+//   [bindBoard],
+//   threadController.create,
+// );
+// router.get(
+//   '/boards/:boardSlug/threads',
+//   [bindBoard],
+//   threadController.list,
+// );
+
+// /* threads */
+// const bindThread = autoBindModelMiddleware({
+//   threads: { entity: Thread, name: 'thread', idField: 'id' },
+// });
+// router.get(
+//   '/threads/:threadId/posts',
+//   [bindThread],
+//   threadController.get,
+// );
+
+// router.post(
+//   '/threads/:threadId/posts',
+//   [bindThread],
+//   postController.create,
+// );
+// router.get('/posts', [autoBindModelMiddleware()], postController.index);
+// router.post('/posts', [autoBindModelMiddleware()], postController.create);
+// router.get('/posts/:postId', [autoBindModelMiddleware()], postController.get);
 
 export default router;

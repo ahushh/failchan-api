@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { Container } from 'typedi';
-import { AutobindRoutesService } from '../services/autobind-routes';
+import { AutobindRoutesService, BindedModels } from '../service/autobind-routes';
 
-export const autoBindModelMiddleware = () => {
+export const autoBindModelMiddleware = (binded: BindedModels) => {
   return async function autoBindModelMiddleware(
     request: Request,
     response: Response,
@@ -12,6 +12,7 @@ export const autoBindModelMiddleware = () => {
     const models = await service.getModels(
       request.route.path,
       request.originalUrl,
+      binded,
     );
     request.context = request.context || {};
     request.context.models = models;

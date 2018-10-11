@@ -30,7 +30,7 @@ const server = http.createServer(app);
 
 useContainer(Container);
 createConnection().then(() => {
-  autobindRoutes(Container);
+  // autobindRoutes(Container);
   server.listen(port);
   server.on('error', onError);
   server.on('listening', onListening);

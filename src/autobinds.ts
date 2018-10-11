@@ -1,4 +1,4 @@
-import { AutobindRoutesService } from './services/autobind-routes';
+import { AutobindRoutesService } from './service/autobind-routes';
 import { Post } from './entity/post';
 
 // tslint:disable-next-line:variable-name

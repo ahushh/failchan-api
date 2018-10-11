@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
 
-export async function postsGetAction(
+export async function boardsGetAction(
   request: Request,
   response: Response,
 ) {
-  const post = request.context.models.Post;
-  if (!post) {
+  const board = request.context.models.Board;
+  if (!board) {
     response.status(404).json({ message: 'Not found' });
   }
-  response.json({ post });
+  response.json({ board });
 }
