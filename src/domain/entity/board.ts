@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany, UpdateDateColumn, CreateDateColumn } from 'typeorm';
 import { Thread } from './thread';
 
 @Entity()
@@ -15,4 +15,9 @@ export class Board {
   @OneToMany(type => Thread, thread => thread.board)
   threads: Thread[];
 
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
 }
