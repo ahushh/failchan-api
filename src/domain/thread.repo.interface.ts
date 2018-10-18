@@ -4,5 +4,10 @@ import { Thread } from './entity/thread';
 
 export interface IThreadRepository {
   findOneOrFail: Repository<Thread>['findOneOrFail'];
-  getThreadsWithPreviewPosts(boardId: number, previewPosts: number): Promise<Thread[]>;
+  getThreadsWithPreviewPosts(
+    boardId: number,
+    previewPosts: number,
+    skip?: number,
+    take?: number,
+  ): Promise<Thread[]>;
 }

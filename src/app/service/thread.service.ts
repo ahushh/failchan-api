@@ -36,9 +36,15 @@ export class ThreadService {
     });
   }
 
-  async getThreadsByBoardSlug(boardSlug: string, previewPosts = 5): Promise<Thread[]> {
+  async getThreadsByBoardSlug(
+    boardSlug: string,
+    previewPosts = 5,
+    skip?: number,
+    take?: number,
+  ): Promise<Thread[]> {
     const board = await this.boardRepo.getBySlug(boardSlug);
-    return this.threadRepo.getThreadsWithPreviewPosts(board.id, previewPosts);
+    return this.threadRepo
+      .getThreadsWithPreviewPosts(board.id, previewPosts, skip, take);
   }
   getThreadWithPosts(boardId: string, threadId: string): Promise<Thread | undefined> {
     return this.threadRepo.findOne({

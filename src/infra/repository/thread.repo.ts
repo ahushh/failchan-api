@@ -7,13 +7,22 @@ export class ThreadRepository extends Repository<Thread> implements IThreadRepos
   constructor() {
     super();
   }
-  getThreadsWithPreviewPosts(boardId: number, previewPosts = 5): Promise<Thread[]> {
-    return this.find({ where: { boardId }, relations: ['posts'] })
-      .then((threads: Thread[]) => {
-        threads.forEach((thread: Thread) => {
-          thread.posts = thread.posts.slice(thread.posts.length - previewPosts);
-        });
-        return threads;
+  getThreadsWithPreviewPosts(
+    boardId: number,
+    previewPosts = 5,
+    skip = 0,
+    take = 10,
+  ): Promise<Thread[]> {
+    return this.find({
+      skip,
+      take,
+      where: { boardId },
+      relations: ['posts', 'posts.attachments', 'posts.replies', 'posts.referencies'],
+    }).then((threads: Thread[]) => {
+      threads.forEach((thread: Thread) => {
+        thread.posts = thread.posts.slice(thread.posts.length - previewPosts);
       });
+      return threads;
+    });
   }
 }
