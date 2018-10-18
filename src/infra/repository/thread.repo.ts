@@ -9,13 +9,14 @@ export class ThreadRepository extends Repository<Thread> implements IThreadRepos
   }
   getThreadsWithPreviewPosts(
     boardId: number,
-    previewPosts = 5,
-    skip = 0,
-    take = 10,
-  ): Promise<Thread[]> {
+    findOptions: {
+      previewPosts: number;
+      take: number;
+      skip: number;
+    }): Promise<Thread[]> {
     return this.find({
-      skip,
-      take,
+      skip: findOptions.skip || 0,
+      take: findOptions.take || 0,
       where: { boardId },
       order: {
         updatedAt: 'DESC',
@@ -23,7 +24,7 @@ export class ThreadRepository extends Repository<Thread> implements IThreadRepos
       relations: ['posts', 'posts.attachments', 'posts.replies', 'posts.referencies'],
     }).then((threads: Thread[]) => {
       threads.forEach((thread: Thread) => {
-        thread.posts = thread.posts.slice(thread.posts.length - previewPosts);
+        thread.posts = thread.posts.slice(thread.posts.length - findOptions.previewPosts);
       });
       return threads;
     });

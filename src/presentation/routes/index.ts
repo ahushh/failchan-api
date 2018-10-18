@@ -14,11 +14,14 @@ const router: Router = express.Router({ mergeParams: true });
 router.post('/boards', boardController.create);
 router.get('/boards', boardController.list);
 
+/***
+ * skip - thread offset for pagination
+ */
 router.get('/boards/:boardSlug/threads', threadController.listByBoard);
 router.post('/boards/:boardSlug/threads', threadController.create);
 
+router.get('/threads/:threadId', threadController.get);
 router.post('/threads/:threadId/posts', postController.create);
-// router.get('/threads/:threadId/posts', postController.list);
 router.post('/attachments', fileUploadMiddleware, attachmentController.create);
 
 export default router;

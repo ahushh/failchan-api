@@ -1,5 +1,7 @@
 import { Service, Inject } from 'typedi';
 import { InjectRepository } from 'typeorm-typedi-extensions';
+// tslint:disable-next-line:import-name
+import R from 'ramda';
 
 import { Repository } from 'typeorm';
 import { Thread } from '../../domain/entity/thread';
@@ -10,6 +12,13 @@ import { Post } from '../../domain/entity/post';
 import { IPost } from '../../domain/interfaces/post.interface';
 import { Attachment } from '../../domain/entity/attachment';
 import { PostService } from './post.service';
+
+export interface IGetBoardParams {
+  boardSlug: string;
+  previewPosts: number;
+  take: number;
+  skip: number;
+}
 
 @Service()
 export class ThreadService {
@@ -23,7 +32,6 @@ export class ThreadService {
 
   async create(boardSlug: string, postData: IPost): Promise<Thread> {
     const board = await this.boardRepo.getBySlug(boardSlug);
-
     const thread = new Thread();
     thread.board = board;
     const threadSaved = await this.threadRepo.save(thread);
@@ -36,19 +44,14 @@ export class ThreadService {
     });
   }
 
-  async getThreadsByBoardSlug(
-    boardSlug: string,
-    previewPosts = 5,
-    skip?: number,
-    take?: number,
-  ): Promise<Thread[]> {
-    const board = await this.boardRepo.getBySlug(boardSlug);
+  async getThreadsByBoardSlug(params: IGetBoardParams): Promise<Thread[]> {
+    const board = await this.boardRepo.getBySlug(params.boardSlug);
     return this.threadRepo
-      .getThreadsWithPreviewPosts(board.id, previewPosts, skip, take);
+      .getThreadsWithPreviewPosts(board.id, R.omit(['boardSlug'], params));
   }
-  getThreadWithPosts(boardId: string, threadId: string): Promise<Thread | undefined> {
+  getThreadWithPosts(threadId: string): Promise<Thread | undefined> {
     return this.threadRepo.findOne({
-      where: { boardId, id: threadId },
+      where: { id: threadId },
       relations: ['posts', 'posts.attachments', 'posts.replies', 'posts.referencies'],
     });
   }

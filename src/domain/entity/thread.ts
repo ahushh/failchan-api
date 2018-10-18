@@ -2,6 +2,7 @@ import {
   Entity, PrimaryGeneratedColumn,
   ManyToOne, OneToMany, CreateDateColumn,
   UpdateDateColumn,
+  Column,
 } from 'typeorm';
 import { Board } from './board';
 import { Post } from './post';
@@ -15,12 +16,16 @@ export class Thread {
   @OneToMany(type => Post, post => post.thread)
   posts: Post[];
 
-  @Entity()
-  bumpCount = 0;
+  @Column({ nullable: true })
+  bumpCount: number;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
+
+  bump() {
+    this.bumpCount = (this.bumpCount || 0) + 1;
+  }
 }

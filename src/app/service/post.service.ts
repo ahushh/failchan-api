@@ -54,14 +54,13 @@ export class PostService {
 
   async replyToThread(threadId: number, postData: IPost): Promise<Post> {
     const thread = await this.threadRepo.findOneOrFail({ where: { id: threadId } });
+    thread.bump();
+    const threadSaved = await this.threadRepo.save(thread);
 
-    const post = new Post();
-    post.thread = thread;
-    post.body = postData.body;
+    const post  = new Post();
+    post.thread = threadSaved;
+    post.body   = postData.body;
     await this.appendAttachments(post, postData);
-
-    thread.bumpCount = thread.bumpCount + 1;
-    await this.threadRepo.save(thread);
 
     const savedRefs = await this.appendReferencies(post, postData);
     const savedPost = await this.postRepo.save(post);

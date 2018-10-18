@@ -6,8 +6,10 @@ export interface IThreadRepository {
   findOneOrFail: Repository<Thread>['findOneOrFail'];
   getThreadsWithPreviewPosts(
     boardId: number,
-    previewPosts: number,
-    skip?: number,
-    take?: number,
+    findOptions: {
+      previewPosts: number,
+      skip?: number,
+      take?: number,
+    },
   ): Promise<Thread[]>;
 }
