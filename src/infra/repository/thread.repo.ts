@@ -17,6 +17,9 @@ export class ThreadRepository extends Repository<Thread> implements IThreadRepos
       skip,
       take,
       where: { boardId },
+      order: {
+        updatedAt: 'DESC',
+      },
       relations: ['posts', 'posts.attachments', 'posts.replies', 'posts.referencies'],
     }).then((threads: Thread[]) => {
       threads.forEach((thread: Thread) => {

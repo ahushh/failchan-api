@@ -15,6 +15,9 @@ export class Thread {
   @OneToMany(type => Post, post => post.thread)
   posts: Post[];
 
+  @Entity()
+  bumpCount = 0;
+
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 

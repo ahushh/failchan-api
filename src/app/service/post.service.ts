@@ -60,15 +60,15 @@ export class PostService {
     post.body = postData.body;
     await this.appendAttachments(post, postData);
 
+    thread.bumpCount = thread.bumpCount + 1;
+    await this.threadRepo.save(thread);
+
     const savedRefs = await this.appendReferencies(post, postData);
     const savedPost = await this.postRepo.save(post);
     await this.appendReplies(savedPost, savedRefs);
     return savedPost;
   }
 
-  getPostsByThreadId(threadId: string): Promise<Post[]> {
-    return this.postRepo.find({ where: { threadId } });
-  }
   // getThreadWithPosts(boardId: string, threadId: string): Promise<Thread | undefined> {
   //   return this.postRepo.findOne({ where: { boardId, id: threadId }, relations: ['posts'] });
   // }
