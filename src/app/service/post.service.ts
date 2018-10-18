@@ -4,23 +4,28 @@ import { Repository } from 'typeorm';
 import { Post, IPost } from '../../domain/entity/post';
 import { Thread } from '../../domain/entity/thread';
 import { ThreadRepository } from '../../infra/repository/thread.repo';
+import { Attachment } from '../../domain/entity/attachment';
 
 @Service()
 export class PostService {
   constructor(
     @InjectRepository(Post) private postRepo: Repository<Post>,
     @InjectRepository(Thread) private threadRepo: ThreadRepository,
-    ) {
-    this.postRepo = postRepo;
-    this.threadRepo = threadRepo;
-  }
+    @InjectRepository(Attachment) private attachmentRepo: Repository<Attachment>,
+    ) {}
 
   async replyToThread(threadId: number, postData: IPost): Promise<Post> {
-    console.log(threadId, postData);
     const thread = await this.threadRepo.findOneOrFail({ where: { id: threadId } });
     const post = new Post();
     post.thread = thread;
     post.body = postData.body;
+    if (postData.attachmentIds) {
+      const ids = postData.attachmentIds;
+      const attachments = await this.attachmentRepo.findByIds(ids);
+      post.attachments = attachments;
+    } else {
+      post.attachments = [];
+    }
     return this.postRepo.save(post);
   }
 

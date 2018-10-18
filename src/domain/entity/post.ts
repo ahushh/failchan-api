@@ -1,9 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, ManyToOne, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import {
+  Entity, PrimaryGeneratedColumn, Column,
+  ManyToMany, ManyToOne, CreateDateColumn,
+  UpdateDateColumn, OneToMany,
+} from 'typeorm';
 import { Thread } from './thread';
 import { Attachment } from './attachment';
 
 export interface IPost {
   body: string;
+  attachmentIds?: number[];
 }
 
 @Entity()

@@ -6,9 +6,7 @@ import { BoardRepository } from '../../infra/repository/board.repo';
 
 @Service()
 export class BoardService {
-  constructor(@InjectRepository(Board) private repo: BoardRepository) {
-    this.repo = repo;
-  }
+  constructor(@InjectRepository(Board) private repo: BoardRepository) { }
   create({ slug, name }): Promise<Board> {
     const board = new Board();
     board.slug = slug;

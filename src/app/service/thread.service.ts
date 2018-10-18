@@ -1,4 +1,4 @@
-import { Service } from 'typedi';
+import { Service, Inject } from 'typedi';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 
 import { Repository } from 'typeorm';
@@ -7,6 +7,8 @@ import { ThreadRepository } from '../../infra/repository/thread.repo';
 import { Board } from '../../domain/entity/board';
 import { BoardRepository } from '../../infra/repository/board.repo';
 import { Post, IPost } from '../../domain/entity/post';
+import { Attachment } from '../../domain/entity/attachment';
+import { PostService } from './post.service';
 
 @Service()
 export class ThreadService {
@@ -14,10 +16,9 @@ export class ThreadService {
     @InjectRepository(Thread) private threadRepo: ThreadRepository,
     @InjectRepository(Board) private boardRepo: BoardRepository,
     @InjectRepository(Post) private postRepo: Repository<Post>,
-  ) {
-    this.threadRepo = threadRepo;
-    this.boardRepo = boardRepo;
-  }
+    @InjectRepository(Attachment) private attachmentRepo: Repository<Attachment>,
+    @Inject(type => PostService) private postService: PostService,
+  ) { }
 
   async create(boardSlug: string, postData: IPost): Promise<Thread> {
     const board = await this.boardRepo.getBySlug(boardSlug);
@@ -26,14 +27,11 @@ export class ThreadService {
     thread.board = board;
     const threadSaved = await this.threadRepo.save(thread);
 
-    const post = new Post();
-    post.body = postData.body;
-    post.thread = threadSaved;
-    await this.postRepo.save(post);
+    await this.postService.replyToThread(threadSaved.id, postData);
 
     return await this.threadRepo.findOneOrFail({
       where: { id: threadSaved.id },
-      relations: ['posts'],
+      relations: ['posts', 'posts.attachments'],
     });
   }
 
@@ -42,6 +40,9 @@ export class ThreadService {
     return this.threadRepo.getThreadsWithPreviewPosts(board.id, previewPosts);
   }
   getThreadWithPosts(boardId: string, threadId: string): Promise<Thread | undefined> {
-    return this.threadRepo.findOne({ where: { boardId, id: threadId }, relations: ['posts'] });
+    return this.threadRepo.findOne({
+      where: { boardId, id: threadId },
+      relations: ['posts', 'posts.attachments'],
+    });
   }
 }

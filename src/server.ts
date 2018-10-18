@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
+require('dotenv').config();
+
 import { createConnection, useContainer } from 'typeorm';
 import { Container } from 'typedi';
 /**
  * Module dependencies.
  */
 
-import app from './app';
+import app from './presentation/app';
 const debug = require('debug')('express:server');
 import http from 'http';
 

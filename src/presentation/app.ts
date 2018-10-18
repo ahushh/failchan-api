@@ -4,7 +4,7 @@ import path from 'path';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 
-import routes from './presentation/routes';
+import routes from './routes';
 
 const app = express();
 

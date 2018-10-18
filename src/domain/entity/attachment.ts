@@ -1,6 +1,6 @@
 import {
   Entity, PrimaryGeneratedColumn,
-  Column, CreateDateColumn, UpdateDateColumn, ManyToMany,
+  Column, CreateDateColumn, UpdateDateColumn, ManyToMany, ManyToOne,
 } from 'typeorm';
 import { Post } from './post';
 
@@ -18,7 +18,7 @@ export class Attachment {
   @Column()
   uri: string;
 
-  @Column({ unique: true })
+  @Column()
   md5: string;
 
   @Column()
@@ -27,7 +27,10 @@ export class Attachment {
   @Column('json')
   exif: Object;
 
-  @ManyToMany(type => Post, post => post.attachments)
+  @Column()
+  thumbnailUri: string;
+
+  @ManyToOne(type => Post, post => post.attachments)
   post: Post;
 
   @CreateDateColumn({ type: 'timestamp' })
