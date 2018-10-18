@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
 import { Container } from 'typedi';
 import { ThreadService } from '../../../app/service/thread.service';
-import { IPost } from '../../../domain/interfaces/post.interface';
+import { ICreatePostCommand } from '../../../app/commands/post';
 
 export async function threadsCreateAction(request: Request, response: Response, next: Function) {
-  const postData: IPost = request.body.post;
+  const command: ICreatePostCommand = request.body.post;
   const board = request.params.boardSlug;
   const service = Container.get(ThreadService);
   try {
-    const thread = await service.create(board, postData);
+    const thread = await service.create(board, command);
     response.json({ thread });
   } catch (e) {
     if (e.name === 'EntityNotFound') {

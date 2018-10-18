@@ -2,7 +2,7 @@ import { Service } from 'typedi';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { Repository } from 'typeorm';
 import { Post } from '../../domain/entity/post';
-import { IPost } from '../../domain/interfaces/post.interface';
+import { ICreatePostCommand } from '../commands/post';
 import { Thread } from '../../domain/entity/thread';
 import { ThreadRepository } from '../../infra/repository/thread.repo';
 import { Attachment } from '../../domain/entity/attachment';
@@ -18,9 +18,8 @@ export class PostService {
   /***
    * Append attachments list to post
    */
-  private async appendAttachments(post: Post, postData: IPost) {
-    if (postData.attachmentIds) {
-      const ids = postData.attachmentIds;
+  private async appendAttachments(post: Post, ids: number[] | undefined) {
+    if (ids) {
       const attachments = await this.attachmentRepo.findByIds(ids);
       post.attachments = attachments;
     } else {
@@ -30,12 +29,12 @@ export class PostService {
   /***
    * Fetch referencies by IDs, append to post and return the list
    */
-  private async appendReferencies(post: Post, postData: IPost): Promise<Post[]> {
-    if (!postData.referencies) {
+  private async appendReferencies(post: Post, ids: number[] | undefined): Promise<Post[]> {
+    if (!ids) {
       return [];
     }
     const referencies = await this.postRepo.findByIds(
-      postData.referencies,
+      ids,
       { relations: ['replies'] },
     );
     post.referencies = referencies;
@@ -52,23 +51,20 @@ export class PostService {
     return await this.postRepo.save(refs);
   }
 
-  async replyToThread(threadId: number, postData: IPost): Promise<Post> {
+  async replyToThread(threadId: number, command: ICreatePostCommand): Promise<Post> {
     const thread = await this.threadRepo.findOneOrFail({ where: { id: threadId } });
     thread.bump();
     const threadSaved = await this.threadRepo.save(thread);
 
     const post  = new Post();
     post.thread = threadSaved;
-    post.body   = postData.body;
-    await this.appendAttachments(post, postData);
+    post.body   = command.body;
+    await this.appendAttachments(post, command.attachmentIds);
 
-    const savedRefs = await this.appendReferencies(post, postData);
+    const savedRefs = await this.appendReferencies(post, command.referencies);
     const savedPost = await this.postRepo.save(post);
     await this.appendReplies(savedPost, savedRefs);
     return savedPost;
   }
 
-  // getThreadWithPosts(boardId: string, threadId: string): Promise<Thread | undefined> {
-  //   return this.postRepo.findOne({ where: { boardId, id: threadId }, relations: ['posts'] });
-  // }
 }

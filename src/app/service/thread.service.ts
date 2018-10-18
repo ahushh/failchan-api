@@ -9,7 +9,7 @@ import { ThreadRepository } from '../../infra/repository/thread.repo';
 import { Board } from '../../domain/entity/board';
 import { BoardRepository } from '../../infra/repository/board.repo';
 import { Post } from '../../domain/entity/post';
-import { IPost } from '../../domain/interfaces/post.interface';
+import { ICreatePostCommand } from '../commands/post';
 import { Attachment } from '../../domain/entity/attachment';
 import { PostService } from './post.service';
 
@@ -30,7 +30,7 @@ export class ThreadService {
     @Inject(type => PostService) private postService: PostService,
   ) { }
 
-  async create(boardSlug: string, postData: IPost): Promise<Thread> {
+  async create(boardSlug: string, postData: ICreatePostCommand): Promise<Thread> {
     const board = await this.boardRepo.getBySlug(boardSlug);
     const thread = new Thread();
     thread.board = board;
