@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 import { Container } from 'typedi';
-import { IPost } from '../../../domain/entity/post';
+import { IPost } from '../../../domain/interfaces/post.interface';
 import { PostService } from '../../../app/service/post.service';
-import { AttachmentService } from '../../../app/service/attachment.service';
 
 export async function postsCreateAction(request: Request, response: Response) {
   const threadId        = request.params.threadId;

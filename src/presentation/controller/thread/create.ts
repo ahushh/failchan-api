@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import typedi, { Container } from 'typedi';
 import { ThreadService } from '../../../app/service/thread.service';
-import { IPost } from '../../../domain/entity/post';
+import { IPost } from '../../../domain/interfaces/post.interface';
 import { AttachmentService } from '../../../app/service/attachment.service';
 
 export async function threadsCreateAction(request: Request, response: Response) {

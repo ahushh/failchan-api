@@ -6,7 +6,8 @@ import { Thread } from '../../domain/entity/thread';
 import { ThreadRepository } from '../../infra/repository/thread.repo';
 import { Board } from '../../domain/entity/board';
 import { BoardRepository } from '../../infra/repository/board.repo';
-import { Post, IPost } from '../../domain/entity/post';
+import { Post } from '../../domain/entity/post';
+import { IPost } from '../../domain/interfaces/post.interface';
 import { Attachment } from '../../domain/entity/attachment';
 import { PostService } from './post.service';
 
@@ -31,7 +32,7 @@ export class ThreadService {
 
     return await this.threadRepo.findOneOrFail({
       where: { id: threadSaved.id },
-      relations: ['posts', 'posts.attachments'],
+      relations: ['posts', 'posts.attachments', 'posts.replies', 'posts.referencies'],
     });
   }
 
@@ -42,7 +43,7 @@ export class ThreadService {
   getThreadWithPosts(boardId: string, threadId: string): Promise<Thread | undefined> {
     return this.threadRepo.findOne({
       where: { boardId, id: threadId },
-      relations: ['posts', 'posts.attachments'],
+      relations: ['posts', 'posts.attachments', 'posts.replies', 'posts.referencies'],
     });
   }
 }

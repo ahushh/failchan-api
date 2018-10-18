@@ -1,18 +1,13 @@
 import {
   Entity, PrimaryGeneratedColumn, Column,
   ManyToMany, ManyToOne, CreateDateColumn,
-  UpdateDateColumn, OneToMany,
+  UpdateDateColumn, OneToMany, JoinTable,
 } from 'typeorm';
 import { Thread } from './thread';
 import { Attachment } from './attachment';
 
-export interface IPost {
-  body: string;
-  attachmentIds?: number[];
-}
-
 @Entity()
-export class Post implements IPost {
+export class Post {
 
   @PrimaryGeneratedColumn()
   id: number;
@@ -23,6 +18,14 @@ export class Post implements IPost {
 
   @OneToMany(type => Attachment, attachment => attachment.post)
   attachments: Attachment[];
+
+  @ManyToMany(type => Post)
+  @JoinTable()
+  replies: Post[];
+
+  @ManyToMany(type => Post)
+  @JoinTable()
+  referencies: Post[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
