@@ -7,14 +7,14 @@ export class ThreadRepository extends Repository<Thread> implements IThreadRepos
   constructor() {
     super();
   }
-  getThreadsWithPreviewPosts(
+  async getThreadsWithPreviewPosts(
     boardId: number,
     findOptions: {
       previewPosts: number;
       take: number;
       skip: number;
     }): Promise<Thread[]> {
-    return this.find({
+    const threads = await this.find({
       skip: findOptions.skip || 0,
       take: findOptions.take || 0,
       where: { boardId },
@@ -22,12 +22,11 @@ export class ThreadRepository extends Repository<Thread> implements IThreadRepos
         updatedAt: 'DESC',
       },
       relations: ['posts', 'posts.attachments', 'posts.replies', 'posts.referencies'],
-    }).then((threads: Thread[]) => {
-      threads.forEach((thread: Thread) => {
-        const op = thread.posts[0];
-        thread.posts = [op, ...thread.posts.slice(thread.posts.length - findOptions.previewPosts)];
-      });
-      return threads;
     });
+    threads.forEach((thread: Thread) => {
+      const op = thread.posts[0];
+      thread.posts = [op, ...thread.posts.slice(thread.posts.length - findOptions.previewPosts)];
+    });
+    return threads;
   }
 }

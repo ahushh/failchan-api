@@ -12,13 +12,7 @@ import { Post } from '../../domain/entity/post';
 import { ICreatePostCommand } from '../commands/post';
 import { Attachment } from '../../domain/entity/attachment';
 import { PostService } from './post.service';
-
-export interface IGetBoardParams {
-  boardSlug: string;
-  previewPosts: number;
-  take: number;
-  skip: number;
-}
+import { ListThreadsByBoardCommand } from '../commands/thread';
 
 @Service()
 export class ThreadService {
@@ -44,7 +38,7 @@ export class ThreadService {
     });
   }
 
-  async getThreadsByBoardSlug(params: IGetBoardParams): Promise<Thread[]> {
+  async getThreadsByBoardSlug(params: ListThreadsByBoardCommand): Promise<Thread[]> {
     const board = await this.boardRepo.getBySlug(params.boardSlug);
     return this.threadRepo
       .getThreadsWithPreviewPosts(board.id, R.omit(['boardSlug'], params));
