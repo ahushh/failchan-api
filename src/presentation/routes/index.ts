@@ -22,6 +22,8 @@ router.post('/boards/:boardSlug/threads', threadController.create);
 
 router.get('/threads/:threadId', threadController.get);
 router.post('/threads/:threadId/posts', postController.create);
+router.patch('/posts/:postId', postController.update);
+
 router.post('/attachments', fileUploadMiddleware, attachmentController.create);
 
 export default router;
