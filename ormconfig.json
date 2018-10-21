@@ -6,8 +6,9 @@
   "password": "postgres",
   "database": "test",
   "entities": ["src/domain/entity/**/*.ts"],
-  "migrations": ["src/migration/**/*.ts"],
-  "subscribers": ["src/subscriber/**/*.ts"],
+  "migrations": ["src/infra/migration/**/*.ts"],
+  "subscribers": ["src/app/subscriber/**/*.ts"],
   "logging": true,
+  "logger": "advanced-console",
   "synchronize": true
 }

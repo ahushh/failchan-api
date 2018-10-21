@@ -9,10 +9,10 @@ import { ThreadRepository } from '../../infra/repository/thread.repo';
 import { Board } from '../../domain/entity/board';
 import { BoardRepository } from '../../infra/repository/board.repo';
 import { Post } from '../../domain/entity/post';
-import { ICreatePostCommand } from '../commands/post';
 import { Attachment } from '../../domain/entity/attachment';
 import { PostService } from './post.service';
 import { ListThreadsByBoardCommand } from '../commands/thread';
+import { ReplyToThreadCommand } from '../commands/post';
 
 @Service()
 export class ThreadService {
@@ -24,18 +24,11 @@ export class ThreadService {
     @Inject(type => PostService) private postService: PostService,
   ) { }
 
-  async create(boardSlug: string, postData: ICreatePostCommand): Promise<Thread> {
+  async create(boardSlug: string): Promise<Thread> {
     const board = await this.boardRepo.getBySlug(boardSlug);
     const thread = new Thread();
     thread.board = board;
-    const threadSaved = await this.threadRepo.save(thread);
-
-    await this.postService.replyToThread(threadSaved.id, postData);
-
-    return await this.threadRepo.findOneOrFail({
-      where: { id: threadSaved.id },
-      relations: ['posts', 'posts.attachments', 'posts.replies', 'posts.referencies'],
-    });
+    return this.threadRepo.save(thread);
   }
 
   async getThreadsByBoardSlug(params: ListThreadsByBoardCommand): Promise<Thread[]> {
@@ -43,8 +36,8 @@ export class ThreadService {
     return this.threadRepo
       .getThreadsWithPreviewPosts(board.id, R.omit(['boardSlug'], params));
   }
-  getThreadWithPosts(threadId: string): Promise<Thread | undefined> {
-    return this.threadRepo.findOne({
+  getThreadWithPosts(threadId: number): Promise<Thread> {
+    return this.threadRepo.findOneOrFail({
       where: { id: threadId },
       relations: ['posts', 'posts.attachments', 'posts.replies', 'posts.referencies'],
     });
