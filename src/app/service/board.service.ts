@@ -9,9 +9,7 @@ import { BOARD_ERRORS } from '../errors/board';
 export class BoardService {
   constructor(@InjectRepository(Board) private repo: BoardRepository) { }
   async create({ slug, name }): Promise<Board> {
-    const board = new Board();
-    board.slug = slug;
-    board.name = name;
+    const board = Board.create(slug, name);
 
     try {
       return await this.repo.save(board);

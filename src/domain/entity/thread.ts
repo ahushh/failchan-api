@@ -25,6 +25,17 @@ export class Thread {
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 
+  static create(board: Board) {
+    const thread = new Thread();
+    thread.board = board;
+    return thread;
+  }
+
+  reply(post: Post) {
+    this.bump();
+    post.thread = this;
+  }
+
   bump() {
     this.bumpCount = (this.bumpCount || 0) + 1;
   }

@@ -1,9 +1,10 @@
 import { Service, Inject } from 'typedi';
 import { Attachment } from '../../domain/entity/attachment';
 import { IFileServiceFactory, FileServiceFactory } from '../../infra/file/file.factory';
-import { Repository } from 'typeorm';
+import { Repository, Transaction, TransactionRepository } from 'typeorm';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { Post } from '../../domain/entity/post';
+import { IFileService } from '../../infra/file/file.interface';
 
 export interface IAttachmentFile {
   path: string;
@@ -17,6 +18,7 @@ export class AttachmentService {
   constructor(
     @Inject(FileServiceFactory) public factory: IFileServiceFactory,
     @InjectRepository(Attachment) public repo: Repository<Attachment>,
+    @TransactionRepository(Attachment) public transactionRepo: Repository<Attachment>,
     @InjectRepository(Post) public postRepo: Repository<Post>,
   ) { }
   private calcHash = async (file: IAttachmentFile): Promise<string> => {
@@ -29,7 +31,7 @@ export class AttachmentService {
   }
 
   private getFileMetadata = async (file: IAttachmentFile) => {
-    const service = this.factory.create(file.mimetype);
+    const service: IFileService = this.factory.create(file.mimetype);
     const md5 = await this.calcHash(file);
 
     const existing = await this.getExistingByMd5(md5);
@@ -52,28 +54,24 @@ export class AttachmentService {
 
   private createOne = async (file: IAttachmentFile): Promise<Attachment> => {
     const { uri, thumbnailUri, exif, md5 } = await this.getFileMetadata(file);
-    const attachment = new Attachment();
-    attachment.exif = exif;
-    attachment.md5 = md5;
-    attachment.mime = file.mimetype;
-    attachment.name = file.originalname;
-    attachment.thumbnailUri = thumbnailUri;
-    attachment.uri = uri;
-    attachment.size = `${file.size}`;
-    return this.repo.save(attachment);
+    const attachment = Attachment.create(
+      exif, md5, file.mimetype, file.originalname, thumbnailUri, uri, file.size,
+    );
+    return this.transactionRepo.save(attachment);
   }
 
-  createMultiple = async (files: IAttachmentFile[]) => {
+  @Transaction()
+  async createMultiple (files: IAttachmentFile[]) {
     const created = await Promise.all(files.map(this.createOne));
     return created.map(({ id }) => id);
   }
 
-  attachToPost = async (ids: number[], postId: number): Promise<Post> => {
-    const attachments = await this.repo.findByIds(ids);
-    const post = await this.postRepo.findOneOrFail(postId);
-    attachments.forEach(a => a.post = post);
-    const updatedAttachments = await this.repo.save(attachments);
-    post.attachments = updatedAttachments;
-    return this.postRepo.save(post);
-  }
+  // attachToPost = async (ids: number[], postId: number): Promise<Post> => {
+  //   const attachments = await this.repo.findByIds(ids);
+  //   const post = await this.postRepo.findOneOrFail(postId);
+  //   attachments.forEach(a => a.post = post);
+  //   const updatedAttachments = await this.repo.save(attachments);
+  //   post.attachments = updatedAttachments;
+  //   return this.postRepo.save(post);
+  // }
 }

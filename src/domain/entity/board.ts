@@ -24,4 +24,16 @@ export class Board {
 
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
+
+  constructor(obj?) {
+    if (!obj) {
+      return;
+    }
+    this.slug = obj.slug;
+    this.name = obj.name;
+  }
+
+  static create(slug: string, name: string) {
+    return new Board({ slug, name });
+  }
 }

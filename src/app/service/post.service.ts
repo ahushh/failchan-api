@@ -15,27 +15,22 @@ export class PostService {
     @InjectRepository(Attachment) private attachmentRepo: Repository<Attachment>,
   ) { }
 
-  private async createPost(
-    command: ReplyToThreadCommand, thread: Thread,
-  ) {
-    const post = new Post();
-    post.thread = thread;
-    post.body = command.body;
-    post.attachments = await this.attachmentRepo.findByIds(command.attachmentIds);
-    post.referencies = await this.postRepo.findByIds(command.referencies, {
+  async replyToThreadHandler(command: ReplyToThreadCommand): Promise<Post> {
+    const thread = await this.threadRepo.findOneOrFail(command.threadId);
+    const attachments = await this.attachmentRepo.findByIds(command.attachmentIds);
+    const referencies = await this.postRepo.findByIds(command.referencies, {
       relations: ['replies'],
     });
-    const savedPost = await this.postRepo.save(post);
-    await this.updateRefsReplies(savedPost);
-    return savedPost;
-  }
 
-  async replyToThreadHandler(command: ReplyToThreadCommand): Promise<Post> {
-    let thread = await this.threadRepo.findOneOrFail(command.threadId);
-    thread.bump();
-    thread = await this.threadRepo.save(thread);
+    let post = Post.create(command.body, referencies, attachments);
+    thread.reply(post);
+    await this.threadRepo.save(thread);
+    post = await this.postRepo.save(post);
 
-    return this.createPost(command, thread);
+    const refs = await post.updateRefsReplies();
+    await this.postRepo.save(refs);
+
+    return post;
   }
 
   async updatePostHandler(command: UpdatePostCommand): Promise<Post> {
@@ -56,14 +51,10 @@ export class PostService {
       post.attachments = await this.attachmentRepo.findByIds(command.attachmentIds);
     }
     const savedPost = await this.postRepo.save(post);
-    await this.updateRefsReplies(savedPost);
+    if (command.referencies) {
+      const refs = await savedPost.updateRefsReplies();
+      await this.postRepo.save(refs);
+    }
     return savedPost;
-  }
-
-  private updateRefsReplies(post: Post) {
-    const refs = post.referencies.map((ref: Post) =>
-      ({ ...ref, replies: [...ref.replies, post] }),
-    );
-    return this.postRepo.save(refs);
   }
 }

@@ -26,8 +26,7 @@ export class ThreadService {
 
   async create(boardSlug: string): Promise<Thread> {
     const board = await this.boardRepo.getBySlug(boardSlug);
-    const thread = new Thread();
-    thread.board = board;
+    const thread = Thread.create(board);
     return this.threadRepo.save(thread);
   }
 

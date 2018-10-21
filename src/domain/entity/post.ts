@@ -1,3 +1,5 @@
+import { plainToClass } from 'class-transformer';
+
 import {
   Entity, PrimaryGeneratedColumn, Column,
   ManyToMany, ManyToOne, CreateDateColumn,
@@ -32,4 +34,31 @@ export class Post {
 
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
+
+  constructor(obj?) {
+    if (!obj) {
+      return;
+    }
+    this.body = obj.body;
+  }
+
+  static create(body: string, referencies: Post[], attachments: Attachment[]) {
+    const post = new Post({ body });
+    post.referencies = referencies;
+    post.attachments = attachments;
+    return post;
+  }
+
+  addReply(post: Post) {
+    const alreadyAdded = this.replies.find(p => p.id === post.id);
+    if (!alreadyAdded) {
+      this.replies.push(post);
+    }
+  }
+
+  // synchronize post referencies and replies of the referencies
+  updateRefsReplies(): Post[] {
+    this.referencies.forEach((ref: Post) => ref.addReply(this));
+    return this.referencies;
+  }
 }
