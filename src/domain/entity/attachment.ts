@@ -40,6 +40,9 @@ export class Attachment {
   updatedAt: Date;
 
   constructor(obj?) {
+    if (!obj) {
+      return;
+    }
     this.exif = obj.exif;
     this.md5 = obj.md5;
     this.mime = obj.mimetype;
