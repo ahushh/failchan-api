@@ -3,10 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "ts-node src/server.ts",
-    "start:dev": "nodemon",
+    "start": "nodemon",
+    "start:dev": "ts-node src/server.ts",
+    "start:prod": "node dist/server.js",
     "lint": "tslint --project . -c tslint.json src/**/*.ts src/*.ts",
-    "lint:fix": "npm run lint -- --fix"
+    "lint:fix": "npm run lint -- --fix",
+    "build": "tsc",
+    "typeorm": "ts-node ./node_modules/.bin/typeorm"
   },
   "dependencies": {
     "@types/aws-sdk": "^2.7.0",

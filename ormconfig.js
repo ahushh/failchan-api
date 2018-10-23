@@ -1,4 +1,4 @@
-{
+module.exports = {
   "type": "postgres",
   "host": "localhost",
   "port": 5432,
@@ -10,5 +10,8 @@
   "subscribers": ["src/app/subscriber/**/*.ts"],
   "logging": true,
   "logger": "advanced-console",
-  "synchronize": true
+  "synchronize": false, //process.env.NODE_ENV !== 'production',
+  "cli": {
+    "migrationsDir": "src/infra/migration"
+}
 }
