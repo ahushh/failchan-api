@@ -2,97 +2,78 @@
 
 require('dotenv').config();
 
-import { createConnection, useContainer } from 'typeorm';
+import { createConnection, useContainer, getConnectionOptions } from 'typeorm';
 import { Container } from 'typedi';
-/**
- * Module dependencies.
- */
 
 import app from './presentation/app';
 const debug = require('debug')('express:server');
 import http from 'http';
 
-/**
- * Get port from environment and store in Express.
- */
-
-const port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
-
-/**
- * Create HTTP server.
- */
-
-const server = http.createServer(app);
-
-/**
- * Listen on provided port, on all network interfaces.
- */
-
-useContainer(Container);
-createConnection().then(() => {
-  // autobindRoutes(Container);
-  server.listen(port);
-  server.on('error', onError);
-  server.on('listening', onListening);
-});
-
-/**
- * Normalize a port into a number, string, or false.
- */
-
-function normalizePort(val) {
-  const port = parseInt(val, 10);
-
-  if (isNaN(port)) {
-    // named pipe
-    return val;
+class Server {
+  app: any;
+  port: any;
+  server: any;
+  constructor(app) {
+    this.app = app;
+    this.port = this.normalizePort(process.env.PORT || '3000');
+    app.set('port', this.port);
+    this.server = http.createServer(this.app);
+  }
+  async start() {
+    useContainer(Container);
+    await this.createTypeOrmConnection();
+    this.server.listen(this.port);
+    this.server.on('error', this.onError);
+    this.server.on('listening', this.onListening);
   }
 
-  if (port >= 0) {
-    // port number
-    return port;
+  private async createTypeOrmConnection() {
+    const options = await getConnectionOptions(<string>process.env.NODE_ENV);
+    return createConnection(options);
   }
 
-  return false;
-}
-
-/**
- * Event listener for HTTP server "error" event.
- */
-
-function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
+  private normalizePort(val) {
+    const port = parseInt(val, 10);
+    if (isNaN(port)) {
+      // named pipe
+      return val;
+    }
+    if (port >= 0) {
+      // port number
+      return port;
+    }
+    return false;
   }
-
-  const bind = typeof port === 'string'
-    ? `Pipe ${port}`
-    : `Port ${port}`;
-
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case 'EACCES':
-      console.error(`${bind} requires elevated privileges`);
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(`${bind} is already in use`);
-      process.exit(1);
-      break;
-    default:
+  private onError = (error) => {
+    if (error.syscall !== 'listen') {
       throw error;
+    }
+
+    const bind = typeof this.port === 'string'
+      ? `Pipe ${this.port}`
+      : `Port ${this.port}`;
+
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+      case 'EACCES':
+        console.error(`${bind} requires elevated privileges`);
+        process.exit(1);
+        break;
+      case 'EADDRINUSE':
+        console.error(`${bind} is already in use`);
+        process.exit(1);
+        break;
+      default:
+        throw error;
+    }
+  }
+  private onListening = () => {
+    const addr = this.server.address();
+    const bind = typeof addr === 'string'
+      ? `pipe ${addr}`
+      : `port ${addr.port}`;
+    debug(`Listening on ${bind}`);
   }
 }
 
-/**
- * Event listener for HTTP server "listening" event.
- */
-
-function onListening() {
-  const addr = server.address();
-  const bind = typeof addr === 'string'
-    ? `pipe ${addr}`
-    : `port ${addr.port}`;
-  debug(`Listening on ${bind}`);
-}
+new Server(app).start();
