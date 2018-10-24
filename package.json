@@ -4,13 +4,14 @@
   "private": true,
   "scripts": {
     "start": "nodemon",
-    "start:dev": "NODE_ENV=development ts-node src/server.ts",
-    "start:test": "NODE_ENV=test ts-node src/server.ts",
-    "start:prod": "NODE_ENV=production node dist/server.js",
+    "start:dev": "NODE_ENV=development ts-node src/index.ts",
+    "start:test": "NODE_ENV=test ts-node src/index.ts",
+    "start:prod": "NODE_ENV=production node dist/index.js",
     "lint": "tslint --project . -c tslint.json src/**/*.ts src/*.ts",
     "lint:fix": "npm run lint -- --fix",
     "build": "tsc",
-    "typeorm": "ts-node ./node_modules/.bin/typeorm"
+    "typeorm": "ts-node ./node_modules/.bin/typeorm",
+    "test": "NODE_ENV=test mocha test/**/*.ts"
   },
   "dependencies": {
     "@types/aws-sdk": "^2.7.0",
@@ -19,6 +20,7 @@
     "@types/lodash": "^4.14.116",
     "@types/node": "^10.11.5",
     "aws-sdk": "^2.336.0",
+    "chai": "^4.2.0",
     "class-transformer": "^0.1.10",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
@@ -28,6 +30,7 @@
     "glob": "^7.1.3",
     "lodash": "^4.17.11",
     "md5": "^2.2.1",
+    "mocha": "^5.2.0",
     "morgan": "~1.9.0",
     "multer": "^1.4.1",
     "node-exiftool": "^2.3.0",
@@ -36,6 +39,7 @@
     "ramda": "^0.25.0",
     "reflect-metadata": "^0.1.12",
     "sharp": "^0.21.0",
+    "supertest": "^3.3.0",
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
     "typedi": "^0.8.0",
@@ -45,6 +49,8 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
+    "@types/chai": "^4.1.6",
+    "@types/mocha": "^5.2.5",
     "@types/multer": "^1.3.7",
     "@types/ramda": "^0.25.39",
     "@types/redis": "^2.8.7",

@@ -29,7 +29,7 @@ class Server {
 
   private async createTypeOrmConnection() {
     const options = await getConnectionOptions(<string>process.env.NODE_ENV);
-    return createConnection(options);
+    return createConnection({ ...options, name: 'default' });
   }
 
   private normalizePort(val) {
@@ -76,4 +76,4 @@ class Server {
   }
 }
 
-new Server(app).start();
+export const createServer = () => new Server(app);
