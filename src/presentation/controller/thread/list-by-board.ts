@@ -7,7 +7,7 @@ export async function threadsListByBoardAction(request: Request, response: Respo
   const service = Container.get(ThreadService);
   const command = new ListThreadsByBoardCommand({
     boardSlug: request.params.boardSlug,
-    skip: request.params.skip,
+    skip: request.query.skip,
   });
   const threads = await service.getThreadsByBoardSlug(command);
   response.json({ threads });
