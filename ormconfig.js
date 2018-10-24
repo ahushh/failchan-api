@@ -12,6 +12,8 @@ module.exports = {
   "logger": "advanced-console",
   "synchronize": false, //process.env.NODE_ENV !== 'production',
   "cli": {
-    "migrationsDir": "src/infra/migration"
-}
+    "migrationsDir": "src/infra/migration",
+    "entitiesDir": "src/domain/entity",
+    "subscribersDir": "src/app/subscriber"
+  }
 }
