@@ -24,8 +24,9 @@ export class ThreadRepository extends Repository<Thread> implements IThreadRepos
       relations: ['posts', 'posts.attachments', 'posts.replies', 'posts.referencies'],
     });
     threads.forEach((thread: Thread) => {
-      const op = thread.posts[0];
-      thread.posts = [op, ...thread.posts.slice(thread.posts.length - findOptions.previewPosts)];
+      const posts = thread.posts.sort((a, b) => a.id > b.id ? 1 : -1);
+      const op = posts[0];
+      thread.posts = [op, ...posts.slice(thread.posts.length - findOptions.previewPosts)];
     });
     return threads;
   }
