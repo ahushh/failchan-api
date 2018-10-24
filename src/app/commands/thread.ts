@@ -1,8 +1,10 @@
+export const TEST_THREADS_LISTING_TAKE = 2;
+export const TEST_THREADS_LISTING_PREVIEW_POSTS = 2;
 
 export class ListThreadsByBoardCommand {
   boardSlug: string;
-  previewPosts = 5;
-  take = 10;
+  previewPosts = process.env.NODE_ENV === 'test' ? TEST_THREADS_LISTING_PREVIEW_POSTS : 5;
+  take =  process.env.NODE_ENV === 'test' ? TEST_THREADS_LISTING_TAKE : 10;
   skip = 0;
   constructor({ boardSlug, previewPosts, take, skip }: any) {
     this.boardSlug    = boardSlug;

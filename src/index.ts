@@ -1,3 +1,6 @@
-import { createServer } from './server';
 
-createServer().start();
+import { ApplicationServer } from './server';
+
+ApplicationServer.getApp().then((app) => {
+  ApplicationServer.start(app);
+});

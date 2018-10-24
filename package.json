@@ -11,7 +11,7 @@
     "lint:fix": "npm run lint -- --fix",
     "build": "tsc",
     "typeorm": "ts-node ./node_modules/.bin/typeorm",
-    "test": "NODE_ENV=test mocha test/**/*.ts"
+    "test": "NODE_ENV=test mocha --opts test/mocha.opts test/**/*.ts"
   },
   "dependencies": {
     "@types/aws-sdk": "^2.7.0",

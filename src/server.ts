@@ -2,7 +2,7 @@
 
 require('dotenv').config();
 
-import { createConnection, useContainer, getConnectionOptions } from 'typeorm';
+import { createConnection, useContainer, getConnectionOptions, Connection } from 'typeorm';
 import { Container } from 'typedi';
 
 import app from './presentation/app';
@@ -12,22 +12,29 @@ import http from 'http';
 class Server {
   app: any;
   port: any;
-  server: any;
-  constructor(app) {
+  server: http.Server;
+  connection: Connection;
+
+  async getApp() {
+    if (this.app) {
+      return this.app;
+    }
+    this.connection = await this.createTypeOrmConnection();
     this.app = app;
     this.port = this.normalizePort(process.env.PORT || '3000');
     app.set('port', this.port);
-    this.server = http.createServer(this.app);
+    return this.app;
   }
-  async start() {
-    useContainer(Container);
-    await this.createTypeOrmConnection();
+
+  start(app) {
+    this.server = http.createServer(app);
     this.server.listen(this.port);
     this.server.on('error', this.onError);
     this.server.on('listening', this.onListening);
   }
 
   private async createTypeOrmConnection() {
+    useContainer(Container);
     const options = await getConnectionOptions(<string>process.env.NODE_ENV);
     return createConnection({ ...options, name: 'default' });
   }
@@ -75,5 +82,5 @@ class Server {
     debug(`Listening on ${bind}`);
   }
 }
-
-export const createServer = () => new Server(app);
+// tslint:disable-next-line:variable-name
+export const ApplicationServer = new Server();
