@@ -64,4 +64,8 @@ export class Attachment {
       exif, md5, mimetype, originalname, thumbnailUri, uri, size,
     });
   }
+
+  get storageKey() {
+    return `${this.md5}/${this.name}`;
+  }
 }

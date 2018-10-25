@@ -4,8 +4,9 @@ import multer from 'multer';
 
 export const diskStorage: multer.StorageEngine = multer.diskStorage({
   destination: (req, file, cb) => {
-    const subdir = Math.random().toString().slice(2);
-    const dir = `${process.env.TEMP_DIR || '/tmp'}/attachments/${subdir}`;
+    const timestamp = + new Date();
+    const subdir = timestamp + Math.random().toString().slice(2);
+    const dir = `${process.env.TEMP_DIR || '/tmp'}/${subdir}`;
     fs.mkdir(dir, undefined, (err) => {
       if (err && err.errno !== EACCES) {
         throw err;

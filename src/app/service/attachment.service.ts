@@ -1,6 +1,9 @@
 import { Inject, Service } from 'typedi';
-import { Repository, Transaction, TransactionRepository } from 'typeorm';
-import { InjectRepository } from 'typeorm-typedi-extensions';
+import {
+  Connection, EntityManager, Repository,
+  Transaction, TransactionManager, TransactionRepository,
+} from 'typeorm';
+import { InjectConnection, InjectRepository } from 'typeorm-typedi-extensions';
 import { Attachment } from '../../domain/entity/attachment';
 import { Post } from '../../domain/entity/post';
 import { FileServiceFactory, IFileServiceFactory } from '../../infra/file/file.factory';
@@ -18,7 +21,6 @@ export class AttachmentService {
   constructor(
     @Inject(FileServiceFactory) public factory: IFileServiceFactory,
     @InjectRepository(Attachment) public repo: Repository<Attachment>,
-    @TransactionRepository(Attachment) public transactionRepo: Repository<Attachment>,
     @InjectRepository(Post) public postRepo: Repository<Post>,
   ) { }
   private calcHash = async (file: IAttachmentFile): Promise<string> => {
@@ -45,7 +47,7 @@ export class AttachmentService {
     }
 
     const [uri, thumbnailUri, exif] = await Promise.all([
-      service.upload(file.path, file.originalname),
+      service.upload(file.path, `${md5}/${file.originalname}`),
       service.generateThumbnail(file.path, md5),
       service.getExif(file.path),
     ]);
@@ -57,21 +59,12 @@ export class AttachmentService {
     const attachment = Attachment.create(
       exif, md5, file.mimetype, file.originalname, thumbnailUri, uri, file.size,
     );
-    return this.transactionRepo.save(attachment);
+    return this.repo.save(attachment);
   }
 
-  @Transaction()
   async createMultiple (files: IAttachmentFile[]) {
     const created = await Promise.all(files.map(this.createOne));
     return created.map(({ id }) => id);
   }
 
-  // attachToPost = async (ids: number[], postId: number): Promise<Post> => {
-  //   const attachments = await this.repo.findByIds(ids);
-  //   const post = await this.postRepo.findOneOrFail(postId);
-  //   attachments.forEach(a => a.post = post);
-  //   const updatedAttachments = await this.repo.save(attachments);
-  //   post.attachments = updatedAttachments;
-  //   return this.postRepo.save(post);
-  // }
 }

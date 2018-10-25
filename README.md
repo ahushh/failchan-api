@@ -2,8 +2,6 @@
 
 `npm ci`
 
-`mkdir /tmp/attachment`
-
 `cp .env.example .env`
 
 # Run in dev mode
@@ -20,6 +18,8 @@ npm start
 
 # TODO
 
+* attachments - удаление неиспользованных
+* attachments create - transaction & rollback
 * Events and websockets
 * Event bus
 * слой обработки ошибок
