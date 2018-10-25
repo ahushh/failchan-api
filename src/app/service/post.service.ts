@@ -30,7 +30,9 @@ export class PostService {
     const refs = await post.updateRefsReplies();
     await this.postRepo.save(refs);
 
-    return post;
+    return this.postRepo.findOneOrFail(post.id, {
+      relations: ['referencies', 'attachments', 'replies'],
+    });
   }
 
   async updatePostHandler(command: UpdatePostCommand): Promise<Post> {

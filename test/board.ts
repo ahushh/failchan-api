@@ -8,7 +8,7 @@ import { ApplicationServer } from '../src/server';
 
 let app;
 
-describe('Boards list', () => {
+describe('Boards listing', () => {
   before(async () => {
     app = await ApplicationServer.getApp();
 
