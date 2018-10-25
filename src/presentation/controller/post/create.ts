@@ -12,7 +12,7 @@ export async function postsCreateAction(request: Request, response: Response, ne
     response.json({ post: createdPost });
   } catch (e) {
     if (e.name === 'EntityNotFound') {
-      response.status(404).json({ message: `Thread ${request.params.threadId} not found` });
+      response.status(404).json({ error: `Thread ${request.params.threadId} not found` });
     }
     next(e);
   }

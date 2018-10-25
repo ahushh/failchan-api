@@ -38,15 +38,15 @@ describe('Post create', () => {
         done();
       });
   });
-  // it('does not allow to create a board with existing slug', (done) => {
-  //   supertest(app).post(`/thread/${threadId}`)
-  //     .send({ post: { name: 'should fail', slug: 'b' } })
-  //     .end((err, res) => {
-  //       chai.expect(res.status).to.eq(400);
-  //       chai.expect(res.body).to.include({
-  //         error: 'Board with such slug already exists',
-  //       });
-  //       done();
-  //     });
-  // });
+  it('does not allow to create a board with existing slug', (done) => {
+    supertest(app).post('/threads/666/posts')
+      .send({ post: { body: 'should fail', attachments: [], referencies: [] } })
+      .end((err, res) => {
+        chai.expect(res.status).to.eq(404);
+        chai.expect(res.body).to.include({
+          error: 'Thread 666 not found',
+        });
+        done();
+      });
+  });
 });
