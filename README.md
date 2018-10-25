@@ -22,3 +22,4 @@ npm start
 
 * Events and websockets
 * Event bus
+* слой обработки ошибок
