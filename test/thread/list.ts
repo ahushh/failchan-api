@@ -1,19 +1,19 @@
 import chai from 'chai';
-import { ApplicationServer } from '../../src/server';
 import supertest from 'supertest';
 import { Container } from 'typedi';
-import { Board } from '../../src/domain/entity/board';
-import { getConnection, getRepository, getCustomRepository } from 'typeorm';
-import { BoardRepository } from '../../src/infra/repository/board.repo';
-import { Thread } from '../../src/domain/entity/thread';
-import { ThreadRepository } from '../../src/infra/repository/thread.repo';
-import { PostService } from '../../src/app/service/post.service';
+import { getConnection, getCustomRepository, getRepository } from 'typeorm';
 import { ReplyToThreadCommand } from '../../src/app/commands/post';
-import { Post } from '../../src/domain/entity/post';
 import {
-  TEST_THREADS_LISTING_TAKE,
   TEST_THREADS_LISTING_PREVIEW_POSTS,
+  TEST_THREADS_LISTING_TAKE,
 } from '../../src/app/commands/thread';
+import { PostService } from '../../src/app/service/post.service';
+import { Board } from '../../src/domain/entity/board';
+import { Post } from '../../src/domain/entity/post';
+import { Thread } from '../../src/domain/entity/thread';
+import { BoardRepository } from '../../src/infra/repository/board.repo';
+import { ThreadRepository } from '../../src/infra/repository/thread.repo';
+import { ApplicationServer } from '../../src/server';
 
 const ALL_THREADS = 20;
 const POSTS_PER_THREAD = 10;

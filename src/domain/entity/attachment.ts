@@ -1,6 +1,6 @@
 import {
-  Entity, PrimaryGeneratedColumn,
-  Column, CreateDateColumn, UpdateDateColumn, ManyToMany, ManyToOne,
+  Column, CreateDateColumn,
+  Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn,
 } from 'typeorm';
 import { Post } from './post';
 

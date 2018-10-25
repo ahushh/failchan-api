@@ -1,8 +1,8 @@
-import { Container, Service, Token, Inject } from 'typedi';
-import { IFileService } from './file.interface';
-import { ImageFileService } from './image';
-import { GenericFileService } from './generic';
+import { Container, Inject, Service, Token } from 'typedi';
 import { FileStorage } from '../storage.service';
+import { IFileService } from './file.interface';
+import { GenericFileService } from './generic';
+import { ImageFileService } from './image';
 
 export interface IFileServiceFactory {
   create(mime: string): IFileService;

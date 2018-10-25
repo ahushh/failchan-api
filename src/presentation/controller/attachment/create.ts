@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
-import { Container } from 'typedi';
-// tslint:disable-next-line:import-name
 import R from 'ramda';
+import { Container } from 'typedi';
 import {
   AttachmentService,
   IAttachmentFile,

@@ -1,9 +1,8 @@
-// tslint:disable-next-line:import-name
 import S3 from 'aws-sdk/clients/s3';
-import fs, { ReadStream } from 'fs';
-import { Service } from 'typedi';
 import { Blob } from 'aws-sdk/lib/dynamodb/document_client';
+import fs, { ReadStream } from 'fs';
 import { Readable } from 'stream';
+import { Service } from 'typedi';
 
 export type Body = Buffer | Uint8Array | Blob | string | Readable;
 

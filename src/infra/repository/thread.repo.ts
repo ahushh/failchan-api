@@ -1,4 +1,4 @@
-import { EntityRepository, Repository, EntityManager } from 'typeorm';
+import { EntityManager, EntityRepository, Repository } from 'typeorm';
 import { Thread } from '../../domain/entity/thread';
 import { IThreadRepository } from '../../domain/thread.repo.interface';
 

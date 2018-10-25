@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { Container } from 'typedi';
-import { ThreadService } from '../../../app/service/thread.service';
 import { ReplyToThreadCommand } from '../../../app/commands/post';
 import { PostService } from '../../../app/service/post.service';
+import { ThreadService } from '../../../app/service/thread.service';
 
 export async function threadsCreateAction(request: Request, response: Response, next: Function) {
   const board = request.params.boardSlug;

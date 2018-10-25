@@ -2,8 +2,8 @@
 
 require('dotenv').config();
 
-import { createConnection, useContainer, getConnectionOptions, Connection } from 'typeorm';
 import { Container } from 'typedi';
+import { Connection, createConnection, getConnectionOptions, useContainer } from 'typeorm';
 
 import app from './presentation/app';
 const debug = require('debug')('express:server');

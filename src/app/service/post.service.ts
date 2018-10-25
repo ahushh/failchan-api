@@ -1,10 +1,10 @@
 import { Service } from 'typedi';
-import { InjectRepository } from 'typeorm-typedi-extensions';
 import { Repository } from 'typeorm';
+import { InjectRepository } from 'typeorm-typedi-extensions';
+import { Attachment } from '../../domain/entity/attachment';
 import { Post } from '../../domain/entity/post';
 import { Thread } from '../../domain/entity/thread';
 import { ThreadRepository } from '../../infra/repository/thread.repo';
-import { Attachment } from '../../domain/entity/attachment';
 import { ReplyToThreadCommand, UpdatePostCommand } from '../commands/post';
 
 @Service()

@@ -1,12 +1,10 @@
 import chai from 'chai';
-import { ApplicationServer } from '../src/server';
 import supertest from 'supertest';
-import { Container } from 'typedi';
+
+import { getConnection, getCustomRepository, getRepository } from 'typeorm';
 import { Board } from '../src/domain/entity/board';
-import { getConnection, getRepository, getCustomRepository } from 'typeorm';
 import { BoardRepository } from '../src/infra/repository/board.repo';
-import { Post } from '../src/domain/entity/post';
-import { ThreadRepository } from '../src/infra/repository/thread.repo';
+import { ApplicationServer } from '../src/server';
 
 let app;
 

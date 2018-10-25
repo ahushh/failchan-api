@@ -1,8 +1,8 @@
 
-import express from 'express';
-import path from 'path';
 import cookieParser from 'cookie-parser';
+import express from 'express';
 import morgan from 'morgan';
+import path from 'path';
 
 import routes from './routes';
 

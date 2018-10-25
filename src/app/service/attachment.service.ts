@@ -1,9 +1,9 @@
-import { Service, Inject } from 'typedi';
-import { Attachment } from '../../domain/entity/attachment';
-import { IFileServiceFactory, FileServiceFactory } from '../../infra/file/file.factory';
+import { Inject, Service } from 'typedi';
 import { Repository, Transaction, TransactionRepository } from 'typeorm';
 import { InjectRepository } from 'typeorm-typedi-extensions';
+import { Attachment } from '../../domain/entity/attachment';
 import { Post } from '../../domain/entity/post';
+import { FileServiceFactory, IFileServiceFactory } from '../../infra/file/file.factory';
 import { IFileService } from '../../infra/file/file.interface';
 
 export interface IAttachmentFile {

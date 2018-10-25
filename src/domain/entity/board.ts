@@ -1,7 +1,7 @@
 import {
-  Entity, PrimaryGeneratedColumn, Column,
-  ManyToMany, OneToMany, UpdateDateColumn,
-  CreateDateColumn,
+  Column, CreateDateColumn, Entity,
+  ManyToMany, OneToMany, PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Thread } from './thread';
 

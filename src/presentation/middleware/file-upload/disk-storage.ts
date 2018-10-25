@@ -1,6 +1,6 @@
-import multer from 'multer';
-import fs from 'fs';
 import { EACCES } from 'constants';
+import fs from 'fs';
+import multer from 'multer';
 
 export const diskStorage: multer.StorageEngine = multer.diskStorage({
   destination: (req, file, cb) => {

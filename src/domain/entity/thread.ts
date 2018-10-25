@@ -1,8 +1,8 @@
 import {
-  Entity, PrimaryGeneratedColumn,
-  ManyToOne, OneToMany, CreateDateColumn,
+  Column, CreateDateColumn,
+  Entity, ManyToOne, OneToMany,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
-  Column,
 } from 'typeorm';
 import { Board } from './board';
 import { Post } from './post';

@@ -1,15 +1,10 @@
-// tslint:disable-next-line:import-name
 import exiftoolBin from 'dist-exiftool';
-
-// tslint:disable-next-line:import-name
 import exiftool from 'node-exiftool';
-// tslint:disable-next-line:import-name
-import { IFileService } from './file.interface';
+import R from 'ramda';
+import { Inject, Service } from 'typedi';
 import { calculateMd5ForFile } from '../md5';
 import { FileStorage } from '../storage.service';
-import { Inject, Service } from 'typedi';
-// tslint:disable-next-line:import-name
-import R from 'ramda';
+import { IFileService } from './file.interface';
 
 @Service()
 export class GenericFileService implements IFileService {

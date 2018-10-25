@@ -7,7 +7,7 @@
     "start:dev": "NODE_ENV=development ts-node src/index.ts",
     "start:test": "NODE_ENV=test ts-node src/index.ts",
     "start:prod": "NODE_ENV=production node dist/index.js",
-    "lint": "tslint --project . -c tslint.json src/**/*.ts src/*.ts",
+    "lint": "tslint --project . -c tslint.json",
     "lint:fix": "npm run lint -- --fix",
     "build": "tsc",
     "typeorm": "ts-node ./node_modules/.bin/typeorm",

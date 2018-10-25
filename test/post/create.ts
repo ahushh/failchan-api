@@ -1,11 +1,11 @@
 import chai from 'chai';
 import supertest from 'supertest';
-import { ApplicationServer } from '../../src/server';
-import { Board } from '../../src/domain/entity/board';
 import { getCustomRepository } from 'typeorm';
-import { BoardRepository } from '../../src/infra/repository/board.repo';
+import { Board } from '../../src/domain/entity/board';
 import { Thread } from '../../src/domain/entity/thread';
+import { BoardRepository } from '../../src/infra/repository/board.repo';
 import { ThreadRepository } from '../../src/infra/repository/thread.repo';
+import { ApplicationServer } from '../../src/server';
 
 let app;
 

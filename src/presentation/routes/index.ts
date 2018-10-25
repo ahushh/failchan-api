@@ -1,10 +1,10 @@
 import express, { Router } from 'express';
 
-import { postController } from '../controller/post';
+import { attachmentController } from '../controller/attachment';
 import { boardController } from '../controller/board';
+import { postController } from '../controller/post';
 import { threadController } from '../controller/thread';
 import { fileUploadMiddleware } from '../middleware/file-upload';
-import { attachmentController } from '../controller/attachment';
 
 const router: Router = express.Router({ mergeParams: true });
 

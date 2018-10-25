@@ -6,7 +6,8 @@
     "jsRules": {
     },
     "rules": {
-        "import-name": 0
+        "import-name": [false],
+        "ordered-imports": true
     },
     "rulesDirectory": []
 }

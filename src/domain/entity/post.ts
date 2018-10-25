@@ -1,12 +1,12 @@
 import { plainToClass } from 'class-transformer';
 
 import {
-  Entity, PrimaryGeneratedColumn, Column,
-  ManyToMany, ManyToOne, CreateDateColumn,
-  UpdateDateColumn, OneToMany, JoinTable,
+  Column, CreateDateColumn, Entity,
+  JoinTable, ManyToMany, ManyToOne,
+  OneToMany, PrimaryGeneratedColumn, UpdateDateColumn,
 } from 'typeorm';
-import { Thread } from './thread';
 import { Attachment } from './attachment';
+import { Thread } from './thread';
 
 @Entity()
 export class Post {

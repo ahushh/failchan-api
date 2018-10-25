@@ -1,18 +1,17 @@
-import { Service, Inject } from 'typedi';
-import { InjectRepository } from 'typeorm-typedi-extensions';
-// tslint:disable-next-line:import-name
 import R from 'ramda';
-
+import { Inject, Service } from 'typedi';
 import { Repository } from 'typeorm';
-import { Thread } from '../../domain/entity/thread';
-import { ThreadRepository } from '../../infra/repository/thread.repo';
-import { Board } from '../../domain/entity/board';
-import { BoardRepository } from '../../infra/repository/board.repo';
-import { Post } from '../../domain/entity/post';
+import { InjectRepository } from 'typeorm-typedi-extensions';
+
 import { Attachment } from '../../domain/entity/attachment';
-import { PostService } from './post.service';
-import { ListThreadsByBoardCommand } from '../commands/thread';
+import { Board } from '../../domain/entity/board';
+import { Post } from '../../domain/entity/post';
+import { Thread } from '../../domain/entity/thread';
+import { BoardRepository } from '../../infra/repository/board.repo';
+import { ThreadRepository } from '../../infra/repository/thread.repo';
 import { ReplyToThreadCommand } from '../commands/post';
+import { ListThreadsByBoardCommand } from '../commands/thread';
+import { PostService } from './post.service';
 
 @Service()
 export class ThreadService {

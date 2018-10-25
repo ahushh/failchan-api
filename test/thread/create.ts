@@ -1,12 +1,12 @@
 import chai from 'chai';
 import supertest from 'supertest';
 import { Container } from 'typedi';
-import { Board } from '../../src/domain/entity/board';
 import { getCustomRepository, getRepository } from 'typeorm';
-import { BoardRepository } from '../../src/infra/repository/board.repo';
-import { ApplicationServer } from '../../src/server';
+import { Board } from '../../src/domain/entity/board';
 import { Post } from '../../src/domain/entity/post';
+import { BoardRepository } from '../../src/infra/repository/board.repo';
 import { ThreadRepository } from '../../src/infra/repository/thread.repo';
+import { ApplicationServer } from '../../src/server';
 
 describe('Threads creation', () => {
   let app;
@@ -42,7 +42,7 @@ describe('Threads creation', () => {
         chai.expect(res.body.thread.posts[0]).to.include({
           body: 'some message',
         });
-        ['attachments', 'replies', 'referencies'].forEach(k => {
+        ['attachments', 'replies', 'referencies'].forEach((k: string) => {
           chai.expect(res.body.thread.posts[0][k]).to.have.lengthOf(0);
         });
         done();
