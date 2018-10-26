@@ -1,4 +1,4 @@
-import { Board } from './entity/board';
+import { Board } from '../../domain/entity/board';
 
 export interface IBoardRepository {
   getBySlug(slug: string): Promise<Board>;

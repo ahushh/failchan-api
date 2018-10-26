@@ -1,5 +1,5 @@
 import { EntityManager, EntityRepository, Repository } from 'typeorm';
-import { IBoardRepository } from '../../domain/board.repo.interface';
+import { IBoardRepository } from '../../app/interfaces/board.repo';
 import { Board } from '../../domain/entity/board';
 
 @EntityRepository(Board)

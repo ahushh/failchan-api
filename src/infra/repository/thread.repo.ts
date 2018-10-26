@@ -1,6 +1,6 @@
 import { EntityManager, EntityRepository, Repository } from 'typeorm';
+import { IThreadRepository } from '../../app/interfaces/thread.repo';
 import { Thread } from '../../domain/entity/thread';
-import { IThreadRepository } from '../../domain/thread.repo.interface';
 
 @EntityRepository(Thread)
 export class ThreadRepository extends Repository<Thread> implements IThreadRepository {

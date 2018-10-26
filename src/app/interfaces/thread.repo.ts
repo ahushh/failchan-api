@@ -1,6 +1,6 @@
 
 import { Repository } from 'typeorm';
-import { Thread } from './entity/thread';
+import { Thread } from '../../domain/entity/thread';
 
 export interface IThreadRepository {
   findOneOrFail: Repository<Thread>['findOneOrFail'];

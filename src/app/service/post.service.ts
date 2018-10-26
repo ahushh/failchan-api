@@ -1,9 +1,10 @@
-import { Service } from 'typedi';
+import { Inject, Service } from 'typedi';
 import { Repository } from 'typeorm';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { Attachment } from '../../domain/entity/attachment';
 import { Post } from '../../domain/entity/post';
 import { Thread } from '../../domain/entity/thread';
+import { Domain } from '../../domain/services/post.service';
 import { ThreadRepository } from '../../infra/repository/thread.repo';
 import { ReplyToThreadCommand, UpdatePostCommand } from '../commands/post';
 
@@ -13,6 +14,7 @@ export class PostService {
     @InjectRepository(Post) private postRepo: Repository<Post>,
     @InjectRepository(Thread) private threadRepo: ThreadRepository,
     @InjectRepository(Attachment) private attachmentRepo: Repository<Attachment>,
+    @Inject(() => Domain.PostService) private postService: Domain.PostService,
   ) { }
 
   async replyToThreadHandler(command: ReplyToThreadCommand): Promise<Post> {
@@ -21,15 +23,12 @@ export class PostService {
     const referencies = await this.postRepo.findByIds(command.referencies, {
       relations: ['replies'],
     });
-
-    let post = Post.create(command.body, referencies, attachments);
-    thread.reply(post);
-    await this.threadRepo.save(thread);
-    post = await this.postRepo.save(post);
-
-    const refs = await post.updateRefsReplies();
+    const { post, thread: newThread, refs } = this.postService.replyToThread({
+      thread, attachments, referencies, body: command.body,
+    });
+    await this.threadRepo.save(newThread);
+    await this.postRepo.save(post);
     await this.postRepo.save(refs);
-
     return this.postRepo.findOneOrFail(post.id, {
       relations: ['referencies', 'attachments', 'replies'],
     });
@@ -53,8 +52,9 @@ export class PostService {
       post.attachments = await this.attachmentRepo.findByIds(command.attachmentIds);
     }
     const savedPost = await this.postRepo.save(post);
+    // TODO: add test, move to the first `if`
     if (command.referencies) {
-      const refs = await savedPost.updateRefsReplies();
+      const refs = savedPost.updateRefsReplies();
       await this.postRepo.save(refs);
     }
     return savedPost;
