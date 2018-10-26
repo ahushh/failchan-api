@@ -36,6 +36,10 @@ export class Thread {
     post.thread = this;
   }
 
+  sortPosts() {
+    this.posts = this.posts.sort((a, b) => a.id > b.id ? 1 : -1);
+  }
+
   bump() {
     this.bumpCount = (this.bumpCount || 0) + 1;
   }

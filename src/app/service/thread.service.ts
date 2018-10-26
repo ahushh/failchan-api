@@ -33,10 +33,9 @@ export class ThreadService {
     return this.threadRepo
       .getThreadsWithPreviewPosts(board.id, R.omit(['boardSlug'], params));
   }
-  getThreadWithPosts(threadId: number): Promise<Thread> {
-    return this.threadRepo.findOneOrFail({
-      where: { id: threadId },
-      relations: ['posts', 'posts.attachments', 'posts.replies', 'posts.referencies'],
-    });
+  async getThreadWithPosts(threadId: number): Promise<Thread> {
+    const thread = await this.threadRepo.getThreadWithRelations(threadId);
+    thread.sortPosts();
+    return thread;
   }
 }

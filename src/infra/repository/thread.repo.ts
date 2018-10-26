@@ -24,10 +24,16 @@ export class ThreadRepository extends Repository<Thread> implements IThreadRepos
       relations: ['posts', 'posts.attachments', 'posts.replies', 'posts.referencies'],
     });
     threads.forEach((thread: Thread) => {
-      const posts = thread.posts.sort((a, b) => a.id > b.id ? 1 : -1);
+      thread.sortPosts();
+      const posts = thread.posts;
       const op = posts[0];
       thread.posts = [op, ...posts.slice(thread.posts.length - findOptions.previewPosts)];
     });
     return threads;
+  }
+  async getThreadWithRelations(id: number): Promise<Thread> {
+    return await this.findOneOrFail(id, {
+      relations: ['posts', 'posts.attachments', 'posts.replies', 'posts.referencies'],
+    });
   }
 }
