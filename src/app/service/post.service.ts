@@ -34,8 +34,10 @@ export class PostService {
     });
   }
 
-  async updatePostHandler(command: UpdatePostCommand): Promise<Post> {
-    const post = await this.postRepo.findOneOrFail(command.postId);
+  async updatePostHandler(command: UpdatePostCommand): Promise<void> {
+    const post = await this.postRepo.findOneOrFail(command.postId, {
+      relations: ['referencies', 'referencies.replies'],
+    });
     if (command.threadId) {
       const thread = await this.threadRepo.findOneOrFail(command.threadId);
       post.thread = thread;
@@ -44,19 +46,21 @@ export class PostService {
       post.body = command.body;
     }
     if (command.referencies) {
-      post.referencies = await this.postRepo.findByIds(command.referencies, {
+      const newReferencies = await this.postRepo.findByIds(command.referencies, {
         relations: ['replies'],
       });
+      const syncedRefs = this.postService.syncReferencies(post, newReferencies);
+      await this.postRepo.save(syncedRefs);
     }
     if (command.attachmentIds) {
       post.attachments = await this.attachmentRepo.findByIds(command.attachmentIds);
     }
-    const savedPost = await this.postRepo.save(post);
-    // TODO: add test, move to the first `if`
-    if (command.referencies) {
-      const refs = savedPost.updateRefsReplies();
-      await this.postRepo.save(refs);
-    }
-    return savedPost;
+    await this.postRepo.save(post);
+  }
+
+  async findOneById(id: number): Promise<Post> {
+    return this.postRepo.findOneOrFail(id, {
+      relations: ['referencies', 'attachments', 'replies'],
+    });
   }
 }

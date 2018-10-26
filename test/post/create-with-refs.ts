@@ -11,13 +11,7 @@ import { Thread } from '../../src/domain/entity/thread';
 import { BoardRepository } from '../../src/infra/repository/board.repo';
 import { ThreadRepository } from '../../src/infra/repository/thread.repo';
 import { ApplicationServer } from '../../src/server';
-
-const replyToThread = async (thread, body, referencies = []) => {
-  const postService = Container.get(PostService);
-  const post = { body, referencies, attachmentIds: [] };
-  const command = new ReplyToThreadCommand({ ...post, threadId: thread.id });
-  return postService.replyToThreadHandler(command);
-};
+import { replyToThread } from './update';
 
 let app;
 

@@ -23,11 +23,11 @@ export class UpdatePostCommand {
   attachmentIds: number[] | null = null;
   referencies: number[] | null = null;
   constructor({ postId, threadId, body, attachmentIds, referencies }) {
-    this.postId = postId;
-    if (!this.postId) {
+    this.postId = +postId;
+    if (!this.postId || isNaN(this.postId)) {
       throw new Error('postId must be specified');
     }
-    this.threadId = threadId;
+    this.threadId = +threadId;
     this.body = body;
     this.attachmentIds = attachmentIds;
     this.referencies = referencies;

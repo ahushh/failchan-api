@@ -49,16 +49,33 @@ export class Post {
     return post;
   }
 
+  /***
+   * Adds a reply to list
+   * If reply already exists, does nothing
+   */
   addReply(post: Post) {
     const alreadyAdded = this.replies.find(p => p.id === post.id);
     if (!alreadyAdded) {
       this.replies.push(post);
     }
   }
+  removeReply(postId: number) {
+    this.replies = this.replies.filter(reply => reply.id !== postId);
+  }
 
-  // synchronize post referencies and replies of the referencies
-  updateRefsReplies(): Post[] {
+  /***
+   * Updates referencies by adding the Post to their replies
+   */
+  addPostToRefsReplies() {
     this.referencies.forEach((ref: Post) => ref.addReply(this));
-    return this.referencies;
+  }
+  /***
+   * Removes referencies and returns removed
+   */
+  removeReferenciesByIds(ids: number[]): Post[] {
+    const removedRefs = this.referencies.filter(p => ids.includes(p.id));
+    removedRefs.forEach(ref => ref.removeReply(this.id));
+    this.referencies = this.referencies.filter(p => !ids.includes(p.id));
+    return removedRefs;
   }
 }

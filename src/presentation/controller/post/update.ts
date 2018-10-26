@@ -8,8 +8,8 @@ export async function postsUpdateAction(request: Request, response: Response, ne
   const command = new UpdatePostCommand({ ...request.body.post, postId });
   const service = Container.get(PostService);
   try {
-    const post = await service.updatePostHandler(command);
-    response.json({ post });
+    await service.updatePostHandler(command);
+    response.sendStatus(204);
   } catch (e) {
     if (e.name === 'EntityNotFound') {
       response.status(404).json({ message: `Post ${postId} not found` });
