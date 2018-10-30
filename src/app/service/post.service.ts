@@ -4,7 +4,8 @@ import { InjectRepository } from 'typeorm-typedi-extensions';
 import { Attachment } from '../../domain/entity/attachment';
 import { Post } from '../../domain/entity/post';
 import { Thread } from '../../domain/entity/thread';
-import { Domain } from '../../domain/services/post.service';
+import { IDomainPostService } from '../../domain/interfaces/post.service';
+import { DomainPostService } from '../../domain/services/post.service';
 import { ThreadRepository } from '../../infra/repository/thread.repo';
 import { ReplyToThreadCommand, UpdatePostCommand } from '../commands/post';
 
@@ -14,7 +15,7 @@ export class PostService {
     @InjectRepository(Post) private postRepo: Repository<Post>,
     @InjectRepository(Thread) private threadRepo: ThreadRepository,
     @InjectRepository(Attachment) private attachmentRepo: Repository<Attachment>,
-    @Inject(() => Domain.PostService) private postService: Domain.PostService,
+    @Inject(() => DomainPostService) private postService: IDomainPostService,
   ) { }
 
   async replyToThreadHandler(command: ReplyToThreadCommand): Promise<Post> {
