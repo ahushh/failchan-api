@@ -1,5 +1,25 @@
 module.exports = [
   {
+    "name": "production",
+    "type": "postgres",
+    "host": "postgres",
+    "port": 5432,
+    "username": "postgres",
+    "password": "postgres",
+    "database": "develop",
+    "entities": ["src/domain/entity/**/*.ts"],
+    "migrations": ["src/infra/migration/**/*.ts"],
+    "subscribers": ["src/app/subscriber/**/*.ts"],
+    "logging": true,
+    "logger": "advanced-console",
+    "synchronize": true,
+    "cli": {
+      "migrationsDir": "src/infra/migration",
+      "entitiesDir": "src/domain/entity",
+      "subscribersDir": "src/app/subscriber"
+    }
+  },
+  {
     "name": "development",
     "type": "postgres",
     "host": "localhost",
