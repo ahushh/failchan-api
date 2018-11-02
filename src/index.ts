@@ -1,6 +1,6 @@
 
-import { ApplicationServer } from './server';
+import { ApplicationServer } from './presentation/http/server';
 
-ApplicationServer.getApp().then((app) => {
-  ApplicationServer.start(app);
+ApplicationServer.connectDB().then((server) => {
+  server.listen();
 });

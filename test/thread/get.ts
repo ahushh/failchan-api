@@ -13,7 +13,7 @@ import { Post } from '../../src/domain/entity/post';
 import { Thread } from '../../src/domain/entity/thread';
 import { BoardRepository } from '../../src/infra/repository/board.repo';
 import { ThreadRepository } from '../../src/infra/repository/thread.repo';
-import { ApplicationServer } from '../../src/server';
+import { ApplicationServer } from '../../src/presentation/http/server';
 
 const replyToThread = async (thread, i: number) => {
   const postService = Container.get(PostService);
@@ -33,7 +33,7 @@ const createThread = async (board) => {
 let app;
 describe('Thread fetching', () => {
   before(async () => {
-    app = await ApplicationServer.getApp();
+    app = await ApplicationServer.connectDB().then(server => server.expressApplication);
 
     let board = new Board({ name: 'bred', slug: 'b' });
     const boardRepo = getCustomRepository(BoardRepository);

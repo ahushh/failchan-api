@@ -10,7 +10,7 @@ import { Post } from '../../src/domain/entity/post';
 import { Thread } from '../../src/domain/entity/thread';
 import { BoardRepository } from '../../src/infra/repository/board.repo';
 import { ThreadRepository } from '../../src/infra/repository/thread.repo';
-import { ApplicationServer } from '../../src/server';
+import { ApplicationServer } from '../../src/presentation/http/server';
 import { replyToThread } from './update';
 
 let app;
@@ -19,7 +19,7 @@ describe('Posts creation with referencies', () => {
   let thread;
   let board;
   before(async () => {
-    app = await ApplicationServer.getApp();
+    app = await ApplicationServer.connectDB().then(server => server.expressApplication);
 
     board = new Board({ name: 'bred', slug: 'b' });
     const repo = getCustomRepository(BoardRepository);

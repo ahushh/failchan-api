@@ -6,12 +6,12 @@ import { Board } from '../../src/domain/entity/board';
 import { Post } from '../../src/domain/entity/post';
 import { BoardRepository } from '../../src/infra/repository/board.repo';
 import { ThreadRepository } from '../../src/infra/repository/thread.repo';
-import { ApplicationServer } from '../../src/server';
+import { ApplicationServer } from '../../src/presentation/http/server';
 
 describe('Threads creation', () => {
   let app;
   before(async () => {
-    app = await ApplicationServer.getApp();
+    app = await ApplicationServer.connectDB().then(server => server.expressApplication);
 
     const board = new Board({ name: 'bred', slug: 'b' });
     const repo = getCustomRepository(BoardRepository);

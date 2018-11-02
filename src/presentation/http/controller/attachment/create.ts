@@ -4,7 +4,7 @@ import { Container } from 'typedi';
 import {
   AttachmentService,
   IAttachmentFile,
-} from '../../../app/service/attachment.service';
+} from '../../../../app/service/attachment.service';
 
 export async function attachmentCreateAction(request: Request, response: Response) {
   const service = Container.get(AttachmentService);

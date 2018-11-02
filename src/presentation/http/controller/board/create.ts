@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Container } from 'typedi';
-import { BOARD_ERRORS } from '../../../app/errors/board';
-import { BoardService } from '../../../app/service/board.service';
+import { BOARD_ERRORS } from '../../../../app/errors/board';
+import { BoardService } from '../../../../app/service/board.service';
 
 export async function boardsCreateAction(request: Request, response: Response, next: Function) {
   const service = Container.get(BoardService);

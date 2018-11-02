@@ -9,7 +9,7 @@ import { Post } from '../../src/domain/entity/post';
 import { Thread } from '../../src/domain/entity/thread';
 import { BoardRepository } from '../../src/infra/repository/board.repo';
 import { ThreadRepository } from '../../src/infra/repository/thread.repo';
-import { ApplicationServer } from '../../src/server';
+import { ApplicationServer } from '../../src/presentation/http/server';
 
 export const replyToThread = async (thread, body, referencies: number[] = []) => {
   const postService = Container.get(PostService);
@@ -24,7 +24,7 @@ describe('Posts updating', () => {
   let thread;
   let board;
   before(async () => {
-    app = await ApplicationServer.getApp();
+    app = await ApplicationServer.connectDB().then(server => server.expressApplication);
 
     board = new Board({ name: 'bred', slug: 'b' });
     const repo = getCustomRepository(BoardRepository);

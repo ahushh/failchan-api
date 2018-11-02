@@ -2,54 +2,55 @@
 
 require('dotenv').config();
 
-import { Container } from 'typedi';
-import { Connection, createConnection, getConnectionOptions, useContainer } from 'typeorm';
+import { Connection } from 'typeorm';
 
-import app from './presentation/app';
+import app from './app';
 const debug = require('debug')('express:server');
+import { Express } from 'express-serve-static-core';
 import http from 'http';
+import { createORMConnection } from '../../infra/create-orm-connection';
 
 class Server {
-  app: any;
-  port: any;
+  expressApplication: Express;
+  private port: any;
   server: http.Server;
   connection: Connection;
 
-  async getApp() {
-    if (this.app) {
-      return this.app;
-    }
-    this.connection = await this.createTypeOrmConnection();
-    this.app = app;
-    this.port = this.normalizePort(process.env.PORT || '3000');
-    app.set('port', this.port);
-    return this.app;
+  private createORMConnection: () => Connection;
+  private createHttpServer: (app: Express) => http.Server;
+
+  constructor({ createORMConnection, createHttpServer, expressApplication, port }) {
+    this.createHttpServer = createHttpServer;
+    this.createORMConnection = createORMConnection;
+    this.expressApplication = expressApplication;
+    this.port = port;
+    this.expressApplication.set('port', this.port);
   }
 
-  start(app) {
-    this.server = http.createServer(app);
+  async connectDB() {
+    if (!this.connection) {
+      this.connection = await this.createORMConnection();
+    }
+    return this;
+  }
+
+  listen() {
+    this.server = this.createHttpServer(this.expressApplication);
     this.server.listen(this.port);
     this.server.on('error', this.onError);
     this.server.on('listening', this.onListening);
   }
 
-  private async createTypeOrmConnection() {
-    useContainer(Container);
-    const options = await getConnectionOptions(<string>process.env.NODE_ENV);
-    return createConnection({ ...options, name: 'default' });
-  }
-
-  private normalizePort(val) {
+  set normalizePort(val) {
     const port = parseInt(val, 10);
     if (isNaN(port)) {
       // named pipe
-      return val;
+      this.port = val;
     }
     if (port >= 0) {
       // port number
-      return port;
+      this.port = port;
     }
-    return false;
   }
   private onError = (error) => {
     if (error.syscall !== 'listen') {
@@ -82,5 +83,11 @@ class Server {
     debug(`Listening on ${bind}`);
   }
 }
+
 // tslint:disable-next-line:variable-name
-export const ApplicationServer = new Server();
+export const ApplicationServer = new Server({
+  createORMConnection,
+  createHttpServer: http.createServer,
+  expressApplication: app,
+  port: process.env.PORT || '3000',
+});

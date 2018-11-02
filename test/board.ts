@@ -4,13 +4,13 @@ import supertest from 'supertest';
 import { getConnection, getCustomRepository, getRepository } from 'typeorm';
 import { Board } from '../src/domain/entity/board';
 import { BoardRepository } from '../src/infra/repository/board.repo';
-import { ApplicationServer } from '../src/server';
+import { ApplicationServer } from '../src/presentation/http/server';
 
 let app;
 
 describe('Boards listing', () => {
   before(async () => {
-    app = await ApplicationServer.getApp();
+    app = await ApplicationServer.connectDB().then(server => server.expressApplication);
 
     const board = new Board({ name: 'bred', slug: 'b' });
     const repo = getCustomRepository(BoardRepository);
