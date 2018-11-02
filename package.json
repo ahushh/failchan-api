@@ -6,10 +6,11 @@
     "start": "nodemon",
     "start:dev": "NODE_ENV=development ts-node src/index.ts",
     "start:test": "NODE_ENV=test ts-node src/index.ts",
-    "start:prod": "NODE_ENV=production node dist/index.js",
+    "start:prod": "NODE_ENV=production node dist/src/index.js",
     "lint": "tslint --project . -c tslint.json",
     "lint:fix": "npm run lint -- --fix",
-    "build": "tsc",
+    "clean": "rm -fr dist",
+    "build": "npm run clean && tsc",
     "typeorm": "ts-node ./node_modules/.bin/typeorm",
     "test": "NODE_ENV=test mocha --opts test/mocha.opts 'test/**/*.ts'",
     "test:coverage": "NODE_ENV=test nyc mocha --opts test/mocha.opts 'test/**/*.ts'"
