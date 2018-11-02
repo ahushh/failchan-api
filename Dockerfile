@@ -9,5 +9,4 @@ COPY package-lock.json ./package-lock.json
 RUN npm ci
 COPY . ./
 RUN npm run build
-COPY ./dist ./dist
 CMD npm run start:prod
