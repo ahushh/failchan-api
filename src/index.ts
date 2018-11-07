@@ -1,6 +1,11 @@
 
 import { ApplicationServer } from './presentation/http/server';
 
-ApplicationServer.connectDB().then((server) => {
-  server.listen();
-});
+ApplicationServer
+  .connectBus()
+  .then((server) => {
+    return server.connectDB();
+  })
+  .then((server) => {
+    server.listen();
+  });

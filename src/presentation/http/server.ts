@@ -8,6 +8,7 @@ import app from './app';
 const debug = require('debug')('express:server');
 import { Express } from 'express-serve-static-core';
 import http from 'http';
+import { createEventBusConnection } from '../../infra/create-event-bus-connection';
 import { createORMConnection } from '../../infra/create-orm-connection';
 
 class Server {
@@ -18,9 +19,17 @@ class Server {
 
   private createORMConnection: () => Connection;
   private createHttpServer: (app: Express) => http.Server;
+  private createEventBusConnection = () => Promise;
 
-  constructor({ createORMConnection, createHttpServer, expressApplication, port }) {
+  constructor({
+    createORMConnection,
+    createEventBusConnection,
+    createHttpServer,
+    expressApplication,
+    port,
+  }) {
     this.createHttpServer = createHttpServer;
+    this.createEventBusConnection = createEventBusConnection;
     this.createORMConnection = createORMConnection;
     this.expressApplication = expressApplication;
     this.port = port;
@@ -31,6 +40,10 @@ class Server {
     if (!this.connection) {
       this.connection = await this.createORMConnection();
     }
+    return this;
+  }
+  async connectBus() {
+    await this.createEventBusConnection();
     return this;
   }
 
@@ -87,6 +100,7 @@ class Server {
 // tslint:disable-next-line:variable-name
 export const ApplicationServer = new Server({
   createORMConnection,
+  createEventBusConnection,
   createHttpServer: http.createServer,
   expressApplication: app,
   port: process.env.PORT || '3000',

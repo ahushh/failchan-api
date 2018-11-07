@@ -4,10 +4,12 @@ import {
   Transaction, TransactionManager, TransactionRepository,
 } from 'typeorm';
 import { InjectConnection, InjectRepository } from 'typeorm-typedi-extensions';
+import uuidv4 from 'uuid/v4';
 import { Attachment } from '../../domain/entity/attachment';
 import { Post } from '../../domain/entity/post';
 import { FileServiceFactory, IFileServiceFactory } from '../../infra/file/file.factory';
 import { IFileService } from '../../infra/file/file.interface';
+import { CHANNEL, EventBus } from './event-bus.service';
 
 export interface IAttachmentFile {
   path: string;
@@ -22,6 +24,7 @@ export class AttachmentService {
     @Inject(FileServiceFactory) public factory: IFileServiceFactory,
     @InjectRepository(Attachment) public repo: Repository<Attachment>,
     @InjectRepository(Post) public postRepo: Repository<Post>,
+    @Inject(() => EventBus) public eventBus: EventBus,
   ) { }
   private calcHash = async (file: IAttachmentFile): Promise<string> => {
     const service = this.factory.create(file.mimetype);
@@ -62,9 +65,12 @@ export class AttachmentService {
     return this.repo.save(attachment);
   }
 
-  async createMultiple (files: IAttachmentFile[]) {
-    const created = await Promise.all(files.map(this.createOne));
-    return created.map(({ id }) => id);
+  createMultiple(files: IAttachmentFile[]) {
+    const uid = uuidv4();
+    Promise.all(files.map(this.createOne)).then((created) => {
+      const ids = created.map(({ id }) => id);
+      this.eventBus.publish(`${CHANNEL.ATTACHMENTS_CREATED}:${uid}`, ids);
+    });
+    return uid;
   }
-
 }

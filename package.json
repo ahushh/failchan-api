@@ -22,6 +22,7 @@
     "@types/lodash": "^4.14.116",
     "@types/node": "^10.11.5",
     "aws-sdk": "^2.336.0",
+    "busmq": "^2.9.5",
     "chai": "^4.2.0",
     "class-transformer": "^0.1.10",
     "cookie-parser": "~1.4.3",
@@ -74,6 +75,6 @@
     "reporter": [
       "text"
     ],
-    "all": true  
+    "all": true
   }
 }
