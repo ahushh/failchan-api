@@ -1,7 +1,7 @@
 import { Redis } from 'ioredis';
 import { Inject, Service } from 'typedi';
+import { IAttachmentFile } from '../../domain/interfaces/attachment-file';
 import { deleteFileSubdir } from '../../infra/utils/delete-temp-file';
-import { IAttachmentFile } from '../service/attachment.service';
 import { PubSubService } from '../service/pub-sub.service';
 
 @Service()
@@ -9,7 +9,8 @@ export class ExpiredAttachmentService {
   constructor(
     @Inject(type => PubSubService) public pubsub: PubSubService,
     @Inject('redis-connection') public redis: Redis,
-  ) {
+  ) { }
+  listen() {
     this.pubsub.subscribe('__keyevent@0__:expired');
     this.pubsub.on('message', async (channel, key) => {
       const [entity, type, uid] = key.split(':');
