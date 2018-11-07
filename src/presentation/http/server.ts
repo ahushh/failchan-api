@@ -8,9 +8,9 @@ import app from './app';
 const debug = require('debug')('express:server');
 import { Express } from 'express-serve-static-core';
 import http from 'http';
-import { createORMConnection } from '../../infra/create-orm-connection';
-import { createPubSubConnection } from '../../infra/create-pubsub-connection';
-import { createRedisConnection } from '../../infra/create-redis-connection';
+import { createORMConnection } from '../../infra/utils/create-orm-connection';
+import { createPubSubConnection } from '../../infra/utils/create-pubsub-connection';
+import { createRedisConnection } from '../../infra/utils/create-redis-connection';
 
 class Server {
   expressApplication: Express;

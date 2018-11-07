@@ -1,5 +1,4 @@
-import { Container, Inject, Service, Token } from 'typedi';
-import { FileStorage } from '../storage.service';
+import { Container, Service, Token } from 'typedi';
 import { IFileService } from './file.interface';
 import { GenericFileService } from './generic';
 import { ImageFileService } from './image';

@@ -2,7 +2,7 @@ import exiftoolBin from 'dist-exiftool';
 import exiftool from 'node-exiftool';
 import R from 'ramda';
 import { Inject, Service } from 'typedi';
-import { calculateMd5ForFile } from '../md5';
+import { calculateMd5ForFile } from '../../utils/md5';
 import { FileStorage } from '../storage.service';
 import { IFileService } from './file.interface';
 

@@ -1,17 +1,13 @@
 import { Redis } from 'ioredis';
 import { Inject, Service } from 'typedi';
-import {
-  Connection, EntityManager, Repository,
-  Transaction, TransactionManager, TransactionRepository,
-} from 'typeorm';
-import { InjectConnection, InjectRepository } from 'typeorm-typedi-extensions';
+import { Repository } from 'typeorm';
+import { InjectRepository } from 'typeorm-typedi-extensions';
 import uuidv4 from 'uuid/v4';
 import { Attachment } from '../../domain/entity/attachment';
 import { Post } from '../../domain/entity/post';
-import { FileServiceFactory, IFileServiceFactory } from '../../infra/file/file.factory';
-import { IFileService } from '../../infra/file/file.interface';
+import { FileServiceFactory, IFileServiceFactory } from '../../infra/services/file/file.factory';
+import { IFileService } from '../../infra/services/file/file.interface';
 import { ExpiredAttachmentService } from '../listeners/expired-attachments';
-import { PubSubService } from './pub-sub.service';
 
 export interface IAttachmentFile {
   path: string;
