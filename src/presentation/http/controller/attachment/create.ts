@@ -2,8 +2,9 @@ import { Request, Response } from 'express';
 import R from 'ramda';
 import { Container } from 'typedi';
 import {
-  AttachmentService, IAttachmentFile,
+  AttachmentService,
 } from '../../../../app/service/attachment.service';
+import { IAttachmentFile } from '../../../../domain/interfaces/attachment-file';
 
 export async function attachmentCreateAction(request: Request, response: Response) {
   const files: Express.Multer.File[] = request.files as any[];
