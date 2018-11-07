@@ -26,6 +26,10 @@ export class AttachmentService {
     @InjectRepository(Post) public postRepo: Repository<Post>,
     @Inject(() => EventBus) public eventBus: EventBus,
   ) { }
+  static generateStorageKey(md5: string, originalname: string): string {
+    return `${md5}/${originalname}`;
+  }
+
   private calcHash = async (file: IAttachmentFile): Promise<string> => {
     const service = this.factory.create(file.mimetype);
     return service.calculateMd5(file.path);
@@ -48,9 +52,9 @@ export class AttachmentService {
         exif: existing.exif,
       };
     }
-
+    const storageKey = AttachmentService.generateStorageKey(md5, file.originalname);
     const [uri, thumbnailUri, exif] = await Promise.all([
-      service.upload(file.path, `${md5}/${file.originalname}`),
+      service.upload(file.path, storageKey),
       service.generateThumbnail(file.path, md5),
       service.getExif(file.path),
     ]);
@@ -72,5 +76,16 @@ export class AttachmentService {
       this.eventBus.publish(`${CHANNEL.ATTACHMENTS_CREATED}:${uid}`, ids);
     });
     return uid;
+  }
+  async delete(ids: number[]) {
+    const attachments = await this.repo.findByIds(ids);
+    const deleteAttachment = async (a: Attachment) => {
+      const service: IFileService = this.factory.create(a.mime);
+      const storageKey = AttachmentService.generateStorageKey(a.md5, a.name);
+      await service.delete(storageKey);
+      await service.deleteThumbnail(a.md5);
+    };
+    await Promise.all(attachments.map(deleteAttachment));
+    await this.repo.delete(ids);
   }
 }

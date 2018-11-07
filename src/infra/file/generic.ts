@@ -26,4 +26,10 @@ export class GenericFileService implements IFileService {
   upload = async (path: string, key: string): Promise<string> => {
     return this.storage.uploadFile(path, key);
   }
+  delete = async (key: string) => {
+    return this.storage.deleteFiles([key]);
+  }
+  deleteThumbnail = async (key: string) => {
+    Promise.resolve();
+  }
 }

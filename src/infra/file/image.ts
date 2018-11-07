@@ -12,4 +12,5 @@ export class ImageFileService extends GenericFileService implements IFileService
       .toBuffer()
       .then((data: Buffer) => this.storage.uploadBuffer(data, filename));
   }
+  deleteThumbnail = this.delete;
 }

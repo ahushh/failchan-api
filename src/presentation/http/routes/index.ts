@@ -25,5 +25,6 @@ router.post('/threads/:threadId/posts', postController.create);
 router.patch('/posts/:postId', postController.update);
 
 router.post('/attachments', fileUploadMiddleware, attachmentController.create);
+router.delete('/attachments', attachmentController.delete);
 
 export default router;

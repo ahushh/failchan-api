@@ -38,4 +38,14 @@ export class FileStorage implements IFileStorage {
     const rs = fs.createReadStream(path);
     return this.uploadBuffer(rs, key);
   }
+
+  async deleteFiles(keys: string[]): Promise<any> {
+    return await this.bucket.deleteObjects({
+      Bucket: process.env.AWS_BUCKET as string,
+      Delete: {
+        Objects: keys.map(k => ({ Key: k })),
+        Quiet: false,
+      },
+    });
+  }
 }
