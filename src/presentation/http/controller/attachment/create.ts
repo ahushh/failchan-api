@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
 import R from 'ramda';
 import { Container } from 'typedi';
-import { CreateAttachmentCommand } from '../../../../app/commands/attachment';
 import {
-  IAttachmentFile,
+  AttachmentService, IAttachmentFile,
 } from '../../../../app/service/attachment.service';
 import { CHANNEL, EventBus } from '../../../../app/service/event-bus.service';
 
@@ -15,8 +14,8 @@ export async function attachmentCreateAction(request: Request, response: Respons
       R.pick(['path', 'originalname', 'mimetype', 'size']),
     ),
   );
-  const command = new CreateAttachmentCommand(filesPrepared);
-  const uid = command.execute();
+  const service = Container.get(AttachmentService);
+  const uid = service.createMultiple(filesPrepared);
   eventBus.once(`${CHANNEL.ATTACHMENTS_CREATED}:${uid}`, (ids) => {
     response.json({
       ids,
