@@ -25,9 +25,9 @@ export class ThreadRepository extends Repository<Thread> implements IThreadRepos
     });
     threads.forEach((thread: Thread) => {
       thread.sortPosts();
-      const posts = thread.posts;
-      const op = posts[0];
-      thread.posts = [op, ...posts.slice(thread.posts.length - findOptions.previewPosts)];
+      const [op, ...posts] = thread.posts;
+      const replies = posts.slice(thread.posts.length - findOptions.previewPosts);
+      thread.posts = [op, ...replies];
     });
     return threads;
   }
