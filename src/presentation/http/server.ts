@@ -8,8 +8,9 @@ import app from './app';
 const debug = require('debug')('express:server');
 import { Express } from 'express-serve-static-core';
 import http from 'http';
-import { createEventBusConnection } from '../../infra/create-event-bus-connection';
 import { createORMConnection } from '../../infra/create-orm-connection';
+import { createPubSubConnection } from '../../infra/create-pubsub-connection';
+import { createRedisConnection } from '../../infra/create-redis-connection';
 
 class Server {
   expressApplication: Express;
@@ -19,17 +20,20 @@ class Server {
 
   private createORMConnection: () => Connection;
   private createHttpServer: (app: Express) => http.Server;
-  private createEventBusConnection = () => Promise;
+  private createRedisConnection = () => Promise;
+  private createPubSubConnection = () => Promise;
 
   constructor({
     createORMConnection,
-    createEventBusConnection,
+    createRedisConnection,
+    createPubSubConnection,
     createHttpServer,
     expressApplication,
     port,
   }) {
     this.createHttpServer = createHttpServer;
-    this.createEventBusConnection = createEventBusConnection;
+    this.createRedisConnection = createRedisConnection;
+    this.createPubSubConnection = createPubSubConnection;
     this.createORMConnection = createORMConnection;
     this.expressApplication = expressApplication;
     this.port = port;
@@ -40,13 +44,10 @@ class Server {
     if (!this.connection) {
       this.connection = await this.createORMConnection();
     }
+    await this.createRedisConnection();
+    await this.createPubSubConnection();
     return this;
   }
-  async connectBus() {
-    await this.createEventBusConnection();
-    return this;
-  }
-
   listen() {
     this.server = this.createHttpServer(this.expressApplication);
     this.server.listen(this.port);
@@ -100,7 +101,8 @@ class Server {
 // tslint:disable-next-line:variable-name
 export const ApplicationServer = new Server({
   createORMConnection,
-  createEventBusConnection,
+  createRedisConnection,
+  createPubSubConnection,
   createHttpServer: http.createServer,
   expressApplication: app,
   port: process.env.PORT || '3000',

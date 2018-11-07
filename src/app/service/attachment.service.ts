@@ -1,3 +1,4 @@
+import { Redis } from 'ioredis';
 import { Inject, Service } from 'typedi';
 import {
   Connection, EntityManager, Repository,
@@ -9,7 +10,8 @@ import { Attachment } from '../../domain/entity/attachment';
 import { Post } from '../../domain/entity/post';
 import { FileServiceFactory, IFileServiceFactory } from '../../infra/file/file.factory';
 import { IFileService } from '../../infra/file/file.interface';
-import { CHANNEL, EventBus } from './event-bus.service';
+import { ExpiredAttachmentService } from '../listeners/expired-attachments';
+import { PubSubService } from './pub-sub.service';
 
 export interface IAttachmentFile {
   path: string;
@@ -24,10 +26,37 @@ export class AttachmentService {
     @Inject(FileServiceFactory) public factory: IFileServiceFactory,
     @InjectRepository(Attachment) public repo: Repository<Attachment>,
     @InjectRepository(Post) public postRepo: Repository<Post>,
-    @Inject(() => EventBus) public eventBus: EventBus,
-  ) { }
+    @Inject('redis-connection') public redis: Redis,
+    @Inject(type => ExpiredAttachmentService) public expiredAttachment: ExpiredAttachmentService,
+  ) {
+  }
   static generateStorageKey(md5: string, originalname: string): string {
     return `${md5}/${originalname}`;
+  }
+
+  async createFromCache(id: string): Promise<number[]> {
+    const files = await this.getFromCache(id);
+    return this.createMultiple(files);
+  }
+  async saveToCache(files: IAttachmentFile[]) {
+    const uid = uuidv4();
+    const cacheKey = `attachment:cache:${uid}`;
+    const dataKey = `attachment:data:${uid}`;
+    await this.redis.set(cacheKey, 1, 'EX', process.env.ATTACHMENT_TTL);
+    await this.redis.set(dataKey, JSON.stringify(files));
+    return uid;
+  }
+
+  async delete(ids: number[]) {
+    const attachments = await this.repo.findByIds(ids);
+    const deleteAttachment = async (a: Attachment) => {
+      const service: IFileService = this.factory.create(a.mime);
+      const storageKey = AttachmentService.generateStorageKey(a.md5, a.name);
+      await service.delete(storageKey);
+      await service.deleteThumbnail(a.md5);
+    };
+    await Promise.all(attachments.map(deleteAttachment));
+    await this.repo.delete(ids);
   }
 
   private calcHash = async (file: IAttachmentFile): Promise<string> => {
@@ -69,23 +98,26 @@ export class AttachmentService {
     return this.repo.save(attachment);
   }
 
-  createMultiple(files: IAttachmentFile[]) {
-    const uid = uuidv4();
-    Promise.all(files.map(this.createOne)).then((created) => {
-      const ids = created.map(({ id }) => id);
-      this.eventBus.publish(`${CHANNEL.ATTACHMENTS_CREATED}:${uid}`, ids);
+  private async createMultiple(files: IAttachmentFile[]): Promise<number[]> {
+    return await Promise.all(files.map(this.createOne)).then((created) => {
+      return created.map(({ id }) => id);
     });
-    return uid;
   }
-  async delete(ids: number[]) {
-    const attachments = await this.repo.findByIds(ids);
-    const deleteAttachment = async (a: Attachment) => {
-      const service: IFileService = this.factory.create(a.mime);
-      const storageKey = AttachmentService.generateStorageKey(a.md5, a.name);
-      await service.delete(storageKey);
-      await service.deleteThumbnail(a.md5);
-    };
-    await Promise.all(attachments.map(deleteAttachment));
-    await this.repo.delete(ids);
+
+  private async getFromCache(uid: string): Promise<IAttachmentFile[]> {
+    const cacheKey = `attachment:cache:${uid}`;
+    const dataKey = `attachment:data:${uid}`;
+    const cacheEntry = await this.redis.get(cacheKey) as string;
+    const dataEntry = await this.redis.get(dataKey) as string;
+    if (cacheEntry === null || dataEntry === null) {
+      const error = new Error(`File bunch ${uid} not found`);
+      error.name = 'CacheRecordNotFound';
+      throw error;
+    }
+    try {
+      return JSON.parse(dataEntry);
+    } catch (e) {
+      throw e;
+    }
   }
 }
