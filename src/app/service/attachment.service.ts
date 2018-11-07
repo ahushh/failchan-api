@@ -25,7 +25,7 @@ export class AttachmentService {
 
   async createFromCache(id: string): Promise<number[]> {
     const files = await this.getFromCache(id);
-    const entities = await Promise.all(files.map(this.service.create));
+    const entities = await Promise.all(files.map(f => this.service.create(f)));
     const saved = await this.repo.save(entities);
     return saved.map(({ id }) => id);
   }
