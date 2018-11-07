@@ -86,7 +86,7 @@ describe('Threads listing', () => {
         done();
       });
   });
-  it('returns first page with correct quantity of preview posts and corret order', (done) => {
+  it('returns first page with correct quantity of preview posts and correct order', (done) => {
     supertest(app).get('/boards/b/threads')
       .end((err, res) => {
         const checkThread = (index: number) => {
