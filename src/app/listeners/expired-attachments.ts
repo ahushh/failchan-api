@@ -1,6 +1,6 @@
 import { Redis } from 'ioredis';
 import { Inject, Service } from 'typedi';
-import { deleteTempFile } from '../../infra/utils/delete-temp-file';
+import { deleteFileSubdir } from '../../infra/utils/delete-temp-file';
 import { IAttachmentFile } from '../service/attachment.service';
 import { PubSubService } from '../service/pub-sub.service';
 
@@ -31,7 +31,7 @@ export class ExpiredAttachmentService {
       }
       try {
         await Promise.all(
-          data.map(f => deleteTempFile(f.path)),
+          data.map(f => deleteFileSubdir(f.path)),
         );
       } catch (e) {
         console.warn(e);
