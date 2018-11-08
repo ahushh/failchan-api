@@ -2,7 +2,6 @@ import chai from 'chai';
 import supertest from 'supertest';
 import { Container } from 'typedi';
 import { getCustomRepository, getRepository } from 'typeorm';
-import { ReplyToThreadCommand } from '../../src/app/commands/post';
 import { PostService } from '../../src/app/service/post.service';
 import { Board } from '../../src/domain/entity/board';
 import { Post } from '../../src/domain/entity/post';
@@ -14,8 +13,8 @@ import { ApplicationServer } from '../../src/presentation/http/server';
 export const replyToThread = async (thread, body, referencies: number[] = []) => {
   const postService = Container.get(PostService);
   const post = { body, referencies, attachmentIds: [] };
-  const command = new ReplyToThreadCommand({ ...post, threadId: thread.id });
-  return postService.replyToThreadHandler(command);
+  const request = { ...post, threadId: thread.id };
+  return postService.replyToThreadHandler(request);
 };
 
 let app;
@@ -32,12 +31,16 @@ describe('Posts updating', () => {
 
     thread = Thread.create(board);
     thread = await getCustomRepository(ThreadRepository).save(thread); // 1
-    await replyToThread(thread, 'op'); // id 1
-    await replyToThread(thread, 'reply 1', []); // id 2
-    await replyToThread(thread, 'reply 2', [1]); // id 3
-    await replyToThread(thread, 'reply 3', []); // id 4
-    await replyToThread(thread, 'reply 4', []); // id 5
-    await replyToThread(thread, 'reply 5', [5]); // id 6
+    try {
+      await replyToThread(thread, 'op'); // id 1
+      await replyToThread(thread, 'reply 1', []); // id 2
+      await replyToThread(thread, 'reply 2', [1]); // id 3
+      await replyToThread(thread, 'reply 3', []); // id 4
+      await replyToThread(thread, 'reply 4', []); // id 5
+      await replyToThread(thread, 'reply 5', [5]); // id 6
+    } catch (e) {
+      console.log(e);
+    }
   });
   after(async () => {
     await ApplicationServer.connection.synchronize(true);

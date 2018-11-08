@@ -1,15 +1,10 @@
 import chai from 'chai';
 import supertest from 'supertest';
 import { Container } from 'typedi';
-import { getConnection, getCustomRepository, getRepository } from 'typeorm';
-import { ReplyToThreadCommand } from '../../src/app/commands/post';
-import {
-  TEST_THREADS_LISTING_PREVIEW_POSTS,
-  TEST_THREADS_LISTING_TAKE,
-} from '../../src/app/commands/thread';
+import { getCustomRepository } from 'typeorm';
+import { ListThreadsByBoardAction } from '../../src/app/actions/thread/list';
 import { PostService } from '../../src/app/service/post.service';
 import { Board } from '../../src/domain/entity/board';
-import { Post } from '../../src/domain/entity/post';
 import { Thread } from '../../src/domain/entity/thread';
 import { BoardRepository } from '../../src/infra/repository/board.repo';
 import { ThreadRepository } from '../../src/infra/repository/thread.repo';
@@ -21,8 +16,8 @@ const POSTS_PER_THREAD = 10;
 const replyToThread = async (thread, i: number) => {
   const postService = Container.get(PostService);
   const post = { body: `#${i}`, attachmentIds: [], referencies: [] };
-  const command = new ReplyToThreadCommand({ ...post, threadId: thread.id });
-  await postService.replyToThreadHandler(command);
+  const request = { ...post, threadId: thread.id };
+  await postService.replyToThreadHandler(request);
 };
 const createThreads = async (board) => {
   const createOne = async () => {
@@ -62,7 +57,9 @@ describe('Threads listing', () => {
     supertest(app).get('/boards/b/threads')
       .end((err, res) => {
         chai.expect(res.status).to.eq(200);
-        chai.expect(res.body.threads).to.have.lengthOf(TEST_THREADS_LISTING_TAKE);
+        chai.expect(res.body.threads).to.have.lengthOf(
+          ListThreadsByBoardAction.TEST_THREADS_LISTING_TAKE,
+        );
         done();
       });
   });
@@ -92,7 +89,9 @@ describe('Threads listing', () => {
         const checkThread = (index: number) => {
           const posts = res.body.threads[index].posts;
           chai.expect(posts)
-            .to.have.lengthOf(TEST_THREADS_LISTING_PREVIEW_POSTS + 1); // plus OP post
+            .to.have.lengthOf(
+              ListThreadsByBoardAction.TEST_THREADS_LISTING_PREVIEW_POSTS + 1,
+            ); // plus OP post
           chai.expect(posts[2].body).to.eq(`#${POSTS_PER_THREAD}`);
           chai.expect(posts[1].body).to.eq(`#${POSTS_PER_THREAD - 1}`);
         };
@@ -102,10 +101,13 @@ describe('Threads listing', () => {
       });
   });
   it('returns second page with correct threads by IDs', (done) => {
-    supertest(app).get(`/boards/b/threads?skip=${TEST_THREADS_LISTING_TAKE}`)
+    const url = `/boards/b/threads?skip=${ListThreadsByBoardAction.TEST_THREADS_LISTING_TAKE}`;
+    supertest(app).get(url)
       .end((err, res) => {
-        chai.expect(res.body.threads[0].id).to.eq(ALL_THREADS - TEST_THREADS_LISTING_TAKE);
-        chai.expect(res.body.threads[1].id).to.eq(ALL_THREADS - TEST_THREADS_LISTING_TAKE - 1);
+        chai.expect(res.body.threads[0].id).to
+        .eq(ALL_THREADS - ListThreadsByBoardAction.TEST_THREADS_LISTING_TAKE);
+        chai.expect(res.body.threads[1].id).to
+        .eq(ALL_THREADS - ListThreadsByBoardAction.TEST_THREADS_LISTING_TAKE - 1);
         done();
       });
   });

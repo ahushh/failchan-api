@@ -1,15 +1,9 @@
 import chai from 'chai';
 import supertest from 'supertest';
 import { Container } from 'typedi';
-import { getConnection, getCustomRepository, getRepository } from 'typeorm';
-import { ReplyToThreadCommand } from '../../src/app/commands/post';
-import {
-  TEST_THREADS_LISTING_PREVIEW_POSTS,
-  TEST_THREADS_LISTING_TAKE,
-} from '../../src/app/commands/thread';
+import { getCustomRepository } from 'typeorm';
 import { PostService } from '../../src/app/service/post.service';
 import { Board } from '../../src/domain/entity/board';
-import { Post } from '../../src/domain/entity/post';
 import { Thread } from '../../src/domain/entity/thread';
 import { BoardRepository } from '../../src/infra/repository/board.repo';
 import { ThreadRepository } from '../../src/infra/repository/thread.repo';
@@ -18,8 +12,8 @@ import { ApplicationServer } from '../../src/presentation/http/server';
 const replyToThread = async (thread, i: number) => {
   const postService = Container.get(PostService);
   const post = { body: `#${i}`, attachmentIds: [], referencies: [] };
-  const command = new ReplyToThreadCommand({ ...post, threadId: thread.id });
-  await postService.replyToThreadHandler(command);
+  const request = { ...post, threadId: thread.id };
+  await postService.replyToThreadHandler(request);
 };
 const createThread = async (board) => {
   let thread = Thread.create(board);

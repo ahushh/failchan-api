@@ -1,14 +1,10 @@
 import { Request, Response } from 'express';
-import { Container } from 'typedi';
-import { UpdatePostCommand } from '../../../../app/commands/post';
-import { PostService } from '../../../../app/service/post.service';
+import { UpdatePostAction } from '../../../../app/actions/post/update';
 
 export async function postsUpdateAction(request: Request, response: Response, next: Function) {
-  const postId  = request.params.postId;
-  const command = new UpdatePostCommand({ ...request.body.post, postId });
-  const service = Container.get(PostService);
+  const postId = request.params.postId;
   try {
-    await service.updatePostHandler(command);
+    await new UpdatePostAction({ ...request.body.post, postId }).execute();
     response.sendStatus(204);
   } catch (e) {
     if (e.name === 'EntityNotFound') {

@@ -1,9 +1,6 @@
 import { Request, Response } from 'express';
 import R from 'ramda';
-import { Container } from 'typedi';
-import {
-  AttachmentService,
-} from '../../../../app/service/attachment.service';
+import { CreateAttachmentAction } from '../../../../app/actions/attachments/create';
 import { IAttachmentFile } from '../../../../domain/interfaces/attachment-file';
 
 export async function attachmentCreateAction(request: Request, response: Response) {
@@ -13,7 +10,6 @@ export async function attachmentCreateAction(request: Request, response: Respons
       R.pick(['path', 'originalname', 'mimetype', 'size']),
     ),
   );
-  const service = Container.get(AttachmentService);
-  const uid = await service.saveToCache(filesPrepared);
+  const uid = await new CreateAttachmentAction(filesPrepared).execute();
   response.json({ uid });
 }

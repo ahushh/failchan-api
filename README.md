@@ -18,7 +18,6 @@ npm start
 
 # TODO
 
-* attachments - удаление неиспользованных
 * attachments create - transaction & rollback
 * Events and websockets
 * Event bus

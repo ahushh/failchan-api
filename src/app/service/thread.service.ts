@@ -7,8 +7,6 @@ import { Board } from '../../domain/entity/board';
 import { Thread } from '../../domain/entity/thread';
 import { BoardRepository } from '../../infra/repository/board.repo';
 import { ThreadRepository } from '../../infra/repository/thread.repo';
-import { ReplyToThreadCommand } from '../commands/post';
-import { CreateThreadCommand, ListThreadsByBoardCommand } from '../commands/thread';
 import { PostService } from './post.service';
 
 @Service()
@@ -19,16 +17,32 @@ export class ThreadService {
     @Inject(type => PostService) private postService: PostService,
   ) { }
 
-  async createHandler(command: CreateThreadCommand): Promise<Thread> {
-    const board = await this.boardRepo.getBySlug(command.boardSlug);
+  async createHandler(request: {
+    post: {
+      body: string;
+      attachmentIds: number[];
+      referencies: number[];
+      threadId: number;
+    };
+    boardSlug: string;
+  }): Promise<Thread> {
+    const board = await this.boardRepo.getBySlug(request.boardSlug);
     const thread = Thread.create(board);
     const { id: threadId } = await this.threadRepo.save(thread);
-    const replyCommand  = new ReplyToThreadCommand({ ...command.post, threadId });
-    await this.postService.replyToThreadHandler(replyCommand);
+    const replyRequest = {
+      threadId,
+      ...request.post,
+    };
+    await this.postService.replyToThreadHandler(replyRequest);
     return this.getThreadWithPosts(threadId);
   }
 
-  async listThreadsByBoardHandler(params: ListThreadsByBoardCommand): Promise<Thread[]> {
+  async listThreadsByBoardHandler(params: {
+    boardSlug: string,
+    previewPosts: number,
+    take: number,
+    skip: number,
+  }): Promise<Thread[]> {
     const board = await this.boardRepo.getBySlug(params.boardSlug);
     return this.threadRepo
       .getThreadsWithPreviewPosts(board.id, R.omit(['boardSlug'], params));

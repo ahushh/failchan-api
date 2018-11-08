@@ -1,14 +1,10 @@
 import { Request, Response } from 'express';
-import { Container } from 'typedi';
-import { ListThreadsByBoardCommand } from '../../../../app/commands/thread';
-import { ThreadService } from '../../../../app/service/thread.service';
+import { ListThreadsByBoardAction } from '../../../../app/actions/thread/list';
 
 export async function threadsListByBoardAction(request: Request, response: Response) {
-  const service = Container.get(ThreadService);
-  const command = new ListThreadsByBoardCommand({
+  const threads = await new ListThreadsByBoardAction({
     boardSlug: request.params.boardSlug,
     skip: request.query.skip,
-  });
-  const threads = await service.listThreadsByBoardHandler(command);
+  }).execute();
   response.json({ threads });
 }

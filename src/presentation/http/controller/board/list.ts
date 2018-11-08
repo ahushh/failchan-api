@@ -1,9 +1,7 @@
 import { Request, Response } from 'express';
-import { Container } from 'typedi';
-import { BoardService } from '../../../../app/service/board.service';
+import { ListBoardAction } from '../../../../app/actions/board/list';
 
 export async function boardsListAction(request: Request, response: Response) {
-  const service = Container.get(BoardService);
-  const boards = await service.list();
+  const boards = await new ListBoardAction().execute();
   response.json({ boards });
 }

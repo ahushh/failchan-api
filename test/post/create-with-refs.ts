@@ -1,10 +1,7 @@
 import chai from 'chai';
 import supertest from 'supertest';
-import Container from 'typedi';
 import { getCustomRepository, getRepository } from 'typeorm';
 
-import { ReplyToThreadCommand } from '../../src/app/commands/post';
-import { PostService } from '../../src/app/service/post.service';
 import { Board } from '../../src/domain/entity/board';
 import { Post } from '../../src/domain/entity/post';
 import { Thread } from '../../src/domain/entity/thread';

@@ -7,7 +7,6 @@ import { Thread } from '../../domain/entity/thread';
 import { IDomainPostService } from '../../domain/interfaces/post.service';
 import { DomainPostService } from '../../domain/services/post.service';
 import { ThreadRepository } from '../../infra/repository/thread.repo';
-import { ReplyToThreadCommand, UpdatePostCommand } from '../commands/post';
 
 @Service()
 export class PostService {
@@ -18,14 +17,20 @@ export class PostService {
     @Inject(() => DomainPostService) private postService: IDomainPostService,
   ) { }
 
-  async replyToThreadHandler(command: ReplyToThreadCommand): Promise<Post> {
-    const thread = await this.threadRepo.findOneOrFail(command.threadId);
-    const attachments = await this.attachmentRepo.findByIds(command.attachmentIds);
-    const referencies = await this.postRepo.findByIds(command.referencies, {
+  async replyToThreadHandler(request: {
+    threadId: number;
+    body: string;
+    attachmentIds: number[];
+    referencies: number[];
+  }): Promise<Post>;
+  async replyToThreadHandler(request) {
+    const thread = await this.threadRepo.findOneOrFail(request.threadId);
+    const attachments = await this.attachmentRepo.findByIds(request.attachmentIds);
+    const referencies = await this.postRepo.findByIds(request.referencies, {
       relations: ['replies'],
     });
     const { post, thread: newThread, refs } = this.postService.replyToThread({
-      thread, attachments, referencies, body: command.body,
+      thread, attachments, referencies, body: request.body,
     });
     await getManager().transaction(async (manager) => {
       await manager.save(newThread);
@@ -37,26 +42,32 @@ export class PostService {
     });
   }
 
-  async updatePostHandler(command: UpdatePostCommand): Promise<void> {
-    const post = await this.postRepo.findOneOrFail(command.postId, {
+  async updatePostHandler(request: {
+    postId: number;
+    threadId: number | null;
+    body: string | null;
+    attachmentIds: number[] | null;
+    referencies: number[] | null;
+  }): Promise<void> {
+    const post = await this.postRepo.findOneOrFail(request.postId, {
       relations: ['referencies', 'referencies.replies'],
     });
-    if (command.threadId) {
-      const thread = await this.threadRepo.findOneOrFail(command.threadId);
+    if (request.threadId) {
+      const thread = await this.threadRepo.findOneOrFail(request.threadId);
       post.thread = thread;
     }
-    if (command.body) {
-      post.body = command.body;
+    if (request.body) {
+      post.body = request.body;
     }
-    if (command.referencies) {
-      const newReferencies = await this.postRepo.findByIds(command.referencies, {
+    if (request.referencies) {
+      const newReferencies = await this.postRepo.findByIds(request.referencies, {
         relations: ['replies'],
       });
       const syncedRefs = this.postService.syncReferencies(post, newReferencies);
       await this.postRepo.save(syncedRefs);
     }
-    if (command.attachmentIds) {
-      post.attachments = await this.attachmentRepo.findByIds(command.attachmentIds);
+    if (request.attachmentIds) {
+      post.attachments = await this.attachmentRepo.findByIds(request.attachmentIds);
     }
     await this.postRepo.save(post);
   }

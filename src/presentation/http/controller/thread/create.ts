@@ -1,33 +1,25 @@
 import { Request, Response } from 'express';
-import { Container } from 'typedi';
-import { CreateThreadCommand } from '../../../../app/commands/thread';
-import { AttachmentService } from '../../../../app/service/attachment.service';
-import { ThreadService } from '../../../../app/service/thread.service';
+import { CreateThreadAction } from '../../../../app/actions/thread/create';
 
 export async function threadsCreateAction(request: Request, response: Response, next: Function) {
-  const attachmentService = Container.get(AttachmentService);
-  let attachmentIds;
+  const boardSlug: string = request.params.boardSlug;
   try {
-    attachmentIds = [] = request.body.post.attachment
-      ? await attachmentService.createFromCache(request.body.post.attachment)
-      : [];
+    const thread = await new CreateThreadAction({
+      boardSlug,
+      body: request.body.post.body,
+      attachment: request.body.post.attachment,
+      referencies: request.body.post.referencies,
+      threadId: request.body.post.threadId,
+    }).execute();
+    response.json({ thread });
   } catch (e) {
     if (e.name === 'CacheRecordNotFound') {
       return response.status(400).json({ error: e.message });
     }
-    next(e);
-  }
-
-  const board = request.params.boardSlug;
-  const service = Container.get(ThreadService);
-  try {
-    const command = new CreateThreadCommand(board, { ...request.body.post, attachmentIds });
-    const thread = await service.createHandler(command);
-    response.json({ thread });
-  } catch (e) {
     if (e.name === 'EntityNotFound') {
-      return response.status(404).json({ message: `Board ${board} not found` });
+      return response.status(404).json({ message: `Board ${boardSlug} not found` });
     }
+    console.log(e);
     next(e);
   }
 }

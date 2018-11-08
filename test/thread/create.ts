@@ -1,11 +1,8 @@
 import chai from 'chai';
 import supertest from 'supertest';
-import { Container } from 'typedi';
-import { getCustomRepository, getRepository } from 'typeorm';
+import { getCustomRepository } from 'typeorm';
 import { Board } from '../../src/domain/entity/board';
-import { Post } from '../../src/domain/entity/post';
 import { BoardRepository } from '../../src/infra/repository/board.repo';
-import { ThreadRepository } from '../../src/infra/repository/thread.repo';
 import { ApplicationServer } from '../../src/presentation/http/server';
 
 describe('Threads creation', () => {
@@ -19,7 +16,6 @@ describe('Threads creation', () => {
   });
   after(async () => {
     await ApplicationServer.connection.synchronize(true);
-
   });
 
   it('creates a new thread', (done) => {

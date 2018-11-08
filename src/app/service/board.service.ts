@@ -15,7 +15,9 @@ export class BoardService {
       return await this.repo.save(board);
     } catch (e) {
       if (e.message.match('duplicate key value violates unique constraint')) {
-        throw new Error(BOARD_ERRORS.ALREADY_EXISTS);
+        const error = new Error(BOARD_ERRORS.ALREADY_EXISTS);
+        error.name = 'AlreadyExists';
+        throw error;
       }
       throw e;
     }
