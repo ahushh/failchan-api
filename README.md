@@ -6,15 +6,21 @@
 
 # Run in dev mode
 
-npm start
+`docker-compose up`
 
-# Run DB
+`npm start`
 
-`docker-compose up postgres`
+# Run tests
 
-# Create test DB
+`docker-compose up`
 
 `docker-compose exec postgres createdb -Upostgres test`
+
+`npm test`
+
+# Run in production mode
+
+`docker-compose -f docker-compose.yml -f docker-compose.prod.yml up`
 
 # TODO
 
