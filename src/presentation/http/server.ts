@@ -1,51 +1,41 @@
-#!/usr/bin/env node
-
 require('dotenv').config();
-
-import { Connection } from 'typeorm';
 
 import app from './app';
 const debug = require('debug')('express:server');
 import { Express } from 'express-serve-static-core';
 import http from 'http';
+import { FailchanApp } from '../../app/app';
 import { createORMConnection } from '../../infra/utils/create-orm-connection';
 import { createPubSubConnection } from '../../infra/utils/create-pubsub-connection';
 import { createRedisConnection } from '../../infra/utils/create-redis-connection';
 
 class Server {
-  expressApplication: Express;
   private port: any;
-  server: http.Server;
-  connection: Connection;
-
-  private createORMConnection: () => Connection;
+  private server: http.Server;
   private createHttpServer: (app: Express) => http.Server;
-  private createRedisConnection = () => Promise;
-  private createPubSubConnection = () => Promise;
+  private application: FailchanApp;
+
+  expressApplication: Express;
+
+  get connection() {
+    return this.application.connection;
+  }
 
   constructor({
-    createORMConnection,
-    createRedisConnection,
-    createPubSubConnection,
+    application,
     createHttpServer,
     expressApplication,
     port,
   }) {
     this.createHttpServer = createHttpServer;
-    this.createRedisConnection = createRedisConnection;
-    this.createPubSubConnection = createPubSubConnection;
-    this.createORMConnection = createORMConnection;
+    this.application = application;
     this.expressApplication = expressApplication;
     this.port = port;
     this.expressApplication.set('port', this.port);
   }
 
   async connectDB() {
-    if (!this.connection) {
-      this.connection = await this.createORMConnection();
-    }
-    await this.createRedisConnection();
-    await this.createPubSubConnection();
+    await this.application.connectDB();
     return this;
   }
   listen() {
@@ -98,11 +88,15 @@ class Server {
   }
 }
 
-// tslint:disable-next-line:variable-name
-export const ApplicationServer = new Server({
+const application = new FailchanApp({
   createORMConnection,
   createRedisConnection,
   createPubSubConnection,
+});
+
+// tslint:disable-next-line:variable-name
+export const ApplicationServer = new Server({
+  application,
   createHttpServer: http.createServer,
   expressApplication: app,
   port: process.env.PORT || '3000',
