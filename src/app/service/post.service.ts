@@ -1,5 +1,5 @@
 import { Inject, Service } from 'typedi';
-import { Repository } from 'typeorm';
+import { EntityManager, getManager, Repository, Transaction, TransactionManager } from 'typeorm';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { Attachment } from '../../domain/entity/attachment';
 import { Post } from '../../domain/entity/post';
@@ -27,9 +27,11 @@ export class PostService {
     const { post, thread: newThread, refs } = this.postService.replyToThread({
       thread, attachments, referencies, body: command.body,
     });
-    await this.threadRepo.save(newThread);
-    await this.postRepo.save(post);
-    await this.postRepo.save(refs);
+    await getManager().transaction(async (manager) => {
+      await manager.save(newThread);
+      await manager.save(post);
+      await manager.save(refs);
+    });
     return this.postRepo.findOneOrFail(post.id, {
       relations: ['referencies', 'attachments', 'replies'],
     });
