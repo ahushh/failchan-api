@@ -30,8 +30,8 @@ export class ThreadService {
     const thread = Thread.create(board);
     const { id: threadId } = await this.threadRepo.save(thread);
     const replyRequest = {
-      threadId,
       ...request.post,
+      threadId,
     };
     await this.postService.replyToThreadHandler(replyRequest);
     return this.getThreadWithPosts(threadId);

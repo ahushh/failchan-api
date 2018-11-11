@@ -22,8 +22,7 @@ export class PostService {
     body: string;
     attachmentIds: number[];
     referencies: number[];
-  }): Promise<Post>;
-  async replyToThreadHandler(request) {
+  }): Promise<Post> {
     const thread = await this.threadRepo.findOneOrFail(request.threadId);
     const attachments = await this.attachmentRepo.findByIds(request.attachmentIds);
     const referencies = await this.postRepo.findByIds(request.referencies, {

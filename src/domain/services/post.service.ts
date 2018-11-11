@@ -1,14 +1,19 @@
 import { Service } from 'typedi';
 import { Post } from '../entity/post';
+import { Thread } from '../entity/thread';
 import { IDomainPostService } from '../interfaces/post.service';
+import { IReply } from '../interfaces/reply';
 
 @Service()
 export class DomainPostService implements IDomainPostService {
   constructor() { }
 
-  replyToThread({ thread, attachments, referencies, body }) {
+  replyToThread(reply: IReply): { post: Post, thread: Thread, refs: Post[] } {
+    const { thread, attachments, referencies, body } = reply;
     const post = Post.create(body, referencies, attachments);
-    thread.reply(post);
+    thread.bump();
+    post.thread = thread;
+    // thread.posts = [post];
     post.addPostToRefsReplies();
     const refs = post.referencies;
     return { post, thread, refs };

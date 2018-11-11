@@ -33,7 +33,6 @@ export class Thread {
 
   reply(post: Post) {
     this.bump();
-    post.thread = this;
   }
 
   sortPosts() {
