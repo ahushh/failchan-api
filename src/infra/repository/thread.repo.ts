@@ -17,7 +17,7 @@ export class ThreadRepository extends Repository<Thread> implements IThreadRepos
     const threads = await this.find({
       skip: findOptions.skip || 0,
       take: findOptions.take || 0,
-      where: { boardId },
+      where: { board: { id: boardId } },
       order: {
         updatedAt: 'DESC',
       },
