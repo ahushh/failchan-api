@@ -40,7 +40,7 @@ const createThreads = async (board) => {
 };
 
 let app;
-describe.only('Threads listing', () => {
+describe('Threads listing', () => {
   before(async () => {
     app = await ApplicationServer.connectDB().then(server => server.expressApplication);
 
