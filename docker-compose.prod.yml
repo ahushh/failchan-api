@@ -4,3 +4,6 @@ services:
     build: .
     ports:
       - "80:3000"
+    depends_on:
+      - postgres
+      - redis
