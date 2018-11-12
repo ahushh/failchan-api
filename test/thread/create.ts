@@ -5,7 +5,7 @@ import { Board } from '../../src/domain/entity/board';
 import { BoardRepository } from '../../src/infra/repository/board.repo';
 import { ApplicationServer } from '../../src/presentation/http/server';
 
-describe.only('Threads creation', () => {
+describe('Threads creation', () => {
   let app;
   before(async () => {
     app = await ApplicationServer.connectDB().then(server => server.expressApplication);
