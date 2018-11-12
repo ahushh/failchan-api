@@ -7,16 +7,16 @@ module.exports = [
     "username": "postgres",
     "password": "postgres",
     "database": "develop",
-    "entities": ["dist/domain/entity/**/*.js"],
-    "migrations": ["dist/infra/migration/**/*.js"],
-    "subscribers": ["dist/app/subscriber/**/*.js"],
+    "entities": ["dist/src/domain/entity/**/*.js"],
+    "migrations": ["dist/src/infra/migration/**/*.js"],
+    "subscribers": ["dist/src/app/subscriber/**/*.js"],
     "logging": true,
     "logger": "advanced-console",
     "synchronize": true,
     "cli": {
-      "migrationsDir": "dist/infra/migration",
-      "entitiesDir": "dist/domain/entity",
-      "subscribersDir": "dist/app/subscriber"
+      "migrationsDir": "dist/src/infra/migration",
+      "entitiesDir": "dist/src/domain/entity",
+      "subscribersDir": "dist/src/app/subscriber"
     }
   },
   {
