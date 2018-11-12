@@ -20,7 +20,8 @@ services:
       - redis  
   adminer:
     image: adminer
-    depends_on: postgres
+    depends_on: 
+      - postgres
     ports:
       - 8081:8080
 
