@@ -13,7 +13,7 @@ const replyToThread = async (thread, i: number) => {
   const postService = Container.get(PostService);
   const post = { body: `#${i}`, attachmentIds: [], referencies: [] };
   const request = { ...post, threadId: thread.id };
-  await postService.replyToThreadHandler(request);
+  await postService.replyToThread(request);
 };
 const createThread = async (board) => {
   let thread = Thread.create(board);

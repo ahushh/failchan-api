@@ -14,7 +14,7 @@ export const replyToThread = async (thread, body, referencies: number[] = []) =>
   const postService = Container.get(PostService);
   const post = { body, referencies, attachmentIds: [] };
   const request = { ...post, threadId: thread.id };
-  return postService.replyToThreadHandler(request);
+  return postService.replyToThread(request);
 };
 
 let app;

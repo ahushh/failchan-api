@@ -23,6 +23,6 @@ export class UpdatePostAction implements IAction {
   }
   execute() {
     const service = Container.get(PostService);
-    return service.updatePostHandler(this.request);
+    return service.updatePost(this.request);
   }
 }

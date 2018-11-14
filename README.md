@@ -24,6 +24,7 @@
 
 # TODO
 
+* interfaces refactoring: IAttachmentFile
 * attachments create - transaction & rollback
 * Events and websockets
 * Event bus

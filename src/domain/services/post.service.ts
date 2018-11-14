@@ -1,11 +1,10 @@
 import { Service } from 'typedi';
 import { Post } from '../entity/post';
 import { Thread } from '../entity/thread';
-import { IDomainPostService } from '../interfaces/post.service';
 import { IReply } from '../interfaces/reply';
 
 @Service()
-export class DomainPostService implements IDomainPostService {
+export class DomainPostService {
   constructor() { }
 
   replyToThread(reply: IReply): { post: Post, thread: Thread, refs: Post[] } {
@@ -18,7 +17,7 @@ export class DomainPostService implements IDomainPostService {
     const refs = post.referencies;
     return { post, thread, refs };
   }
-  syncReferencies(post, newReferencies) {
+  syncReferencies(post: Post, newReferencies: Post[]): Post[] {
     const newRefsIds = newReferencies.map(r => r.id);
     const idsToRemove = post.referencies
       .filter(p => !newRefsIds.includes(p.id))

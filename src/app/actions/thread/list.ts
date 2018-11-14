@@ -33,6 +33,6 @@ export class ListThreadsByBoardAction implements IAction {
       take: this.take,
       skip: this.skip,
     };
-    return service.listThreadsByBoardHandler(request);
+    return service.listThreadsByBoard(request);
   }
 }

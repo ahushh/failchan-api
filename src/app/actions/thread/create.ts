@@ -22,7 +22,7 @@ export class CreateThreadAction implements IAction {
       : [];
 
     const service = Container.get(ThreadService);
-    return service.createHandler({
+    return service.create({
       post: {
         attachmentIds,
         body: this.request.body,

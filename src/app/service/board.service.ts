@@ -2,11 +2,12 @@
 import { Service } from 'typedi';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { Board } from '../../domain/entity/board';
+import { IBoardService } from '../../domain/interfaces/board.service';
 import { BoardRepository } from '../../infra/repository/board.repo';
 import { BOARD_ERRORS } from '../errors/board';
 
 @Service()
-export class BoardService {
+export class BoardService implements IBoardService {
   constructor(@InjectRepository(Board) private repo: BoardRepository) { }
   async create({ slug, name }): Promise<Board> {
     const board = Board.create(slug, name);

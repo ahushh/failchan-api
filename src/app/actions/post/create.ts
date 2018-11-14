@@ -26,6 +26,6 @@ export class CreatePostAction implements IAction {
       referencies: this.request.referencies,
       threadId: this.request.threadId,
     };
-    return service.replyToThreadHandler(request);
+    return service.replyToThread(request);
   }
 }

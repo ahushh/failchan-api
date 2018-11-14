@@ -17,7 +17,7 @@ const replyToThread = async (boardSlug: string, thread, i: number) => {
   const postService = Container.get(PostService);
   const post = { body: `${boardSlug}`, attachmentIds: [], referencies: [] };
   const request = { ...post, threadId: thread.id };
-  await postService.replyToThreadHandler(request);
+  await postService.replyToThread(request);
 };
 const createThreads = async (board) => {
   const createOne = async () => {

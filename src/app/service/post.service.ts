@@ -1,23 +1,23 @@
 import { Inject, Service } from 'typedi';
-import { EntityManager, getManager, Repository, Transaction, TransactionManager } from 'typeorm';
+import { getManager, Repository } from 'typeorm';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { Attachment } from '../../domain/entity/attachment';
 import { Post } from '../../domain/entity/post';
 import { Thread } from '../../domain/entity/thread';
-import { IDomainPostService } from '../../domain/interfaces/post.service';
+import { IPostService } from '../../domain/interfaces/post.service';
 import { DomainPostService } from '../../domain/services/post.service';
 import { ThreadRepository } from '../../infra/repository/thread.repo';
 
 @Service()
-export class PostService {
+export class PostService implements IPostService {
   constructor(
     @InjectRepository(Post) private postRepo: Repository<Post>,
     @InjectRepository(Thread) private threadRepo: ThreadRepository,
     @InjectRepository(Attachment) private attachmentRepo: Repository<Attachment>,
-    @Inject(() => DomainPostService) private postService: IDomainPostService,
+    @Inject(() => DomainPostService) private postService: DomainPostService,
   ) { }
 
-  async replyToThreadHandler(request: {
+  async replyToThread(request: {
     threadId: number;
     body: string;
     attachmentIds: number[];
@@ -41,7 +41,7 @@ export class PostService {
     });
   }
 
-  async updatePostHandler(request: {
+  async updatePost(request: {
     postId: number;
     threadId: number | null;
     body: string | null;

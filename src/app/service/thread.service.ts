@@ -1,23 +1,23 @@
 import R from 'ramda';
 import { Inject, Service } from 'typedi';
-import { Repository } from 'typeorm';
 import { InjectRepository } from 'typeorm-typedi-extensions';
-
 import { Board } from '../../domain/entity/board';
 import { Thread } from '../../domain/entity/thread';
+import { IPostService } from '../../domain/interfaces/post.service';
+import { IThreadService } from '../../domain/interfaces/thread.service';
 import { BoardRepository } from '../../infra/repository/board.repo';
 import { ThreadRepository } from '../../infra/repository/thread.repo';
 import { PostService } from './post.service';
 
 @Service()
-export class ThreadService {
+export class ThreadService implements IThreadService {
   constructor(
     @InjectRepository(Thread) private threadRepo: ThreadRepository,
     @InjectRepository(Board) private boardRepo: BoardRepository,
-    @Inject(type => PostService) private postService: PostService,
+    @Inject(type => PostService) private postService: IPostService,
   ) { }
 
-  async createHandler(request: {
+  async create(request: {
     post: {
       body: string;
       attachmentIds: number[];
@@ -33,11 +33,11 @@ export class ThreadService {
       ...request.post,
       threadId,
     };
-    await this.postService.replyToThreadHandler(replyRequest);
+    await this.postService.replyToThread(replyRequest);
     return this.getThreadWithPosts(threadId);
   }
 
-  async listThreadsByBoardHandler(params: {
+  async listThreadsByBoard(params: {
     boardSlug: string,
     previewPosts: number,
     take: number,
