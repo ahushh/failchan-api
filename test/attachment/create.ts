@@ -2,9 +2,6 @@ import chai from 'chai';
 import supertest from 'supertest';
 import { ApplicationServer } from '../../src/presentation/http/server';
 
-import Container from 'typedi';
-import { FileFactory } from '../../src/infra/services/file/file.factory';
-
 import fs from 'fs';
 import rimraf from 'rimraf';
 
