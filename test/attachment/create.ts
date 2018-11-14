@@ -3,7 +3,7 @@ import supertest from 'supertest';
 import { ApplicationServer } from '../../src/presentation/http/server';
 
 import Container from 'typedi';
-import { FileServiceFactory } from '../../src/infra/services/file/file.factory';
+import { FileFactory } from '../../src/infra/services/file/file.factory';
 
 import fs from 'fs';
 import rimraf from 'rimraf';

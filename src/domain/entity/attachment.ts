@@ -68,4 +68,7 @@ export class Attachment {
   get storageKey() {
     return `${this.md5}/${this.name}`;
   }
+  get thumbStorageKey() {
+    return this.md5;
+  }
 }

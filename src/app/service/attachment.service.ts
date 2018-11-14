@@ -6,26 +6,39 @@ import uuidv4 from 'uuid/v4';
 import { Attachment } from '../../domain/entity/attachment';
 
 import { IAttachmentFile } from '../../domain/interfaces/attachment-file';
-import { DomainAttachmentService } from '../../domain/services/attachment.service';
-import { FileServiceFactory, IFileServiceFactory } from '../../infra/services/file/file.factory';
-import { IFileService } from '../../infra/services/file/file.interface';
+import { FileRepository, IFileRepository } from '../../infra/repository/file.repo';
+import { FileFactory, IFileFactory } from '../../infra/class/file/file.factory';
+import { IFile } from '../../infra/class/file/file.interface';
 import { ExpiredAttachmentService } from '../listeners/expired-attachments';
 
 @Service()
 export class AttachmentService {
   constructor(
-    @Inject(FileServiceFactory) public factory: IFileServiceFactory,
+    @Inject(FileFactory) public factory: IFileFactory,
     @InjectRepository(Attachment) public repo: Repository<Attachment>,
     @Inject('redis-connection') public redis: Redis,
     @Inject(type => ExpiredAttachmentService) public expiredAttachment: ExpiredAttachmentService,
-    @Inject(type => DomainAttachmentService) public service: DomainAttachmentService,
+    @Inject(FileFactory) public fileFactory: IFileFactory,
+    @Inject(type => FileRepository) public fileRepo: IFileRepository,
   ) {
     expiredAttachment.listen();
   }
 
+  private create = async (request: IAttachmentFile): Promise<Attachment> => {
+    const file: IFile = this.fileFactory.create(request);
+    await file.calculateMd5();
+    await file.generateThumbnail();
+    await file.getExif();
+    await this.fileRepo.save(file);
+    const { uri, thumbnailUri, exif, md5, mime, name, size } = await file.toJSON();
+    return Attachment.create(
+      exif, md5, mime, name, thumbnailUri, uri, size,
+    );
+  }
+
   async createFromCache(id: string): Promise<number[]> {
     const files = await this.getFromCache(id);
-    const entities = await Promise.all(files.map(f => this.service.create(f)));
+    const entities = await Promise.all(files.map(f => this.create(f)));
     const saved = await this.repo.save(entities);
     return saved.map(({ id }) => id);
   }
@@ -41,10 +54,7 @@ export class AttachmentService {
   async delete(ids: number[]) {
     const attachments = await this.repo.findByIds(ids);
     const deleteAttachment = async (a: Attachment) => {
-      const fileService: IFileService = this.factory.create(a.mime);
-      const storageKey = DomainAttachmentService.generateStorageKey(a.md5, a.name);
-      await fileService.delete(storageKey);
-      await fileService.deleteThumbnail(a.md5);
+      await this.fileRepo.delete([a.storageKey, a.thumbStorageKey].filter(Boolean));
     };
     await Promise.all(attachments.map(deleteAttachment));
     await this.repo.delete(ids);

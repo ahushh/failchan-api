@@ -3,16 +3,17 @@ import { Blob } from 'aws-sdk/lib/dynamodb/document_client';
 import fs, { ReadStream } from 'fs';
 import { Readable } from 'stream';
 import { Service } from 'typedi';
+import { IFile } from '../class/file/file.interface';
 
 export type Body = Buffer | Uint8Array | Blob | string | Readable;
 
-export interface IFileStorage {
-  uploadFile(path: string, key: string): Promise<string>;
-  uploadBuffer(buffer: Body, key: string): Promise<string>;
+export interface IFileRepository {
+  save(file: IFile): Promise<IFile>;
+  delete(keys: string[]): Promise<any>;
 }
 
 @Service()
-export class FileStorage implements IFileStorage {
+export class FileRepository implements IFileRepository {
   bucket: S3;
 
   constructor() {
@@ -34,12 +35,21 @@ export class FileStorage implements IFileStorage {
     });
   }
 
-  async uploadFile(path: string, key: string): Promise<string> {
-    const rs = fs.createReadStream(path);
-    return this.uploadBuffer(rs, key);
+  /**
+   * Saves file and its thumbnail to AWS.
+   * Fills in uri and thumbnail fields.
+   * @param file IFile
+   */
+  async save(file: IFile): Promise<IFile> {
+    const rs = fs.createReadStream(file.path);
+    file.uri = await this.uploadBuffer(rs, file.storageKey);
+    if (file.thumbnail) {
+      file.thumbnailUri = await this.uploadBuffer(file.thumbnail, file.md5);
+    }
+    return file;
   }
 
-  async deleteFiles(keys: string[]): Promise<any> {
+  async delete(keys: string[]): Promise<any> {
     return await this.bucket.deleteObjects({
       Bucket: process.env.AWS_BUCKET as string,
       Delete: {
