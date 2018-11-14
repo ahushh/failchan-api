@@ -6,9 +6,9 @@ import uuidv4 from 'uuid/v4';
 import { Attachment } from '../../domain/entity/attachment';
 
 import { IAttachmentFile } from '../../domain/interfaces/attachment-file';
-import { FileRepository, IFileRepository } from '../../infra/repository/file.repo';
 import { FileFactory, IFileFactory } from '../../infra/class/file/file.factory';
 import { IFile } from '../../infra/class/file/file.interface';
+import { FileRepository, IFileRepository } from '../../infra/repository/file.repo';
 import { ExpiredAttachmentService } from '../listeners/expired-attachments';
 
 @Service()
