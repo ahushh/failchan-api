@@ -85,7 +85,7 @@ class Server {
   }
 }
 
-const application = new FailchanApp.create();
+const application = FailchanApp.create();
 
 // tslint:disable-next-line:variable-name
 export const ApplicationServer = new Server({
