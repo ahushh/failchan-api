@@ -5,9 +5,6 @@ const debug = require('debug')('express:server');
 import { Express } from 'express-serve-static-core';
 import http from 'http';
 import { FailchanApp } from '../../app/app';
-import { createORMConnection } from '../../infra/utils/create-orm-connection';
-import { createPubSubConnection } from '../../infra/utils/create-pubsub-connection';
-import { createRedisConnection } from '../../infra/utils/create-redis-connection';
 
 class Server {
   private port: any;
@@ -88,11 +85,7 @@ class Server {
   }
 }
 
-const application = new FailchanApp({
-  createORMConnection,
-  createRedisConnection,
-  createPubSubConnection,
-});
+const application = new FailchanApp.create();
 
 // tslint:disable-next-line:variable-name
 export const ApplicationServer = new Server({

@@ -1,4 +1,7 @@
 import { Connection } from 'typeorm';
+import { createORMConnection } from '../infra/utils/create-orm-connection';
+import { createPubSubConnection } from '../infra/utils/create-pubsub-connection';
+import { createRedisConnection } from '../infra/utils/create-redis-connection';
 
 export class FailchanApp {
   connection: Connection;
@@ -6,6 +9,14 @@ export class FailchanApp {
   private createORMConnection: () => Connection;
   private createRedisConnection = () => Promise;
   private createPubSubConnection = () => Promise;
+
+  static create() {
+    return new FailchanApp({
+      createORMConnection,
+      createRedisConnection,
+      createPubSubConnection,
+    });
+  }
 
   constructor({
     createORMConnection,
