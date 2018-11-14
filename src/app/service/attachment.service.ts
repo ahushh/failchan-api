@@ -8,7 +8,8 @@ import { Attachment } from '../../domain/entity/attachment';
 import { IAttachmentFile } from '../../domain/interfaces/attachment-file';
 import { FileFactory, IFileFactory } from '../../infra/class/file/file.factory';
 import { IFile } from '../../infra/class/file/file.interface';
-import { FileRepository, IFileRepository } from '../../infra/repository/file.repo';
+import { FileRepository } from '../../infra/repository/file/file.repo';
+import { IFileRepository } from '../../infra/repository/file/file.repo.interface';
 import { ExpiredAttachmentService } from '../listeners/expired-attachments';
 
 @Service()

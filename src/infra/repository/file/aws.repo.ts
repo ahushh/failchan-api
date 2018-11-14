@@ -1,19 +1,13 @@
 import S3 from 'aws-sdk/clients/s3';
 import { Blob } from 'aws-sdk/lib/dynamodb/document_client';
-import fs, { ReadStream } from 'fs';
+import fs from 'fs';
 import { Readable } from 'stream';
-import { Service } from 'typedi';
-import { IFile } from '../class/file/file.interface';
+import { IFile } from '../../class/file/file.interface';
+import { IFileRepository } from './file.repo.interface';
 
 export type Body = Buffer | Uint8Array | Blob | string | Readable;
 
-export interface IFileRepository {
-  save(file: IFile): Promise<IFile>;
-  delete(keys: string[]): Promise<any>;
-}
-
-@Service()
-export class FileRepository implements IFileRepository {
+export class AWSFileRepository implements IFileRepository {
   bucket: S3;
 
   constructor() {
