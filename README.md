@@ -24,6 +24,9 @@
 
 # TODO
 
+* заменить typedi на inversify
+* разделить тесты на unit и e2e
+* дописать изначальные условия в тест-кейсах, типа дано: ...
 * interfaces refactoring: IAttachmentFile
 * attachments create - transaction & rollback
 * Events and websockets
