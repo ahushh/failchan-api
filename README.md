@@ -1,36 +1,44 @@
-# Setup
+# What is it?
+
+Yet Another Imageboard (forum with pictures) API which I'm trying to build during researching in backend development, software design and DDD in particular, OOP and DB.
+
+# Initial setup
 
 `npm ci`
 
 `cp .env.example .env`
 
+**Do not forget about .env file!**
+
 # Run in dev mode
 
-`docker-compose up`
+`npm run db:run`
 
 `npm start`
 
-# Run tests
+# Run e2e tests to test each endpoint
 
-`docker-compose up`
+`npm run db:run`
 
-`docker-compose exec postgres createdb -Upostgres test`
+`npm run test:db:create`
 
-`npm test`
+`npm e2e`
 
-# Run in production mode
+# Run in production mode through Docker
 
-`docker-compose -f docker-compose.yml -f docker-compose.prod.yml up`
+`npm run start:docker`
 
-# Clean DB
+# Troubles during e2e tests
 
-In case of error kinda
+- Some tests fails with output `QueryFailedError: duplicate key value violates unique constraint`
 
-`QueryFailedError: duplicate key value violates unique constraint`
+-- Try to recreate DB
 
-try to recreate DB:
+`npm run test:db:drop && npm run test:db:create`
 
-`docker-compose exec postgres dropdb -Upostgres test && docker-compose exec postgres createdb -Upostgres test`
+-- Run tests again
+
+-- Wait and try something again
 
 # TODO
 
@@ -47,3 +55,34 @@ try to recreate DB:
 * Events and websockets
 * Event bus
 * слой обработки ошибок
+
+
+# Inspired by
+
+https://hsto.org/webt/wp/gk/2w/wpgk2wxy5fgyjtrwuzctapvv19y.png
+
+https://github.com/citerus/dddsample-core
+
+https://github.com/dmiseev/ddd-node-starter
+
+https://github.com/inversify/inversify-express-example
+
+https://stackoverflow.com/questions/37534890/inversify-js-reflect-hasownmetadata-is-not-a-function
+
+https://github.com/joshuaalpuerto/node-ddd-boilerplate
+
+https://stackoverflow.com/questions/36636957/where-should-i-configure-my-di-container-for-domain-infrastructure-services-in-d
+
+https://cqrs.nu/Faq
+
+https://stackoverflow.com/questions/47991017/understanding-the-command-pattern-in-a-ddd-context
+
+https://medium.com/@qasimsoomro/building-microservices-using-node-js-with-ddd-cqrs-and-event-sourcing-part-1-of-2-52e0dc3d81df
+
+https://habr.com/ru/company/ruvds/blog/434114/
+
+https://github.com/joshuaalpuerto/node-ddd-boilerplate
+
+https://github.com/talyssonoc/node-api-boilerplate
+
+https://emacsway.github.io/ru/service-layer/
