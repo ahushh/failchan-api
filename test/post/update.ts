@@ -23,7 +23,7 @@ describe('Posts updating', () => {
   let thread;
   let board;
   before(async () => {
-    app = await ApplicationServer.connectDB().then(server => server.expressApplication);
+    app = await ApplicationServer.connectDB().then(server => server.app);
 
     board = new Board({ name: 'bred', slug: 'b' });
     const repo = getCustomRepository(BoardRepository);

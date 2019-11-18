@@ -27,7 +27,7 @@ const createThread = async (board) => {
 let app;
 describe('Thread fetching', () => {
   before(async () => {
-    app = await ApplicationServer.connectDB().then(server => server.expressApplication);
+    app = await ApplicationServer.connectDB().then(server => server.app);
 
     let board = new Board({ name: 'bred', slug: 'b' });
     const boardRepo = getCustomRepository(BoardRepository);

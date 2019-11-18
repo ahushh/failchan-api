@@ -10,7 +10,7 @@ let app;
 
 describe('Boards listing', () => {
   before(async () => {
-    app = await ApplicationServer.connectDB().then(server => server.expressApplication);
+    app = await ApplicationServer.connectDB().then(server => server.app);
 
     const board = new Board({ name: 'bred', slug: 'b' });
     const repo = getCustomRepository(BoardRepository);

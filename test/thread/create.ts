@@ -8,7 +8,7 @@ import { ApplicationServer } from '../../src/presentation/http/server';
 describe('Threads creation', () => {
   let app;
   before(async () => {
-    app = await ApplicationServer.connectDB().then(server => server.expressApplication);
+    app = await ApplicationServer.connectDB().then(server => server.app);
 
     const repo = getCustomRepository(BoardRepository);
 

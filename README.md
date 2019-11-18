@@ -22,9 +22,24 @@
 
 `docker-compose -f docker-compose.yml -f docker-compose.prod.yml up`
 
+# Clean DB
+
+In case of error kinda
+
+`QueryFailedError: duplicate key value violates unique constraint`
+
+try to recreate DB:
+
+`docker-compose exec postgres dropdb -Upostgres test && docker-compose exec postgres createdb -Upostgres test`
+
 # TODO
 
-* заменить typedi на inversify
+* заменить typedi на inversify по всему проекту
+* опечатки referencies -> references
+* обновить пакеты
+* заменить tslint на eslint
+* добавить логирование, например через morgan
+* Перенести интерфейсы (например репозиторий) в слой домена
 * разделить тесты на unit и e2e
 * дописать изначальные условия в тест-кейсах, типа дано: ...
 * interfaces refactoring: IAttachmentFile

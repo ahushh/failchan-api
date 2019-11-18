@@ -1,4 +1,4 @@
-import chai from 'chai';
+import chai, { assert } from 'chai';
 import supertest from 'supertest';
 import { ApplicationServer } from '../../src/presentation/http/server';
 
@@ -11,7 +11,7 @@ let app;
 
 describe('Attachment creation', () => {
   before(async () => {
-    app = await ApplicationServer.connectDB().then(server => server.expressApplication);
+    app = await ApplicationServer.connectDB().then(server => server.app);
   });
   beforeEach(() => {
     rimraf.sync(TEMP_DIR);

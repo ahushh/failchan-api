@@ -1,58 +1,55 @@
 require('dotenv').config();
-
-import app from './app';
 const debug = require('debug')('express:server');
-import { Express } from 'express-serve-static-core';
-import http from 'http';
+
+import { Application } from 'express';
+import { InversifyExpressServer } from 'inversify-express-utils';
+import { configAppFactory, errorConfigAppFactory } from './express';
+
 import { FailchanApp } from '../../app/app';
+import { container } from '../../container';
+import { createORMConnection } from '../../infra/utils/create-orm-connection';
+import { createPubSubConnection } from '../../infra/utils/create-pubsub-connection';
+import { createRedisConnection } from '../../infra/utils/create-redis-connection';
 
 class Server {
   private port: any;
-  private server: http.Server;
-  private createHttpServer: (app: Express) => http.Server;
-  private application: FailchanApp;
+  private server: InversifyExpressServer;
+  private failchan: FailchanApp;
 
-  expressApplication: Express;
+  app: Application;
 
   get connection() {
-    return this.application.connection;
+    return this.failchan.connection;
   }
 
   constructor({
-    application,
+    createFailchan,
     createHttpServer,
-    expressApplication,
     port,
   }) {
-    this.createHttpServer = createHttpServer;
-    this.application = application;
-    this.expressApplication = expressApplication;
     this.port = port;
-    this.expressApplication.set('port', this.port);
+    const config = configAppFactory({ port: this.port });
+    const errorConfig = errorConfigAppFactory();
+
+    this.app = createHttpServer()
+      .setConfig(config)
+      .setErrorConfig(errorConfig)
+      .build();
+
+    this.failchan = createFailchan();
   }
 
   async connectDB() {
-    await this.application.connectDB();
+    await this.failchan.connectDB();
     return this;
   }
+
   listen() {
-    this.server = this.createHttpServer(this.expressApplication);
-    this.server.listen(this.port);
-    this.server.on('error', this.onError);
-    this.server.on('listening', this.onListening);
+    this.app.listen(this.port);
+    this.app.on('error', this.onError);
+    this.app.on('listening', this.onListening);
   }
 
-  set normalizePort(val) {
-    const port = parseInt(val, 10);
-    if (isNaN(port)) {
-      // named pipe
-      this.port = val;
-    }
-    if (port >= 0) {
-      // port number
-      this.port = port;
-    }
-  }
   private onError = (error) => {
     if (error.syscall !== 'listen') {
       throw error;
@@ -77,20 +74,17 @@ class Server {
     }
   }
   private onListening = () => {
-    const addr = this.server.address();
-    const bind = typeof addr === 'string'
-      ? `pipe ${addr}`
-      : `port ${addr.port}`;
-    debug(`Listening on ${bind}`);
+    debug(`Listening on ${this.port}`);
   }
 }
 
-const application = FailchanApp.create();
-
 // tslint:disable-next-line:variable-name
 export const ApplicationServer = new Server({
-  application,
-  createHttpServer: http.createServer,
-  expressApplication: app,
+  createFailchan: () => FailchanApp.create({
+    createORMConnection,
+    createPubSubConnection,
+    createRedisConnection,
+  }),
+  createHttpServer: () => new InversifyExpressServer(container),
   port: process.env.PORT || '3000',
 });

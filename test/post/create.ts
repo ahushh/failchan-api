@@ -13,7 +13,7 @@ describe('Posts creation', () => {
   let thread;
   let board;
   before(async () => {
-    app = await ApplicationServer.connectDB().then(server => server.expressApplication);
+    app = await ApplicationServer.connectDB().then(server => server.app);
 
     board = new Board({ name: 'bred', slug: 'b' });
     const repo = getCustomRepository(BoardRepository);
@@ -43,7 +43,7 @@ describe('Posts creation', () => {
         }).catch(done);
       });
   });
-  it('does not allow to create a board with existing slug', (done) => {
+  it('does not allow to reply to non-existent thread', (done) => {
     supertest(app).post('/threads/666/posts')
       .send({ post: { body: 'should fail', attachments: [], referencies: [] } })
       .end((err, res) => {
