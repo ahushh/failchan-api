@@ -11,14 +11,18 @@ import {
   requestParam,
   response,
 } from 'inversify-express-utils';
-import { Container } from 'typedi';
 import { CreatePostAction } from '../../../app/actions/post/create';
 import { UpdatePostAction } from '../../../app/actions/post/update';
 import { ThreadService } from '../../../app/service/thread.service';
+import { IOC_TYPE } from '../../../config/type';
+import { inject } from 'inversify';
 
 @controller('/threads')
 export class ThreadController implements interfaces.Controller {
-  constructor() { }
+  constructor(
+    @inject(IOC_TYPE.CreatePostAction) public createPostAction: CreatePostAction,
+    @inject(IOC_TYPE.ThreadService) public threadService: ThreadService,
+  ) { }
 
   @httpPost('/:threadId/posts')
   private async createPost(
@@ -26,10 +30,10 @@ export class ThreadController implements interfaces.Controller {
     @request() request: Request, @response() response: Response, @next() next: Function,
   ) {
     try {
-      const post = await new CreatePostAction({
+      const post = await this.createPostAction.execute({
         threadId,
         ...request.body.post,
-      }).execute();
+      });
 
       response.json({ post });
     } catch (e) {
@@ -48,8 +52,7 @@ export class ThreadController implements interfaces.Controller {
     @requestParam('threadId') threadId: number,
     @request() request: Request, @response() response: Response, @next() next: Function,
   ) {
-    const service = Container.get(ThreadService);
-    const thread = await service.getThreadWithPosts(+request.params.threadId);
+    const thread = await this.threadService.getThreadWithPosts(+request.params.threadId);
     response.json({ thread });
   }
 }

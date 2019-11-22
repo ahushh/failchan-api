@@ -37,6 +37,7 @@
     "express": "~4.16.0",
     "glob": "^7.1.3",
     "inversify": "^5.0.1",
+    "inversify-binding-decorators": "^4.0.0",
     "inversify-express-utils": "^6.3.2",
     "ioredis": "^4.2.0",
     "lodash": "^4.17.11",

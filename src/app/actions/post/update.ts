@@ -1,6 +1,8 @@
-import Container from 'typedi';
 import { IAction } from '../../interfaces/action';
 import { PostService } from '../../service/post.service';
+import { inject } from 'inversify';
+import { provide } from 'inversify-binding-decorators';
+import { IOC_TYPE } from '../../../config/type';
 
 interface IRequest {
   postId: number;
@@ -10,19 +12,23 @@ interface IRequest {
   referencies: number[] | null;
 }
 
+@provide(IOC_TYPE.UpdatePostAction)
 export class UpdatePostAction implements IAction {
-  constructor(public request: IRequest) {
-    this.request.postId = +request.postId;
-    if (!this.request.postId || isNaN(this.request.postId)) {
+  constructor(
+    @inject(IOC_TYPE.PostService) public postService: PostService,
+  ) { }
+  execute(originalRequest: IRequest) {
+    const request = { ...originalRequest };
+
+    request.postId = +request.postId;
+    if (!request.postId || isNaN(request.postId)) {
       throw new Error('postId must be specified');
     }
-    this.request.threadId = request.threadId ? +request.threadId : null;
-    this.request.body = request.body === undefined ? null : request.body;
-    this.request.attachmentIds = request.attachmentIds || null;
-    this.request.referencies = request.referencies || null;
-  }
-  execute() {
-    const service = Container.get(PostService);
-    return service.updatePost(this.request);
+    request.threadId = request.threadId ? +request.threadId : null;
+    request.body = request.body === undefined ? null : request.body;
+    request.attachmentIds = request.attachmentIds || null;
+    request.referencies = request.referencies || null;
+
+    return this.postService.updatePost(request);
   }
 }

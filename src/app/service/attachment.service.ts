@@ -1,26 +1,25 @@
 import { Redis } from 'ioredis';
-import { Inject, Service } from 'typedi';
 import { Repository } from 'typeorm';
-import { InjectRepository } from 'typeorm-typedi-extensions';
 import uuidv4 from 'uuid/v4';
 import { Attachment } from '../../domain/entity/attachment';
 
 import { IAttachmentFile } from '../../domain/interfaces/attachment-file';
 import { FileFactory, IFileFactory } from '../../infra/class/file/file.factory';
 import { IFile } from '../../infra/class/file/file.interface';
-import { FileRepository } from '../../infra/repository/file/file.repo';
 import { IFileRepository } from '../../infra/repository/file/file.repo.interface';
 import { ExpiredAttachmentService } from '../listeners/expired-attachments';
+import { provide } from 'inversify-binding-decorators';
+import { IOC_TYPE } from '../../config/type';
+import { inject } from 'inversify';
 
-@Service()
+@provide(IOC_TYPE.AttachmentService)
 export class AttachmentService {
   constructor(
-    @Inject(FileFactory) public factory: IFileFactory,
-    @InjectRepository(Attachment) public repo: Repository<Attachment>,
-    @Inject('redis-connection') public redis: Redis,
-    @Inject(type => ExpiredAttachmentService) public expiredAttachment: ExpiredAttachmentService,
-    @Inject(FileFactory) public fileFactory: IFileFactory,
-    @Inject(type => FileRepository) public fileRepo: IFileRepository,
+    @inject(IOC_TYPE.FileFactory) public fileFactory: IFileFactory,
+    @inject(IOC_TYPE.AttachmentRepository) public repo: Repository<Attachment>,
+    @inject(IOC_TYPE.RedisConnection) public redis: Redis,
+    @inject(IOC_TYPE.ExpiredAttachmentService) public expiredAttachment: ExpiredAttachmentService,
+    @inject(IOC_TYPE.FileRepository) public fileRepo: IFileRepository,
   ) {
     expiredAttachment.listen();
   }

@@ -14,18 +14,25 @@ import { CreateBoardAction } from '../../../app/actions/board/create';
 import { ListBoardAction } from '../../../app/actions/board/list';
 import { CreateThreadAction } from '../../../app/actions/thread/create';
 import { ListThreadsByBoardAction } from '../../../app/actions/thread/list';
+import { IOC_TYPE } from '../../../config/type';
+import { inject } from 'inversify';
 
 @controller('/boards')
 export class BoardController implements interfaces.Controller {
 
-  constructor() {}
+  constructor(
+    @inject(IOC_TYPE.CreateBoardAction) public createBoardAction: CreateBoardAction,
+    @inject(IOC_TYPE.ListBoardAction) public listBoardAction: ListBoardAction,
+    @inject(IOC_TYPE.ListThreadsByBoardAction) public listThreadsByBoardAction: ListThreadsByBoardAction,
+    @inject(IOC_TYPE.CreateThreadAction) public createThreadAction: CreateThreadAction,
+  ) {}
 
   @httpPost('/')
   private async create(
     @request() request: Request, @response() response: Response, @next() next: Function,
   ) {
     try {
-      const board = await new CreateBoardAction(request.body).execute();
+      const board = await this.createBoardAction.execute(request.body);
       response.json({ board });
     } catch (e) {
       if (e.name === 'AlreadyExists') {
@@ -39,7 +46,7 @@ export class BoardController implements interfaces.Controller {
   private async list(
     @request() request: Request, @response() response: Response, @next() next: Function,
   ) {
-    const boards = await new ListBoardAction().execute();
+    const boards = await this.listBoardAction.execute();
     response.json({ boards });
   }
 
@@ -48,10 +55,10 @@ export class BoardController implements interfaces.Controller {
     @queryParam('skip') skip: number, @requestParam('boardSlug') boardSlug: string,
     @request() request: Request, @response() response: Response, @next() next: Function,
   ) {
-    const threads = await new ListThreadsByBoardAction({
+    const threads = await this.listThreadsByBoardAction.execute({
       boardSlug,
       skip,
-    }).execute();
+    });
     response.json({ threads });
   }
 
@@ -61,13 +68,13 @@ export class BoardController implements interfaces.Controller {
     @request() request: Request, @response() response: Response, @next() next: Function,
   ) {
     try {
-      const thread = await new CreateThreadAction({
+      const thread = await this.createThreadAction.execute({
         boardSlug,
         body: request.body.post.body,
         attachment: request.body.post.attachment,
         referencies: request.body.post.referencies,
         threadId: request.body.post.threadId,
-      }).execute();
+      });
       response.json({ thread });
     } catch (e) {
       if (e.name === 'CacheRecordNotFound') {

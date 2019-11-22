@@ -2,32 +2,25 @@ require('dotenv').config();
 const debug = require('debug')('express:server');
 
 import { Application } from 'express';
-import { InversifyExpressServer } from 'inversify-express-utils';
 import { configAppFactory, errorConfigAppFactory } from './express';
+import { IORMConnection } from '../../infra/utils/create-orm-connection';
 
-import { FailchanApp } from '../../app/app';
-import { container } from '../../container';
-import { createORMConnection } from '../../infra/utils/create-orm-connection';
-import { createPubSubConnection } from '../../infra/utils/create-pubsub-connection';
-import { createRedisConnection } from '../../infra/utils/create-redis-connection';
-
-class Server {
+export class ApplicationServer {
   private port: any;
-  private server: InversifyExpressServer;
-  private failchan: FailchanApp;
+  connection: IORMConnection;
 
   app: Application;
-
-  get connection() {
-    return this.failchan.connection;
-  }
+  container: any;
 
   constructor({
-    createFailchan,
     createHttpServer,
     port,
+    connection,
+    container
   }) {
+    this.container = container;
     this.port = port;
+    this.connection = connection;
     const config = configAppFactory({ port: this.port });
     const errorConfig = errorConfigAppFactory();
 
@@ -35,13 +28,6 @@ class Server {
       .setConfig(config)
       .setErrorConfig(errorConfig)
       .build();
-
-    this.failchan = createFailchan();
-  }
-
-  async connectDB() {
-    await this.failchan.connectDB();
-    return this;
   }
 
   listen() {
@@ -77,14 +63,3 @@ class Server {
     debug(`Listening on ${this.port}`);
   }
 }
-
-// tslint:disable-next-line:variable-name
-export const ApplicationServer = new Server({
-  createFailchan: () => FailchanApp.create({
-    createORMConnection,
-    createPubSubConnection,
-    createRedisConnection,
-  }),
-  createHttpServer: () => new InversifyExpressServer(container),
-  port: process.env.PORT || '3000',
-});

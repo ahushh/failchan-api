@@ -7,16 +7,21 @@ import { Thread } from '../../src/domain/entity/thread';
 import { BoardRepository } from '../../src/infra/repository/board.repo';
 import { ThreadRepository } from '../../src/infra/repository/thread.repo';
 import { ApplicationServer } from '../../src/presentation/http/server';
-import { replyToThread } from '../post/update';
+import { replyToThreadFactory } from '../post/update';
+import { getTestApplicationServer } from '../../src/index.test';
+import { IOC_TYPE } from '../../src/config/type';
 
 let app;
+let container;
 
-describe('Attachment and posts', () => {
+describe.only('Attachment and posts', () => {
   let uuid;
   let thread;
 
   before(async () => {
-    app = await ApplicationServer.connectDB().then(server => server.app);
+    const testApplicationServer = await getTestApplicationServer;
+    app = testApplicationServer.app;
+    container = testApplicationServer.container;
 
     let board = new Board({ name: 'bred', slug: 'b' });
     const repo = getCustomRepository(BoardRepository);
@@ -24,17 +29,18 @@ describe('Attachment and posts', () => {
 
     thread = Thread.create(board);
     thread = await getCustomRepository(ThreadRepository).save(thread);
-    await replyToThread(thread, 'op');
+    await replyToThreadFactory(container)(thread, 'op');
 
-    uuid = await new CreateAttachmentAction([{
+    uuid = await new container.get(IOC_TYPE.CreateAttachmentAction).execute([{
       mimetype: 'image/jpeg',
       size: 1000,
       path: `${__dirname}/test-image.jpg`,
       originalname: 'test-image.jpg',
-    }]).execute();
+    }]);
   });
   after(async () => {
-    await ApplicationServer.connection.synchronize(true);
+    const testApplicationServer = await getTestApplicationServer;
+    await testApplicationServer.connection.synchronize(true);
   });
   it('attaches an attachment to the post', (done) => {
     supertest(app).post(`/threads/${thread.id}/posts`)

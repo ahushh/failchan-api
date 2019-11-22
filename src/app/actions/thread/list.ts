@@ -1,7 +1,10 @@
-import Container from 'typedi';
 import { IAction } from '../../interfaces/action';
 import { ThreadService } from '../../service/thread.service';
+import { IOC_TYPE } from '../../../config/type';
+import { inject } from 'inversify';
+import { provide } from 'inversify-binding-decorators';
 
+@provide(IOC_TYPE.ListThreadsByBoardAction)
 export class ListThreadsByBoardAction implements IAction {
   static TEST_THREADS_LISTING_TAKE = 2;
   static TEST_THREADS_LISTING_PREVIEW_POSTS = 2;
@@ -15,8 +18,13 @@ export class ListThreadsByBoardAction implements IAction {
     : 10;
   skip = 0;
 
-  constructor(request: { boardSlug: string, previewPosts?: number, take?: number, skip?: number });
-  constructor({ boardSlug, previewPosts, take, skip }) {
+  constructor(
+    @inject(IOC_TYPE.ThreadService) public service: ThreadService,
+  ) {}
+
+  execute(request: { boardSlug: string, previewPosts?: number, take?: number, skip?: number });
+
+  execute({ boardSlug, previewPosts, take, skip }) {
     this.boardSlug = boardSlug;
     this.previewPosts = previewPosts || this.previewPosts;
     this.take = take || this.take;
@@ -24,15 +32,13 @@ export class ListThreadsByBoardAction implements IAction {
     if (!boardSlug) {
       throw new Error('Board slug must be specified');
     }
-  }
-  execute() {
-    const service = Container.get(ThreadService);
+
     const request = {
       boardSlug: this.boardSlug,
       previewPosts: this.previewPosts,
       take: this.take,
       skip: this.skip,
     };
-    return service.listThreadsByBoard(request);
+    return this.service.listThreadsByBoard(request);
   }
 }

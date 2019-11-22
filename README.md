@@ -42,6 +42,8 @@ Yet Another Imageboard (forum with pictures) API which I'm trying to build duri
 
 # TODO
 
+* заменить сущности (сервисы, репозитории) на интерфейсы
+* нужно ли экшены класть в контейнер?
 * заменить typedi на inversify по всему проекту
 * опечатки referencies -> references
 * обновить пакеты

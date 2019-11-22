@@ -1,9 +1,10 @@
-import { Service } from 'typedi';
 import { Post } from '../entity/post';
 import { Thread } from '../entity/thread';
 import { IReply } from '../interfaces/reply';
+import { provide } from 'inversify-binding-decorators';
+import { IOC_TYPE } from '../../config/type';
 
-@Service()
+@provide(IOC_TYPE.DomainPostService)
 export class DomainPostService {
   constructor() { }
 

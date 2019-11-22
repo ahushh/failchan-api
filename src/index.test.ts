@@ -13,12 +13,11 @@ if (!fs.existsSync(tmpDir)) {
   fs.mkdirSync(tmpDir);
 }
 
-createContainer().then(container => {
-  new ApplicationServer({
+export const getTestApplicationServer = createContainer().then(container => {
+  return new ApplicationServer({
     port: process.env.PORT || 3000,
     createHttpServer: () => new InversifyExpressServer(container),
     connection: container.get(IOC_TYPE.ORMConnection),
     container
-  }).listen();
+  });
 });
-

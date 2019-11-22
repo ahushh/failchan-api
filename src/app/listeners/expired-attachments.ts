@@ -1,14 +1,16 @@
 import { Redis } from 'ioredis';
-import { Inject, Service } from 'typedi';
 import { IAttachmentFile } from '../../domain/interfaces/attachment-file';
 import { deleteFileSubdir } from '../../infra/utils/delete-temp-file';
 import { PubSubService } from '../service/pub-sub.service';
+import { IOC_TYPE } from '../../config/type';
+import { provide } from 'inversify-binding-decorators';
+import { inject } from 'inversify';
 
-@Service()
+@provide(IOC_TYPE.ExpiredAttachmentService)
 export class ExpiredAttachmentService {
   constructor(
-    @Inject(type => PubSubService) public pubsub: PubSubService,
-    @Inject('redis-connection') public redis: Redis,
+    @inject(IOC_TYPE.PubSubService) public pubsub: PubSubService,
+    @inject(IOC_TYPE.RedisConnection) public redis: Redis,
   ) { }
   listen() {
     this.pubsub.subscribe('__keyevent@0__:expired');

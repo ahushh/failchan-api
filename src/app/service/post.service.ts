@@ -1,20 +1,20 @@
-import { Inject, Service } from 'typedi';
 import { getManager, Repository } from 'typeorm';
-import { InjectRepository } from 'typeorm-typedi-extensions';
 import { Attachment } from '../../domain/entity/attachment';
 import { Post } from '../../domain/entity/post';
 import { Thread } from '../../domain/entity/thread';
 import { IPostService } from '../../domain/interfaces/post.service';
 import { DomainPostService } from '../../domain/services/post.service';
-import { ThreadRepository } from '../../infra/repository/thread.repo';
+import { IOC_TYPE } from '../../config/type';
+import { provide } from 'inversify-binding-decorators';
+import { inject } from 'inversify';
 
-@Service()
+@provide(IOC_TYPE.PostService)
 export class PostService implements IPostService {
   constructor(
-    @InjectRepository(Post) private postRepo: Repository<Post>,
-    @InjectRepository(Thread) private threadRepo: ThreadRepository,
-    @InjectRepository(Attachment) private attachmentRepo: Repository<Attachment>,
-    @Inject(() => DomainPostService) private postService: DomainPostService,
+    @inject(IOC_TYPE.PostRepository) private postRepo: Repository<Post>,
+    @inject(IOC_TYPE.ThreadRepository) private threadRepo: Repository<Thread>,
+    @inject(IOC_TYPE.AttachmentRepository) private attachmentRepo: Repository<Attachment>,
+    @inject(IOC_TYPE.DomainPostService) private postService: DomainPostService,
   ) { }
 
   async replyToThread(request: {
