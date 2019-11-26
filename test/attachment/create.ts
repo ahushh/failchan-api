@@ -4,14 +4,19 @@ import { ApplicationServer } from '../../src/presentation/http/server';
 
 import fs from 'fs';
 import rimraf from 'rimraf';
+import { getTestApplicationServer } from '../../src/index.test';
 
 const TEMP_DIR = process.env.TEMP_DIR = '/tmp/failchan-test';
 
 let app;
+let container;
+let testApplicationServer;
 
 describe('Attachment creation', () => {
   before(async () => {
-    app = await ApplicationServer.connectDB().then(server => server.app);
+    testApplicationServer = await getTestApplicationServer;
+    app = testApplicationServer.app;
+    container = testApplicationServer.container;
   });
   beforeEach(() => {
     rimraf.sync(TEMP_DIR);

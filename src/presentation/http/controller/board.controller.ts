@@ -1,4 +1,5 @@
 import { Request, Response } from 'express-serve-static-core';
+import { inject } from 'inversify';
 import {
   controller,
   httpDelete,
@@ -15,7 +16,6 @@ import { ListBoardAction } from '../../../app/actions/board/list';
 import { CreateThreadAction } from '../../../app/actions/thread/create';
 import { ListThreadsByBoardAction } from '../../../app/actions/thread/list';
 import { IOC_TYPE } from '../../../config/type';
-import { inject } from 'inversify';
 
 @controller('/boards')
 export class BoardController implements interfaces.Controller {
@@ -23,6 +23,7 @@ export class BoardController implements interfaces.Controller {
   constructor(
     @inject(IOC_TYPE.CreateBoardAction) public createBoardAction: CreateBoardAction,
     @inject(IOC_TYPE.ListBoardAction) public listBoardAction: ListBoardAction,
+    // tslint:disable-next-line: max-line-length
     @inject(IOC_TYPE.ListThreadsByBoardAction) public listThreadsByBoardAction: ListThreadsByBoardAction,
     @inject(IOC_TYPE.CreateThreadAction) public createThreadAction: CreateThreadAction,
   ) {}

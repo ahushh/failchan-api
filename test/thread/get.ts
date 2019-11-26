@@ -1,41 +1,45 @@
 import chai from 'chai';
 import supertest from 'supertest';
-import { Container } from 'typedi';
 import { getCustomRepository } from 'typeorm';
 import { PostService } from '../../src/app/service/post.service';
 import { Board } from '../../src/domain/entity/board';
 import { Thread } from '../../src/domain/entity/thread';
+import { getTestApplicationServer } from '../../src/index.test';
 import { BoardRepository } from '../../src/infra/repository/board.repo';
 import { ThreadRepository } from '../../src/infra/repository/thread.repo';
-import { ApplicationServer } from '../../src/presentation/http/server';
+import { IOC_TYPE } from '../../src/config/type';
 
-const replyToThread = async (thread, i: number) => {
-  const postService = Container.get(PostService);
+const replyToThread = container => async (thread, i: number) => {
+  const postService = container.get(IOC_TYPE.PostService);
   const post = { body: `#${i}`, attachmentIds: [], referencies: [] };
   const request = { ...post, threadId: thread.id };
   await postService.replyToThread(request);
 };
-const createThread = async (board) => {
+const createThread = container => async (board) => {
   let thread = Thread.create(board);
   const threadRepo = getCustomRepository(ThreadRepository);
   thread = await threadRepo.save(thread);
-  await replyToThread(thread, 1);
-  await replyToThread(thread, 2);
-  await replyToThread(thread, 3);
+  await replyToThread(container)(thread, 1);
+  await replyToThread(container)(thread, 2);
+  await replyToThread(container)(thread, 3);
 };
 
 let app;
+let container;
+let testApplicationServer;
 describe('Thread fetching', () => {
   before(async () => {
-    app = await ApplicationServer.connectDB().then(server => server.app);
+    testApplicationServer = await getTestApplicationServer;
+    app = testApplicationServer.app;
+    container = testApplicationServer.container;
 
     let board = new Board({ name: 'bred', slug: 'b' });
     const boardRepo = getCustomRepository(BoardRepository);
     board = await boardRepo.save(board);
-    await createThread(board);
+    await createThread(container)(board);
   });
   after(async () => {
-    await ApplicationServer.connection.synchronize(true);
+    await testApplicationServer.connection.synchronize(true);
   });
 
   it('returns thread with correct order of its posts', (done) => {

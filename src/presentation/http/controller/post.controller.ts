@@ -1,4 +1,5 @@
 import { Request, Response } from 'express-serve-static-core';
+import { inject } from 'inversify';
 import {
   controller,
   httpGet,
@@ -13,7 +14,6 @@ import {
 } from 'inversify-express-utils';
 import { UpdatePostAction } from '../../../app/actions/post/update';
 import { IOC_TYPE } from '../../../config/type';
-import { inject } from 'inversify';
 
 @controller('/posts')
 export class PostController implements interfaces.Controller {

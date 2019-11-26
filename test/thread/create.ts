@@ -2,13 +2,17 @@ import chai from 'chai';
 import supertest from 'supertest';
 import { getCustomRepository } from 'typeorm';
 import { Board } from '../../src/domain/entity/board';
+import { getTestApplicationServer } from '../../src/index.test';
 import { BoardRepository } from '../../src/infra/repository/board.repo';
-import { ApplicationServer } from '../../src/presentation/http/server';
 
 describe('Threads creation', () => {
   let app;
+  let container;
+  let testApplicationServer;
   before(async () => {
-    app = await ApplicationServer.connectDB().then(server => server.app);
+    testApplicationServer = await getTestApplicationServer;
+    app = testApplicationServer.app;
+    container = testApplicationServer.container;
 
     const repo = getCustomRepository(BoardRepository);
 
@@ -19,7 +23,7 @@ describe('Threads creation', () => {
     await repo.save(board2);
   });
   after(async () => {
-    await ApplicationServer.connection.synchronize(true);
+    await testApplicationServer.connection.synchronize(true);
   });
 
   const makeRequest = (board, body, done) => {

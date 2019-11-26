@@ -15,11 +15,11 @@ import {
 import { IAttachmentFile } from '../../../domain/interfaces/attachment-file';
 import { fileUploadMiddleware } from '../middleware/file-upload';
 
+import { inject } from 'inversify';
 import R from 'ramda';
 import { CreateAttachmentAction } from '../../../app/actions/attachments/create';
 import { DeleteAttachmentAction } from '../../../app/actions/attachments/delete';
 import { IOC_TYPE } from '../../../config/type';
-import { inject } from 'inversify';
 
 @controller('/attachments')
 export class AttachmentController implements interfaces.Controller {

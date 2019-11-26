@@ -1,8 +1,8 @@
+import { inject } from 'inversify';
+import { provide } from 'inversify-binding-decorators';
+import { IOC_TYPE } from '../../../config/type';
 import { IAction } from '../../interfaces/action';
 import { BoardService } from '../../service/board.service';
-import { inject } from 'inversify';
-import { IOC_TYPE } from '../../../config/type';
-import { provide } from 'inversify-binding-decorators';
 
 @provide(IOC_TYPE.ListBoardAction)
 export class ListBoardAction implements IAction  {

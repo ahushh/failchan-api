@@ -1,5 +1,4 @@
 // import { Request, Response } from 'express';
-// import { Container } from 'typedi';
 // import { ThreadService } from '../../../app/service/thread.service';
 
 // export async function threadsListAction(request: Request, response: Response) {

@@ -13,12 +13,12 @@ if (!fs.existsSync(tmpDir)) {
   fs.mkdirSync(tmpDir);
 }
 
-createContainer().then(container => {
+createContainer().then((container) => {
   new ApplicationServer({
     port: process.env.PORT || 3000,
     createHttpServer: () => new InversifyExpressServer(container),
     connection: container.get(IOC_TYPE.ORMConnection),
-    container
+    // tslint:disable-next-line: object-shorthand-properties-first
+    container,
   }).listen();
 });
-

@@ -1,19 +1,18 @@
 import chai from 'chai';
 import supertest from 'supertest';
 
-import { getConnection, getCustomRepository, getRepository } from 'typeorm';
+import { getCustomRepository, getRepository } from 'typeorm';
 import { Board } from '../src/domain/entity/board';
-import { BoardRepository } from '../src/infra/repository/board.repo';
-import { ApplicationServer } from '../src/presentation/http/server';
 import { getTestApplicationServer } from '../src/index.test';
+import { BoardRepository } from '../src/infra/repository/board.repo';
 
 let app;
 let container;
+let testApplicationServer;
 
 describe('Boards listing', () => {
   before(async () => {
-    const testApplicationServer = await getTestApplicationServer;
-
+    testApplicationServer = await getTestApplicationServer;
     app = testApplicationServer.app;
     container = testApplicationServer.container;
 
@@ -22,7 +21,6 @@ describe('Boards listing', () => {
     await repo.save(board);
   });
   after(async () => {
-    const testApplicationServer = await getTestApplicationServer;
     await testApplicationServer.connection.synchronize(true);
   });
 

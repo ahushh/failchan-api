@@ -1,16 +1,15 @@
 import chai from 'chai';
 import supertest from 'supertest';
 import { getCustomRepository, getRepository } from 'typeorm';
-import { PostService } from '../../src/app/service/post.service';
+import { IOC_TYPE } from '../../src/config/type';
 import { Board } from '../../src/domain/entity/board';
 import { Post } from '../../src/domain/entity/post';
 import { Thread } from '../../src/domain/entity/thread';
+import { getTestApplicationServer } from '../../src/index.test';
 import { BoardRepository } from '../../src/infra/repository/board.repo';
 import { ThreadRepository } from '../../src/infra/repository/thread.repo';
-import { ApplicationServer } from '../../src/presentation/http/server';
-import { getTestApplicationServer } from '../../src/index.test';
-import { IOC_TYPE } from '../../src/config/type';
 
+// tslint:disable-next-line: max-line-length
 export const replyToThreadFactory = container => async (thread, body, referencies: number[] = []) => {
   const postService = container.get(IOC_TYPE.PostService);
   const post = { body, referencies, attachmentIds: [] };
@@ -20,12 +19,12 @@ export const replyToThreadFactory = container => async (thread, body, referencie
 
 let app;
 let container;
-
-describe.only('Posts updating', () => {
+let testApplicationServer;
+describe('Posts updating', () => {
   let thread;
   let board;
   before(async () => {
-    const testApplicationServer = await getTestApplicationServer;
+    testApplicationServer = await getTestApplicationServer;
 
     app = testApplicationServer.app;
     container = testApplicationServer.container;
@@ -50,8 +49,6 @@ describe.only('Posts updating', () => {
     }
   });
   after(async () => {
-    const testApplicationServer = await getTestApplicationServer;
-
     await testApplicationServer.connection.synchronize(true);
   });
 

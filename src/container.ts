@@ -1,6 +1,6 @@
 import { Container } from 'inversify';
+import { buildProviderModule } from 'inversify-binding-decorators';
 import { bindings } from './inversity.config';
-import { buildProviderModule } from "inversify-binding-decorators";
 
 export const createContainer = async () => {
   const container = new Container();

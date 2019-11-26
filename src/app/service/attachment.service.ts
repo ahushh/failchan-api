@@ -8,11 +8,12 @@ import { FileFactory, IFileFactory } from '../../infra/class/file/file.factory';
 import { IFile } from '../../infra/class/file/file.interface';
 import { IFileRepository } from '../../infra/repository/file/file.repo.interface';
 import { ExpiredAttachmentService } from '../listeners/expired-attachments';
-import { provide } from 'inversify-binding-decorators';
+import { provide, fluentProvide } from 'inversify-binding-decorators';
 import { IOC_TYPE } from '../../config/type';
 import { inject } from 'inversify';
 
-@provide(IOC_TYPE.AttachmentService)
+// @provide(IOC_TYPE.AttachmentService)
+@fluentProvide(IOC_TYPE.AttachmentService).inSingletonScope().done(true)
 export class AttachmentService {
   constructor(
     @inject(IOC_TYPE.FileFactory) public fileFactory: IFileFactory,

@@ -1,25 +1,24 @@
 import chai from 'chai';
 import supertest from 'supertest';
-import { Container } from 'typedi';
 import { getCustomRepository } from 'typeorm';
-import { ListThreadsByBoardAction } from '../../src/app/actions/thread/list';
 import { PostService } from '../../src/app/service/post.service';
 import { Board } from '../../src/domain/entity/board';
 import { Thread } from '../../src/domain/entity/thread';
+import { getTestApplicationServer } from '../../src/index.test';
 import { BoardRepository } from '../../src/infra/repository/board.repo';
 import { ThreadRepository } from '../../src/infra/repository/thread.repo';
-import { ApplicationServer } from '../../src/presentation/http/server';
+import { IOC_TYPE } from '../../src/config/type';
 
 const ALL_THREADS = 20;
 const POSTS_PER_THREAD = 10;
 
-const replyToThread = async (boardSlug: string, thread, i: number) => {
-  const postService = Container.get(PostService);
+const replyToThread = container => async (boardSlug: string, thread, i: number) => {
+  const postService = container.get(IOC_TYPE.PostService);
   const post = { body: `${boardSlug}`, attachmentIds: [], referencies: [] };
   const request = { ...post, threadId: thread.id };
   await postService.replyToThread(request);
 };
-const createThreads = async (board) => {
+const createThreads = container => async (board) => {
   const createOne = async () => {
     const thread = Thread.create(board);
     const threadRepo = getCustomRepository(ThreadRepository);
@@ -32,7 +31,7 @@ const createThreads = async (board) => {
     let postsNumber: number = 1;
     // creates posts with body #1...#POSTS_PER_THREAD
     while (postsNumber <= POSTS_PER_THREAD) {
-      await replyToThread(board.slug, thread, postsNumber);
+      await replyToThread(container)(board.slug, thread, postsNumber);
       postsNumber = postsNumber + 1;
     }
     threadsNumber = threadsNumber - 1;
@@ -40,22 +39,26 @@ const createThreads = async (board) => {
 };
 
 let app;
+let container;
+let testApplicationServer;
 describe('Threads listing', () => {
   before(async () => {
-    app = await ApplicationServer.connectDB().then(server => server.app);
+    testApplicationServer = await getTestApplicationServer;
+    app = testApplicationServer.app;
+    container = testApplicationServer.container;
 
     const boardRepo = getCustomRepository(BoardRepository);
 
     let board = new Board({ name: 'bred', slug: 'b' });
     board = await boardRepo.save(board);
-    await createThreads(board);
+    await createThreads(container)(board);
 
     let board2 = new Board({ name: 'bred-plus', slug: 'bb' });
     board2 = await boardRepo.save(board2);
-    await createThreads(board2);
+    await createThreads(container)(board2);
   });
   after(async () => {
-    await ApplicationServer.connection.synchronize(true);
+    await testApplicationServer.connection.synchronize(true);
   });
 
   it('/b/ - returns threads only from this board', (done) => {

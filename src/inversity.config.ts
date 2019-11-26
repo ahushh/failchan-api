@@ -1,5 +1,5 @@
-import { AsyncContainerModule, interfaces } from "inversify";
-import { getCustomRepository, Repository } from "typeorm";
+import { AsyncContainerModule, interfaces } from 'inversify';
+import { getCustomRepository, Repository } from 'typeorm';
 
 import { IOC_TYPE } from './config/type';
 

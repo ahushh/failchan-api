@@ -1,8 +1,8 @@
-import { IAction } from '../../interfaces/action';
-import { ThreadService } from '../../service/thread.service';
-import { IOC_TYPE } from '../../../config/type';
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
+import { IOC_TYPE } from '../../../config/type';
+import { IAction } from '../../interfaces/action';
+import { ThreadService } from '../../service/thread.service';
 
 @provide(IOC_TYPE.ListThreadsByBoardAction)
 export class ListThreadsByBoardAction implements IAction {

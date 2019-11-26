@@ -5,18 +5,21 @@ import { getCustomRepository, getRepository } from 'typeorm';
 import { Board } from '../../src/domain/entity/board';
 import { Post } from '../../src/domain/entity/post';
 import { Thread } from '../../src/domain/entity/thread';
+import { getTestApplicationServer } from '../../src/index.test';
 import { BoardRepository } from '../../src/infra/repository/board.repo';
 import { ThreadRepository } from '../../src/infra/repository/thread.repo';
-import { ApplicationServer } from '../../src/presentation/http/server';
-import { replyToThread } from './update';
+import { replyToThreadFactory } from './update';
 
 let app;
-
+let container;
+let testApplicationServer;
 describe('Posts creation with referencies', () => {
   let thread;
   let board;
   before(async () => {
-    app = await ApplicationServer.connectDB().then(server => server.app);
+    testApplicationServer = await getTestApplicationServer;
+    app = testApplicationServer.app;
+    container = testApplicationServer.container;
 
     board = new Board({ name: 'bred', slug: 'b' });
     const repo = getCustomRepository(BoardRepository);
@@ -24,10 +27,11 @@ describe('Posts creation with referencies', () => {
 
     thread = Thread.create(board);
     thread = await getCustomRepository(ThreadRepository).save(thread);
+    const replyToThread = replyToThreadFactory(container);
     await replyToThread(thread, 'op');
   });
   after(async () => {
-    await ApplicationServer.connection.synchronize(true);
+    await testApplicationServer.connection.synchronize(true);
   });
 
   it('creates a new post with 1 reference correctly', (done) => {
