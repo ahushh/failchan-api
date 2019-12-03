@@ -6,15 +6,18 @@ import { Attachment } from '../../domain/entity/attachment';
 import { Post } from '../../domain/entity/post';
 import { Thread } from '../../domain/entity/thread';
 import { IPostService } from '../../domain/interfaces/post.service';
-import { DomainPostService } from '../../domain/services/post.service';
+import { IDomainPostService } from '../../domain/services/post.service';
+import { IThreadRepository } from '../interfaces/thread.repo';
+import { IAttachmentRepository } from '../interfaces/attachment.repo';
+import { IPostRepository } from '../interfaces/post.repo';
 
 @provide(IOC_TYPE.PostService)
 export class PostService implements IPostService {
   constructor(
-    @inject(IOC_TYPE.PostRepository) private postRepo: Repository<Post>,
-    @inject(IOC_TYPE.ThreadRepository) private threadRepo: Repository<Thread>,
-    @inject(IOC_TYPE.AttachmentRepository) private attachmentRepo: Repository<Attachment>,
-    @inject(IOC_TYPE.DomainPostService) private postService: DomainPostService,
+    @inject(IOC_TYPE.PostRepository) private postRepo: IPostRepository,
+    @inject(IOC_TYPE.ThreadRepository) private threadRepo: IThreadRepository,
+    @inject(IOC_TYPE.AttachmentRepository) private attachmentRepo: IAttachmentRepository,
+    @inject(IOC_TYPE.DomainPostService) private postService: IDomainPostService,
   ) { }
 
   async replyToThread(request: {
@@ -28,13 +31,14 @@ export class PostService implements IPostService {
     const references = await this.postRepo.findByIds(request.references, {
       relations: ['replies'],
     });
-    const { post, thread: newThread, refs } = this.postService.replyToThread({
-      thread, attachments, references, body: request.body,
-    });
+
+    const post = Post.create({ references, attachments, body: request.body });
+    this.postService.replyToThread(post, thread);
+
     await getManager().transaction(async (manager) => {
-      await manager.save(newThread);
+      await manager.save(thread);
       await manager.save(post);
-      await manager.save(refs);
+      await manager.save(post.references);
     });
     return this.postRepo.findOneOrFail(post.id, {
       relations: ['references', 'attachments', 'replies'],

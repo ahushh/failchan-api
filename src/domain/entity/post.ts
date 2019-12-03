@@ -8,6 +8,12 @@ import {
 import { Attachment } from './attachment';
 import { Thread } from './thread';
 
+export interface INewPost {
+  body: string;
+  references: Post[];
+  attachments: Attachment[];
+}
+
 @Entity()
 export class Post {
 
@@ -42,7 +48,9 @@ export class Post {
     this.body = obj.body;
   }
 
-  static create(body: string, references: Post[], attachments: Attachment[]) {
+  static create(props: INewPost) {
+    const { body, references, attachments } = props;
+
     const post = new Post({ body });
     post.references = references;
     post.attachments = attachments;
@@ -70,7 +78,7 @@ export class Post {
     this.references.forEach((ref: Post) => ref.addReply(this));
   }
   /***
-   * Removes references and returns removed
+   * Removes references by given ids and returns removed entities
    */
   removeReferencesByIds(ids: number[]): Post[] {
     const removedRefs = this.references.filter(p => ids.includes(p.id));

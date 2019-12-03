@@ -3,8 +3,8 @@ import fs from 'fs';
 import md5 from 'md5';
 import exiftool from 'node-exiftool';
 import R from 'ramda';
+import { IFile } from '../../../app/interfaces/file';
 import { IAttachmentFile } from '../../../domain/interfaces/attachment-file';
-import { IFile } from './file.interface';
 export class GenericFile implements IFile {
   path: string;
   name: string;
@@ -56,7 +56,7 @@ export class GenericFile implements IFile {
       uri: this.uri,
       thumbnailUri: this.thumbnailUri,
       mime: this.mime,
-      name: this.name,
+      originalName: this.name,
       size: this.size,
     };
   }

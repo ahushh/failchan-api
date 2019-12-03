@@ -31,10 +31,6 @@ export class Thread {
     return thread;
   }
 
-  reply(post: Post) {
-    this.bump();
-  }
-
   sortPosts() {
     this.posts = this.posts.sort((a, b) => a.id > b.id ? 1 : -1);
   }

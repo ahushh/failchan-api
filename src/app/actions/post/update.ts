@@ -1,7 +1,7 @@
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import { IOC_TYPE } from '../../../config/type';
-import { IAction } from '../../interfaces/action';
+import { IAction } from '../action';
 import { PostService } from '../../service/post.service';
 
 interface IRequest {

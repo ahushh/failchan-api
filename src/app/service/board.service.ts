@@ -4,13 +4,13 @@ import { provide } from 'inversify-binding-decorators';
 import { IOC_TYPE } from '../../config/type';
 import { Board } from '../../domain/entity/board';
 import { IBoardService } from '../../domain/interfaces/board.service';
-import { BoardRepository } from '../../infra/repository/board.repo';
 import { BOARD_ERRORS } from '../errors/board';
+import { IBoardRepository } from '../interfaces/board.repo';
 
 @provide(IOC_TYPE.BoardService)
 export class BoardService implements IBoardService {
   constructor(
-    @inject(IOC_TYPE.BoardRepository) private repo: BoardRepository,
+    @inject(IOC_TYPE.BoardRepository) private repo: IBoardRepository,
   ) { }
   async create({ slug, name }): Promise<Board> {
     const board = Board.create(slug, name);

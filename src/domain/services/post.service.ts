@@ -2,21 +2,21 @@ import { provide } from 'inversify-binding-decorators';
 import { IOC_TYPE } from '../../config/type';
 import { Post } from '../entity/post';
 import { Thread } from '../entity/thread';
-import { IReply } from '../interfaces/reply';
+
+export interface IDomainPostService {
+  replyToThread(post: Post, thread: Thread): void;
+  syncReferences(post: Post, newReferences: Post[]): Post[];
+}
 
 @provide(IOC_TYPE.DomainPostService)
-export class DomainPostService {
+export class DomainPostService implements IDomainPostService {
   constructor() { }
 
-  replyToThread(reply: IReply): { post: Post, thread: Thread, refs: Post[] } {
-    const { thread, attachments, references, body } = reply;
-    const post = Post.create(body, references, attachments);
+  replyToThread(post: Post, thread: Thread) {
     thread.bump();
     post.thread = thread;
     // thread.posts = [post];
     post.addPostToRefsReplies();
-    const refs = post.references;
-    return { post, thread, refs };
   }
   syncReferences(post: Post, newReferences: Post[]): Post[] {
     const newRefsIds = newReferences.map(r => r.id);

@@ -2,7 +2,7 @@
 import { Repository } from 'typeorm';
 import { Thread } from '../../domain/entity/thread';
 
-export interface IThreadRepository {
+export interface IThreadRepository extends Repository<Thread> {
   findOneOrFail: Repository<Thread>['findOneOrFail'];
   getThreadsWithPreviewPosts(
     boardId: number,

@@ -11,12 +11,13 @@ import { Thread } from './domain/entity/thread';
 import { AttachmentRepository } from './infra/repository/attachment.repo';
 import { BoardRepository } from './infra/repository/board.repo';
 import { AWSFileRepository } from './infra/repository/file/aws.repo';
-import { IFileRepository } from './infra/repository/file/file.repo.interface';
+import { IFileRepository } from './app/interfaces/file.repo';
 import { TestFileRepository } from './infra/repository/file/test.repo';
 import { PostRepository } from './infra/repository/post.repo';
 import { ThreadRepository } from './infra/repository/thread.repo';
 import { createORMConnection, IORMConnection } from './infra/utils/create-orm-connection';
-import { createPubSubConnection, IPubSubConnection } from './infra/utils/create-pubsub-connection';
+import { createPubSubConnection } from './infra/utils/create-pubsub-connection';
+import { IPubSubConnection } from "./app/interfaces/IPubSubConnection";
 import { createRedisConnection, IRedisConnection } from './infra/utils/create-redis-connection';
 
 export const bindings = new AsyncContainerModule(

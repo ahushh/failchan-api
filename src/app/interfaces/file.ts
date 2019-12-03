@@ -1,3 +1,5 @@
+import { INewAttachment } from '../../domain/entity/attachment';
+
 export interface IFile {
   path: string;
   md5: string;
@@ -13,13 +15,5 @@ export interface IFile {
 
   calculateMd5(): Promise<void>;
   generateThumbnail(): Promise<void>;
-  toJSON(): {
-    exif: string;
-    md5: string;
-    uri: string;
-    thumbnailUri: string;
-    mime: string;
-    name: string;
-    size: number;
-  };
+  toJSON(): INewAttachment;
 }

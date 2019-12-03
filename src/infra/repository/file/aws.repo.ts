@@ -2,8 +2,8 @@ import S3 from 'aws-sdk/clients/s3';
 import { Blob } from 'aws-sdk/lib/dynamodb/document_client';
 import fs from 'fs';
 import { Readable } from 'stream';
-import { IFile } from '../../class/file/file.interface';
-import { IFileRepository } from './file.repo.interface';
+import { IFile } from '../../../app/interfaces/file';
+import { IFileRepository } from '../../../app/interfaces/file.repo';
 
 export type Body = Buffer | Uint8Array | Blob | string | Readable;
 

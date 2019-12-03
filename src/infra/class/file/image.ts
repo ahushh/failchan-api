@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import { IFile } from './file.interface';
+import { IFile } from '../../../app/interfaces/file';
 import { GenericFile } from './generic';
 
 export class ImageFile extends GenericFile implements IFile {

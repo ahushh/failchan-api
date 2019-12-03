@@ -2,18 +2,17 @@ import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import R from 'ramda';
 import { IOC_TYPE } from '../../config/type';
-import { Board } from '../../domain/entity/board';
 import { Thread } from '../../domain/entity/thread';
 import { IPostService } from '../../domain/interfaces/post.service';
 import { IThreadService } from '../../domain/interfaces/thread.service';
-import { BoardRepository } from '../../infra/repository/board.repo';
-import { ThreadRepository } from '../../infra/repository/thread.repo';
+import { IBoardRepository } from '../interfaces/board.repo';
+import { IThreadRepository } from '../interfaces/thread.repo';
 
 @provide(IOC_TYPE.ThreadService)
 export class ThreadService implements IThreadService {
   constructor(
-    @inject(IOC_TYPE.ThreadRepository) private threadRepo: ThreadRepository,
-    @inject(IOC_TYPE.BoardRepository) private boardRepo: BoardRepository,
+    @inject(IOC_TYPE.ThreadRepository) private threadRepo: IThreadRepository,
+    @inject(IOC_TYPE.BoardRepository) private boardRepo: IBoardRepository,
     @inject(IOC_TYPE.PostService) private postService: IPostService,
   ) { }
 
