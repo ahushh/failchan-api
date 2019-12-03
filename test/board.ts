@@ -3,8 +3,8 @@ import supertest from 'supertest';
 
 import { getCustomRepository, getRepository } from 'typeorm';
 import { Board } from '../src/domain/entity/board';
-import { getTestApplicationServer } from '../src/index.test';
 import { BoardRepository } from '../src/infra/repository/board.repo';
+import { getTestApplicationServer } from '../src/server.test';
 
 let app;
 let container;

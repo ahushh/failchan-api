@@ -1,4 +1,4 @@
-import { createConnection, getConnectionOptions, Connection } from 'typeorm';
+import { Connection, createConnection, getConnectionOptions } from 'typeorm';
 
 export interface IORMConnection extends Connection {
 

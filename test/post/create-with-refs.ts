@@ -5,9 +5,9 @@ import { getCustomRepository, getRepository } from 'typeorm';
 import { Board } from '../../src/domain/entity/board';
 import { Post } from '../../src/domain/entity/post';
 import { Thread } from '../../src/domain/entity/thread';
-import { getTestApplicationServer } from '../../src/index.test';
 import { BoardRepository } from '../../src/infra/repository/board.repo';
 import { ThreadRepository } from '../../src/infra/repository/thread.repo';
+import { getTestApplicationServer } from '../../src/server.test';
 import { replyToThreadFactory } from './update';
 
 let app;

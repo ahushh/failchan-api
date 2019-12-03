@@ -4,7 +4,7 @@ import { ApplicationServer } from '../../src/presentation/http/server';
 
 import fs from 'fs';
 import rimraf from 'rimraf';
-import { getTestApplicationServer } from '../../src/index.test';
+import { getTestApplicationServer } from '../../src/server.test';
 
 const TEMP_DIR = process.env.TEMP_DIR = '/tmp/failchan-test';
 

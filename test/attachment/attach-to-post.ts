@@ -4,9 +4,9 @@ import { getCustomRepository } from 'typeorm';
 import { IOC_TYPE } from '../../src/config/type';
 import { Board } from '../../src/domain/entity/board';
 import { Thread } from '../../src/domain/entity/thread';
-import { getTestApplicationServer } from '../../src/index.test';
 import { BoardRepository } from '../../src/infra/repository/board.repo';
 import { ThreadRepository } from '../../src/infra/repository/thread.repo';
+import { getTestApplicationServer } from '../../src/server.test';
 import { replyToThreadFactory } from '../post/update';
 
 let app;

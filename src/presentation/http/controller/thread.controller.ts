@@ -1,4 +1,5 @@
 import { Request, Response } from 'express-serve-static-core';
+import { inject } from 'inversify';
 import {
   controller,
   httpGet,
@@ -15,7 +16,6 @@ import { CreatePostAction } from '../../../app/actions/post/create';
 import { UpdatePostAction } from '../../../app/actions/post/update';
 import { ThreadService } from '../../../app/service/thread.service';
 import { IOC_TYPE } from '../../../config/type';
-import { inject } from 'inversify';
 
 @controller('/threads')
 export class ThreadController implements interfaces.Controller {

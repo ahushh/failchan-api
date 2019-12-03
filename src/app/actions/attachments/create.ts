@@ -1,9 +1,9 @@
+import { inject } from 'inversify';
+import { provide } from 'inversify-binding-decorators';
+import { IOC_TYPE } from '../../../config/type';
 import { IAttachmentFile } from '../../../domain/interfaces/attachment-file';
 import { IAction } from '../../interfaces/action';
 import { AttachmentService } from '../../service/attachment.service';
-import { IOC_TYPE } from '../../../config/type';
-import { provide } from 'inversify-binding-decorators';
-import { inject } from 'inversify';
 
 @provide(IOC_TYPE.CreateAttachmentAction)
 export class CreateAttachmentAction implements IAction {

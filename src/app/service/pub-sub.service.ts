@@ -1,8 +1,8 @@
 
-import { IOC_TYPE } from '../../config/type';
-import { provide } from 'inversify-binding-decorators';
-import { IPubSubConnection } from '../../infra/utils/create-pubsub-connection';
 import { inject } from 'inversify';
+import { provide } from 'inversify-binding-decorators';
+import { IOC_TYPE } from '../../config/type';
+import { IPubSubConnection } from '../../infra/utils/create-pubsub-connection';
 
 @provide(IOC_TYPE.PubSubService)
 export class PubSubService {

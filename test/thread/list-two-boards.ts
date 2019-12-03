@@ -2,12 +2,12 @@ import chai from 'chai';
 import supertest from 'supertest';
 import { getCustomRepository } from 'typeorm';
 import { PostService } from '../../src/app/service/post.service';
+import { IOC_TYPE } from '../../src/config/type';
 import { Board } from '../../src/domain/entity/board';
 import { Thread } from '../../src/domain/entity/thread';
-import { getTestApplicationServer } from '../../src/index.test';
 import { BoardRepository } from '../../src/infra/repository/board.repo';
 import { ThreadRepository } from '../../src/infra/repository/thread.repo';
-import { IOC_TYPE } from '../../src/config/type';
+import { getTestApplicationServer } from '../../src/server.test';
 
 const ALL_THREADS = 20;
 const POSTS_PER_THREAD = 10;

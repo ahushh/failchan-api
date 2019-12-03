@@ -2,8 +2,8 @@ import chai from 'chai';
 import supertest from 'supertest';
 import { getCustomRepository } from 'typeorm';
 import { Board } from '../../src/domain/entity/board';
-import { getTestApplicationServer } from '../../src/index.test';
 import { BoardRepository } from '../../src/infra/repository/board.repo';
+import { getTestApplicationServer } from '../../src/server.test';
 
 describe('Threads creation', () => {
   let app;

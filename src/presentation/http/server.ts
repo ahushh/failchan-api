@@ -2,8 +2,9 @@ require('dotenv').config();
 const debug = require('debug')('express:server');
 
 import { Application } from 'express';
-import { configAppFactory, errorConfigAppFactory } from './express';
 import { IORMConnection } from '../../infra/utils/create-orm-connection';
+import { checkTmpDir } from '../utils/check-tmp-dir';
+import { configAppFactory, errorConfigAppFactory } from './express';
 
 export class ApplicationServer {
   private port: any;
@@ -16,8 +17,10 @@ export class ApplicationServer {
     createHttpServer,
     port,
     connection,
-    container
+    container,
   }) {
+    checkTmpDir();
+
     this.container = container;
     this.port = port;
     this.connection = connection;

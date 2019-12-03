@@ -1,13 +1,13 @@
+import { inject } from 'inversify';
+import { provide } from 'inversify-binding-decorators';
 import R from 'ramda';
+import { IOC_TYPE } from '../../config/type';
 import { Board } from '../../domain/entity/board';
 import { Thread } from '../../domain/entity/thread';
 import { IPostService } from '../../domain/interfaces/post.service';
 import { IThreadService } from '../../domain/interfaces/thread.service';
 import { BoardRepository } from '../../infra/repository/board.repo';
 import { ThreadRepository } from '../../infra/repository/thread.repo';
-import { IOC_TYPE } from '../../config/type';
-import { provide } from 'inversify-binding-decorators';
-import { inject } from 'inversify';
 
 @provide(IOC_TYPE.ThreadService)
 export class ThreadService implements IThreadService {

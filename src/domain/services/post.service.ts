@@ -1,8 +1,8 @@
+import { provide } from 'inversify-binding-decorators';
+import { IOC_TYPE } from '../../config/type';
 import { Post } from '../entity/post';
 import { Thread } from '../entity/thread';
 import { IReply } from '../interfaces/reply';
-import { provide } from 'inversify-binding-decorators';
-import { IOC_TYPE } from '../../config/type';
 
 @provide(IOC_TYPE.DomainPostService)
 export class DomainPostService {

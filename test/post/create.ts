@@ -3,9 +3,9 @@ import supertest from 'supertest';
 import { getCustomRepository } from 'typeorm';
 import { Board } from '../../src/domain/entity/board';
 import { Thread } from '../../src/domain/entity/thread';
-import { getTestApplicationServer } from '../../src/index.test';
 import { BoardRepository } from '../../src/infra/repository/board.repo';
 import { ThreadRepository } from '../../src/infra/repository/thread.repo';
+import { getTestApplicationServer } from '../../src/server.test';
 
 let app;
 let container;

@@ -1,12 +1,12 @@
+import { inject } from 'inversify';
+import { provide } from 'inversify-binding-decorators';
 import { getManager, Repository } from 'typeorm';
+import { IOC_TYPE } from '../../config/type';
 import { Attachment } from '../../domain/entity/attachment';
 import { Post } from '../../domain/entity/post';
 import { Thread } from '../../domain/entity/thread';
 import { IPostService } from '../../domain/interfaces/post.service';
 import { DomainPostService } from '../../domain/services/post.service';
-import { IOC_TYPE } from '../../config/type';
-import { provide } from 'inversify-binding-decorators';
-import { inject } from 'inversify';
 
 @provide(IOC_TYPE.PostService)
 export class PostService implements IPostService {

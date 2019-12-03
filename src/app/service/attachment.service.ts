@@ -3,14 +3,14 @@ import { Repository } from 'typeorm';
 import uuidv4 from 'uuid/v4';
 import { Attachment } from '../../domain/entity/attachment';
 
+import { inject } from 'inversify';
+import { fluentProvide, provide } from 'inversify-binding-decorators';
+import { IOC_TYPE } from '../../config/type';
 import { IAttachmentFile } from '../../domain/interfaces/attachment-file';
 import { FileFactory, IFileFactory } from '../../infra/class/file/file.factory';
 import { IFile } from '../../infra/class/file/file.interface';
 import { IFileRepository } from '../../infra/repository/file/file.repo.interface';
 import { ExpiredAttachmentService } from '../listeners/expired-attachments';
-import { provide, fluentProvide } from 'inversify-binding-decorators';
-import { IOC_TYPE } from '../../config/type';
-import { inject } from 'inversify';
 
 // @provide(IOC_TYPE.AttachmentService)
 @fluentProvide(IOC_TYPE.AttachmentService).inSingletonScope().done(true)
