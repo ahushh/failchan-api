@@ -1,8 +1,10 @@
-import Container from 'typedi';
-import { createConnection, getConnectionOptions, useContainer } from 'typeorm';
+import { Connection, createConnection, getConnectionOptions } from 'typeorm';
+
+export interface IORMConnection extends Connection {
+
+}
 
 export const createORMConnection = async () => {
-  useContainer(Container);
   const options = await getConnectionOptions(<string>process.env.NODE_ENV);
-  return createConnection({ ...options, name: 'default' });
+  return createConnection({ ...options, name: 'default' }) as Promise<IORMConnection>;
 };

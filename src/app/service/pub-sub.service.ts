@@ -1,10 +1,13 @@
-import { Redis } from 'ioredis';
-import { Inject, Service } from 'typedi';
 
-@Service()
+import { inject } from 'inversify';
+import { provide } from 'inversify-binding-decorators';
+import { IOC_TYPE } from '../../config/type';
+import { IPubSubConnection } from '../../infra/utils/create-pubsub-connection';
+
+@provide(IOC_TYPE.PubSubService)
 export class PubSubService {
   constructor(
-    @Inject('pubsub-connection') private pubsub: { pub: Redis, sub: Redis },
+    @inject(IOC_TYPE.PubSubConnection) private pubsub: IPubSubConnection,
   ) {
   }
   publish(channel, message) {

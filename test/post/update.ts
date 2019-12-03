@@ -1,29 +1,33 @@
 import chai from 'chai';
 import supertest from 'supertest';
-import { Container } from 'typedi';
 import { getCustomRepository, getRepository } from 'typeorm';
-import { PostService } from '../../src/app/service/post.service';
+import { IOC_TYPE } from '../../src/config/type';
 import { Board } from '../../src/domain/entity/board';
 import { Post } from '../../src/domain/entity/post';
 import { Thread } from '../../src/domain/entity/thread';
 import { BoardRepository } from '../../src/infra/repository/board.repo';
 import { ThreadRepository } from '../../src/infra/repository/thread.repo';
-import { ApplicationServer } from '../../src/presentation/http/server';
+import { getTestApplicationServer } from '../../src/server.test';
 
-export const replyToThread = async (thread, body, referencies: number[] = []) => {
-  const postService = Container.get(PostService);
+// tslint:disable-next-line: max-line-length
+export const replyToThreadFactory = container => async (thread, body, referencies: number[] = []) => {
+  const postService = container.get(IOC_TYPE.PostService);
   const post = { body, referencies, attachmentIds: [] };
   const request = { ...post, threadId: thread.id };
   return postService.replyToThread(request);
 };
 
 let app;
-
+let container;
+let testApplicationServer;
 describe('Posts updating', () => {
   let thread;
   let board;
   before(async () => {
-    app = await ApplicationServer.connectDB().then(server => server.app);
+    testApplicationServer = await getTestApplicationServer;
+
+    app = testApplicationServer.app;
+    container = testApplicationServer.container;
 
     board = new Board({ name: 'bred', slug: 'b' });
     const repo = getCustomRepository(BoardRepository);
@@ -31,6 +35,8 @@ describe('Posts updating', () => {
 
     thread = Thread.create(board);
     thread = await getCustomRepository(ThreadRepository).save(thread); // 1
+    const replyToThread = replyToThreadFactory(container);
+
     try {
       await replyToThread(thread, 'op'); // id 1
       await replyToThread(thread, 'reply 1', []); // id 2
@@ -43,7 +49,7 @@ describe('Posts updating', () => {
     }
   });
   after(async () => {
-    await ApplicationServer.connection.synchronize(true);
+    await testApplicationServer.connection.synchronize(true);
   });
 
   it('updates post with new body correctly', (done) => {

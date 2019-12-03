@@ -1,23 +1,27 @@
 import chai from 'chai';
 import supertest from 'supertest';
 
-import { getConnection, getCustomRepository, getRepository } from 'typeorm';
+import { getCustomRepository, getRepository } from 'typeorm';
 import { Board } from '../src/domain/entity/board';
 import { BoardRepository } from '../src/infra/repository/board.repo';
-import { ApplicationServer } from '../src/presentation/http/server';
+import { getTestApplicationServer } from '../src/server.test';
 
 let app;
+let container;
+let testApplicationServer;
 
 describe('Boards listing', () => {
   before(async () => {
-    app = await ApplicationServer.connectDB().then(server => server.app);
+    testApplicationServer = await getTestApplicationServer;
+    app = testApplicationServer.app;
+    container = testApplicationServer.container;
 
     const board = new Board({ name: 'bred', slug: 'b' });
     const repo = getCustomRepository(BoardRepository);
     await repo.save(board);
   });
   after(async () => {
-    await ApplicationServer.connection.synchronize(true);
+    await testApplicationServer.connection.synchronize(true);
   });
 
   it('returns list of boards', (done) => {

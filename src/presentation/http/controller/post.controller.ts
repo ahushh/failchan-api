@@ -1,4 +1,5 @@
 import { Request, Response } from 'express-serve-static-core';
+import { inject } from 'inversify';
 import {
   controller,
   httpGet,
@@ -12,10 +13,13 @@ import {
   response,
 } from 'inversify-express-utils';
 import { UpdatePostAction } from '../../../app/actions/post/update';
+import { IOC_TYPE } from '../../../config/type';
 
 @controller('/posts')
 export class PostController implements interfaces.Controller {
-  constructor() { }
+  constructor(
+    @inject(IOC_TYPE.UpdatePostAction) public updatePostAction: UpdatePostAction,
+  ) { }
 
   @httpPatch('/:postId')
   private async update(
@@ -23,7 +27,7 @@ export class PostController implements interfaces.Controller {
     @request() request: Request, @response() response: Response, @next() next: Function,
   ) {
     try {
-      await new UpdatePostAction({ ...request.body.post, postId }).execute();
+      await this.updatePostAction.execute({ ...request.body.post, postId });
       response.sendStatus(204);
     } catch (e) {
       if (e.name === 'EntityNotFound') {

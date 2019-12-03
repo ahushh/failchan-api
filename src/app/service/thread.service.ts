@@ -1,20 +1,20 @@
+import { inject } from 'inversify';
+import { provide } from 'inversify-binding-decorators';
 import R from 'ramda';
-import { Inject, Service } from 'typedi';
-import { InjectRepository } from 'typeorm-typedi-extensions';
+import { IOC_TYPE } from '../../config/type';
 import { Board } from '../../domain/entity/board';
 import { Thread } from '../../domain/entity/thread';
 import { IPostService } from '../../domain/interfaces/post.service';
 import { IThreadService } from '../../domain/interfaces/thread.service';
 import { BoardRepository } from '../../infra/repository/board.repo';
 import { ThreadRepository } from '../../infra/repository/thread.repo';
-import { PostService } from './post.service';
 
-@Service()
+@provide(IOC_TYPE.ThreadService)
 export class ThreadService implements IThreadService {
   constructor(
-    @InjectRepository(Thread) private threadRepo: ThreadRepository,
-    @InjectRepository(Board) private boardRepo: BoardRepository,
-    @Inject(type => PostService) private postService: IPostService,
+    @inject(IOC_TYPE.ThreadRepository) private threadRepo: ThreadRepository,
+    @inject(IOC_TYPE.BoardRepository) private boardRepo: BoardRepository,
+    @inject(IOC_TYPE.PostService) private postService: IPostService,
   ) { }
 
   async create(request: {

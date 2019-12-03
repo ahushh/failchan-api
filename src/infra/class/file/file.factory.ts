@@ -1,4 +1,5 @@
-import { Container, Service, Token } from 'typedi';
+import { provide } from 'inversify-binding-decorators';
+import { IOC_TYPE } from '../../../config/type';
 import { IAttachmentFile } from '../../../domain/interfaces/attachment-file';
 import { IFile } from './file.interface';
 import { GenericFile } from './generic';
@@ -8,11 +9,8 @@ export interface IFileFactory {
   create(file: IAttachmentFile): IFile;
 }
 
-// tslint:disable-next-line:variable-name
-export const FileFactory = new Token<IFileFactory>();
-
-@Service(FileFactory)
-class Factory implements IFileFactory {
+@provide(IOC_TYPE.FileFactory)
+export class FileFactory implements IFileFactory {
   create(file: IAttachmentFile): IFile {
     if (file.mimetype.match(/image\//)) {
       return new ImageFile(file);

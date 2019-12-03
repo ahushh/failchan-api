@@ -5,22 +5,25 @@ import { Board } from '../../src/domain/entity/board';
 import { Thread } from '../../src/domain/entity/thread';
 import { BoardRepository } from '../../src/infra/repository/board.repo';
 import { ThreadRepository } from '../../src/infra/repository/thread.repo';
-import { ApplicationServer } from '../../src/presentation/http/server';
+import { getTestApplicationServer } from '../../src/server.test';
 
 let app;
-
+let container;
+let testApplicationServer;
 describe('Posts creation', () => {
   let thread;
   let board;
   before(async () => {
-    app = await ApplicationServer.connectDB().then(server => server.app);
+    testApplicationServer = await getTestApplicationServer;
+    app = testApplicationServer.app;
+    container = testApplicationServer.container;
 
     board = new Board({ name: 'bred', slug: 'b' });
     const repo = getCustomRepository(BoardRepository);
     board = await repo.save(board);
   });
   after(async () => {
-    await ApplicationServer.connection.synchronize(true);
+    await testApplicationServer.connection.synchronize(true);
   });
   beforeEach(async () => {
     thread = Thread.create(board);

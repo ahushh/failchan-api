@@ -1,10 +1,21 @@
 import { Container } from 'inversify';
+import { buildProviderModule } from 'inversify-binding-decorators';
+import { bindings } from './inversity.config';
 
-import './presentation/http/controller/attachment.controller';
-import './presentation/http/controller/board.controller';
-import './presentation/http/controller/post.controller';
-import './presentation/http/controller/thread.controller';
+export const createContainer = async () => {
+  const container = new Container();
 
-const container = new Container();
+  await require('./app/service/attachment.service');
+  await require('./app/service/board.service');
+  await require('./app/service/post.service');
+  await require('./app/service/pub-sub.service');
+  await require('./app/service/thread.service');
+  await require('./app/listeners/expired-attachments');
 
-export { container };
+  await require('./infra/class/file/file.factory');
+
+  await container.loadAsync(bindings);
+
+  container.load(buildProviderModule());
+  return container;
+};

@@ -15,13 +15,18 @@ import {
 import { IAttachmentFile } from '../../../domain/interfaces/attachment-file';
 import { fileUploadMiddleware } from '../middleware/file-upload';
 
+import { inject } from 'inversify';
 import R from 'ramda';
 import { CreateAttachmentAction } from '../../../app/actions/attachments/create';
 import { DeleteAttachmentAction } from '../../../app/actions/attachments/delete';
+import { IOC_TYPE } from '../../../config/type';
 
 @controller('/attachments')
 export class AttachmentController implements interfaces.Controller {
-  constructor() { }
+  constructor(
+    @inject(IOC_TYPE.CreateAttachmentAction) public createAttachmentAction: CreateAttachmentAction,
+    @inject(IOC_TYPE.DeleteAttachmentAction) public deleteAttachmentAction: DeleteAttachmentAction,
+  ) { }
 
   @httpPost('/', fileUploadMiddleware)
   private async create(
@@ -33,7 +38,7 @@ export class AttachmentController implements interfaces.Controller {
         R.pick(['path', 'originalname', 'mimetype', 'size']),
       ),
     );
-    const uid = await new CreateAttachmentAction(filesPrepared).execute();
+    const uid = await this.createAttachmentAction.execute(filesPrepared);
     response.json({ uid });
   }
 
@@ -42,7 +47,7 @@ export class AttachmentController implements interfaces.Controller {
     @request() request: Request, @response() response: Response, @next() next: Function,
   ) {
     const ids = request.query.ids;
-    await new DeleteAttachmentAction(ids).execute();
+    await this.deleteAttachmentAction.execute(ids);
     response.sendStatus(204);
   }
 }

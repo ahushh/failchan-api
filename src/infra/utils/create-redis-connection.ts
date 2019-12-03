@@ -1,13 +1,14 @@
 import Redis from 'ioredis';
-import Container from 'typedi';
 
+export interface IRedisConnection {
+
+}
 export const createRedisConnection = () => {
   const connection = new Redis(process.env.REDIS_URI);
-  Container.set('redis-connection', connection);
-  return new Promise((resolve, reject) => {
+  return new Promise<IRedisConnection>((resolve, reject) => {
     connection.on('ready', () => {
       connection.config('SET', 'notify-keyspace-events', 'Ex');
     });
-    resolve();
+    resolve(connection);
   });
 };

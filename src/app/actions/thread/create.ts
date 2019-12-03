@@ -1,4 +1,6 @@
-import Container from 'typedi';
+import { inject } from 'inversify';
+import { provide } from 'inversify-binding-decorators';
+import { IOC_TYPE } from '../../../config/type';
 import { IAction } from '../../interfaces/action';
 import { AttachmentService } from '../../service/attachment.service';
 import { ThreadService } from '../../service/thread.service';
@@ -11,25 +13,28 @@ interface IRequest {
   boardSlug: string;
 }
 
+@provide(IOC_TYPE.CreateThreadAction)
 export class CreateThreadAction implements IAction {
-  constructor(public request: IRequest) {
-    this.request.referencies = this.request.referencies || [];
-  }
-  async execute() {
-    const attachmentService = Container.get(AttachmentService);
-    const attachmentIds = this.request.attachment
-      ? await attachmentService.createFromCache(this.request.attachment)
+  constructor(
+    @inject(IOC_TYPE.ThreadService) public service: ThreadService,
+    @inject(IOC_TYPE.AttachmentService) public attachmentService: AttachmentService,
+  ) {}
+  async execute(originalRequest: IRequest) {
+    const request = { ...originalRequest };
+    request.referencies = request.referencies || [];
+
+    const attachmentIds = request.attachment
+      ? await this.attachmentService.createFromCache(request.attachment)
       : [];
 
-    const service = Container.get(ThreadService);
-    return service.create({
+    return this.service.create({
       post: {
         attachmentIds,
-        body: this.request.body,
-        referencies: this.request.referencies,
-        threadId: this.request.threadId,
+        body: request.body,
+        referencies: request.referencies,
+        threadId: request.threadId,
       },
-      boardSlug: this.request.boardSlug,
+      boardSlug: request.boardSlug,
     });
   }
 }

@@ -1,5 +1,4 @@
 // import Bus from 'busmq';
-// import { Container } from 'typedi';
 
 // export const createEventBusConnection = () => {
 //   const bus = Bus.create({ redis: [process.env.REDIS_URI] });
