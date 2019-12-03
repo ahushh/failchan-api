@@ -1,20 +1,26 @@
 import chai from 'chai';
+import { Application } from 'express';
+import { Container } from 'inversify';
 import supertest from 'supertest';
 import { getCustomRepository } from 'typeorm';
-import { Board } from '../../src/domain/entity/board';
-import { Thread } from '../../src/domain/entity/thread';
-import { BoardRepository } from '../../src/infra/repository/board.repo';
-import { ThreadRepository } from '../../src/infra/repository/thread.repo';
-import { getTestApplicationServer } from '../../src/server.test';
+import { Board } from '../../../domain/entity/board';
+import { Thread } from '../../../domain/entity/thread';
+import { BoardRepository } from '../../../infra/repository/board.repo';
+import { ThreadRepository } from '../../../infra/repository/thread.repo';
+import { ApplicationServer } from '../../../presentation/http/server';
+import { getTestApplicationServer } from '../../../server.test';
 
-let app;
-let container;
-let testApplicationServer;
+let app: Application;
+let container: Container;
+let testApplicationServer: ApplicationServer;
+
 describe('Posts creation', () => {
   let thread;
   let board;
   before(async () => {
     testApplicationServer = await getTestApplicationServer;
+    await testApplicationServer.connection.synchronize(true);
+
     app = testApplicationServer.app;
     container = testApplicationServer.container;
 

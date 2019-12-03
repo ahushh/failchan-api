@@ -1,20 +1,24 @@
 import chai, { assert } from 'chai';
 import supertest from 'supertest';
-import { ApplicationServer } from '../../src/presentation/http/server';
 
+import { Application } from 'express';
 import fs from 'fs';
+import { Container } from 'inversify';
 import rimraf from 'rimraf';
-import { getTestApplicationServer } from '../../src/server.test';
+import { ApplicationServer } from '../../../presentation/http/server';
+import { getTestApplicationServer } from '../../../server.test';
 
 const TEMP_DIR = process.env.TEMP_DIR = '/tmp/failchan-test';
 
-let app;
-let container;
-let testApplicationServer;
+let app: Application;
+let container: Container;
+let testApplicationServer: ApplicationServer;
 
 describe('Attachment creation', () => {
   before(async () => {
     testApplicationServer = await getTestApplicationServer;
+    await testApplicationServer.connection.synchronize(true);
+
     app = testApplicationServer.app;
     container = testApplicationServer.container;
   });
@@ -22,6 +26,10 @@ describe('Attachment creation', () => {
     rimraf.sync(TEMP_DIR);
     fs.mkdirSync(TEMP_DIR);
   });
+  after(async () => {
+    await testApplicationServer.connection.synchronize(true);
+  });
+
   it('stores file in a tmp subdir keeping original name', (done) => {
     supertest(app).post('/attachments')
       .attach('attachments', `${__dirname}/test-image.jpg`)

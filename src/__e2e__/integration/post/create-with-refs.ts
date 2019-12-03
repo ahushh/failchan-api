@@ -2,22 +2,28 @@ import chai from 'chai';
 import supertest from 'supertest';
 import { getCustomRepository, getRepository } from 'typeorm';
 
-import { Board } from '../../src/domain/entity/board';
-import { Post } from '../../src/domain/entity/post';
-import { Thread } from '../../src/domain/entity/thread';
-import { BoardRepository } from '../../src/infra/repository/board.repo';
-import { ThreadRepository } from '../../src/infra/repository/thread.repo';
-import { getTestApplicationServer } from '../../src/server.test';
-import { replyToThreadFactory } from './update';
+import { Application } from 'express';
+import { Container } from 'inversify';
+import { Board } from '../../../domain/entity/board';
+import { Post } from '../../../domain/entity/post';
+import { Thread } from '../../../domain/entity/thread';
+import { BoardRepository } from '../../../infra/repository/board.repo';
+import { ThreadRepository } from '../../../infra/repository/thread.repo';
+import { ApplicationServer } from '../../../presentation/http/server';
+import { getTestApplicationServer } from '../../../server.test';
+import { replyToThreadFactory } from '../../support/reply-to-thread';
 
-let app;
-let container;
-let testApplicationServer;
+let app: Application;
+let container: Container;
+let testApplicationServer: ApplicationServer;
+
 describe('Posts creation with references', () => {
   let thread;
   let board;
   before(async () => {
     testApplicationServer = await getTestApplicationServer;
+    await testApplicationServer.connection.synchronize(true);
+
     app = testApplicationServer.app;
     container = testApplicationServer.container;
 

@@ -1,30 +1,28 @@
 import chai from 'chai';
+import { Application } from 'express';
+import { Container } from 'inversify';
 import supertest from 'supertest';
 import { getCustomRepository, getRepository } from 'typeorm';
-import { IOC_TYPE } from '../../src/config/type';
-import { Board } from '../../src/domain/entity/board';
-import { Post } from '../../src/domain/entity/post';
-import { Thread } from '../../src/domain/entity/thread';
-import { BoardRepository } from '../../src/infra/repository/board.repo';
-import { ThreadRepository } from '../../src/infra/repository/thread.repo';
-import { getTestApplicationServer } from '../../src/server.test';
+import { IOC_TYPE } from '../../../config/type';
+import { Board } from '../../../domain/entity/board';
+import { Post } from '../../../domain/entity/post';
+import { Thread } from '../../../domain/entity/thread';
+import { BoardRepository } from '../../../infra/repository/board.repo';
+import { ThreadRepository } from '../../../infra/repository/thread.repo';
+import { ApplicationServer } from '../../../presentation/http/server';
+import { getTestApplicationServer } from '../../../server.test';
+import { replyToThreadFactory } from '../../support/reply-to-thread';
 
-// tslint:disable-next-line: max-line-length
-export const replyToThreadFactory = container => async (thread, body, references: number[] = []) => {
-  const postService = container.get(IOC_TYPE.PostService);
-  const post = { body, references, attachmentIds: [] };
-  const request = { ...post, threadId: thread.id };
-  return postService.replyToThread(request);
-};
+let app: Application;
+let container: Container;
+let testApplicationServer: ApplicationServer;
 
-let app;
-let container;
-let testApplicationServer;
 describe('Posts updating', () => {
   let thread;
   let board;
   before(async () => {
     testApplicationServer = await getTestApplicationServer;
+    await testApplicationServer.connection.synchronize(true);
 
     app = testApplicationServer.app;
     container = testApplicationServer.container;

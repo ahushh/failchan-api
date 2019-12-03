@@ -13,7 +13,6 @@ export class ExpiredAttachmentService {
     @inject(IOC_TYPE.RedisConnection) public redis: Redis,
   ) { }
   listen() {
-    console.log('#####LISTEN');
     this.pubsub.subscribe('__keyevent@0__:expired');
     this.pubsub.on('message', async (channel, key) => {
       const [entity, type, uid] = key.split(':');

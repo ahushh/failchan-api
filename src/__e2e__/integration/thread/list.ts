@@ -1,57 +1,40 @@
 import chai from 'chai';
+import { Application } from 'express';
+import { Container } from 'inversify';
 import supertest from 'supertest';
 import { getCustomRepository } from 'typeorm';
-import { ListThreadsByBoardAction } from '../../src/app/actions/thread/list';
-import { PostService } from '../../src/app/service/post.service';
-import { IOC_TYPE } from '../../src/config/type';
-import { Board } from '../../src/domain/entity/board';
-import { Thread } from '../../src/domain/entity/thread';
-import { BoardRepository } from '../../src/infra/repository/board.repo';
-import { ThreadRepository } from '../../src/infra/repository/thread.repo';
-import { getTestApplicationServer } from '../../src/server.test';
+import { ListThreadsByBoardAction } from '../../../app/actions/thread/list';
+import { Board } from '../../../domain/entity/board';
+import { BoardRepository } from '../../../infra/repository/board.repo';
+import { ApplicationServer } from '../../../presentation/http/server';
+import { getTestApplicationServer } from '../../../server.test';
+import { createManyThreadsFactory } from '../../support/create-many-threads';
 
-const ALL_THREADS = 20;
-const POSTS_PER_THREAD = 10;
+let app: Application;
+let container: Container;
+let testApplicationServer: ApplicationServer;
 
-const replyToThread = container => async (thread, i: number) => {
-  const postService = container.get(IOC_TYPE.PostService);
-  const post = { body: `#${i}`, attachmentIds: [], references: [] };
-  const request = { ...post, threadId: thread.id };
-  await postService.replyToThread(request);
-};
-const createThreads = container => async (board) => {
-  const createOne = async () => {
-    const thread = Thread.create(board);
-    const threadRepo = getCustomRepository(ThreadRepository);
-    return await threadRepo.save(thread);
-  };
-  let threadsNumber: number = ALL_THREADS;
-  // creates posts with id 1...ALL_THREADS
-  while (threadsNumber !== 0) {
-    const thread = await createOne();
-    let postsNumber: number = 1;
-    // creates posts with body #1...#POSTS_PER_THREAD
-    while (postsNumber <= POSTS_PER_THREAD) {
-      await replyToThread(container)(thread, postsNumber);
-      postsNumber = postsNumber + 1;
-    }
-    threadsNumber = threadsNumber - 1;
-  }
-};
-
-let app;
-let container;
-let testApplicationServer;
 describe('Threads listing', () => {
+  const ALL_THREADS = 20;
+  const POSTS_PER_THREAD = 10;
+
   before(async () => {
     testApplicationServer = await getTestApplicationServer;
+    await testApplicationServer.connection.synchronize(true);
+
     app = testApplicationServer.app;
     container = testApplicationServer.container;
 
+    const createThreads = createManyThreadsFactory(
+      container,
+      ALL_THREADS,
+      POSTS_PER_THREAD,
+      'index',
+    );
     let board = new Board({ name: 'bred', slug: 'b' });
     const boardRepo = getCustomRepository(BoardRepository);
     board = await boardRepo.save(board);
-    await createThreads(container)(board);
+    await createThreads(board);
   });
   after(async () => {
     await testApplicationServer.connection.synchronize(true);
@@ -109,9 +92,9 @@ describe('Threads listing', () => {
     supertest(app).get(url)
       .end((err, res) => {
         chai.expect(res.body.threads[0].id).to
-        .eq(ALL_THREADS - ListThreadsByBoardAction.TEST_THREADS_LISTING_TAKE);
+          .eq(ALL_THREADS - ListThreadsByBoardAction.TEST_THREADS_LISTING_TAKE);
         chai.expect(res.body.threads[1].id).to
-        .eq(ALL_THREADS - ListThreadsByBoardAction.TEST_THREADS_LISTING_TAKE - 1);
+          .eq(ALL_THREADS - ListThreadsByBoardAction.TEST_THREADS_LISTING_TAKE - 1);
         done();
       });
   });
