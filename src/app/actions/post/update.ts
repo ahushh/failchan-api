@@ -9,7 +9,7 @@ interface IRequest {
   threadId: number | null;
   body: string | null;
   attachmentIds: number[] | null;
-  referencies: number[] | null;
+  references: number[] | null;
 }
 
 @provide(IOC_TYPE.UpdatePostAction)
@@ -27,7 +27,7 @@ export class UpdatePostAction implements IAction {
     request.threadId = request.threadId ? +request.threadId : null;
     request.body = request.body === undefined ? null : request.body;
     request.attachmentIds = request.attachmentIds || null;
-    request.referencies = request.referencies || null;
+    request.references = request.references || null;
 
     return this.postService.updatePost(request);
   }

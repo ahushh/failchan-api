@@ -5,6 +5,6 @@ import { Thread } from '../entity/thread';
 export interface IReply {
   body: string;
   attachments: Attachment[];
-  referencies: Post[];
+  references: Post[];
   thread: Thread;
 }

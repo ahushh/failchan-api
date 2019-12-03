@@ -42,7 +42,7 @@ describe('Attachment and posts', () => {
   });
   it('attaches an attachment to the post', (done) => {
     supertest(app).post(`/threads/${thread.id}/posts`)
-      .send({ post: { body: 'some text', attachment: uuid, referencies: [] } })
+      .send({ post: { body: 'some text', attachment: uuid, references: [] } })
       .end((err, res) => {
         chai.expect(res.status).to.eq(200);
         chai.expect(res.body.post.attachments).to.be.lengthOf(1);

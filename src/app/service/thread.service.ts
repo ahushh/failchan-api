@@ -21,7 +21,7 @@ export class ThreadService implements IThreadService {
     post: {
       body: string;
       attachmentIds: number[];
-      referencies: number[];
+      references: number[];
       threadId: number;
     };
     boardSlug: string;

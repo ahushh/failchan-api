@@ -8,7 +8,7 @@ import { ThreadService } from '../../service/thread.service';
 interface IRequest {
   body: string;
   attachment: string;
-  referencies: number[];
+  references: number[];
   threadId: number;
   boardSlug: string;
 }
@@ -21,7 +21,7 @@ export class CreateThreadAction implements IAction {
   ) {}
   async execute(originalRequest: IRequest) {
     const request = { ...originalRequest };
-    request.referencies = request.referencies || [];
+    request.references = request.references || [];
 
     const attachmentIds = request.attachment
       ? await this.attachmentService.createFromCache(request.attachment)
@@ -31,7 +31,7 @@ export class CreateThreadAction implements IAction {
       post: {
         attachmentIds,
         body: request.body,
-        referencies: request.referencies,
+        references: request.references,
         threadId: request.threadId,
       },
       boardSlug: request.boardSlug,

@@ -15,7 +15,7 @@ const POSTS_PER_THREAD = 10;
 
 const replyToThread = container => async (thread, i: number) => {
   const postService = container.get(IOC_TYPE.PostService);
-  const post = { body: `#${i}`, attachmentIds: [], referencies: [] };
+  const post = { body: `#${i}`, attachmentIds: [], references: [] };
   const request = { ...post, threadId: thread.id };
   await postService.replyToThread(request);
 };

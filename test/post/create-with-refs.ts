@@ -13,7 +13,7 @@ import { replyToThreadFactory } from './update';
 let app;
 let container;
 let testApplicationServer;
-describe('Posts creation with referencies', () => {
+describe('Posts creation with references', () => {
   let thread;
   let board;
   before(async () => {
@@ -36,12 +36,12 @@ describe('Posts creation with referencies', () => {
 
   it('creates a new post with 1 reference correctly', (done) => {
     supertest(app).post(`/threads/${thread.id}/posts`)
-      .send({ post: { body: 'with ref', attachments: [], referencies: [1] } })
+      .send({ post: { body: 'with ref', attachments: [], references: [1] } })
       .end((err, res) => {
         chai.expect(res.status).to.eq(200);
         const post = res.body.post;
-        chai.expect(post.referencies).to.have.lengthOf(1);
-        chai.expect(post.referencies[0]).to.include({
+        chai.expect(post.references).to.have.lengthOf(1);
+        chai.expect(post.references[0]).to.include({
           body: 'op',
           id: 1,
         });

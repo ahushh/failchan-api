@@ -41,12 +41,12 @@ describe('Threads creation', () => {
       chai.expect(res.body.thread.posts).to.have.lengthOf(1);
       chai.expect(res.body.thread.posts[0]).to.keys([
         'id', 'body', 'attachments', 'createdAt', 'updatedAt',
-        'replies', 'referencies',
+        'replies', 'references',
       ]);
       chai.expect(res.body.thread.posts[0]).to.include({
         body,
       });
-      ['attachments', 'replies', 'referencies'].forEach((k: string) => {
+      ['attachments', 'replies', 'references'].forEach((k: string) => {
         chai.expect(res.body.thread.posts[0][k]).to.have.lengthOf(0);
       });
       done();

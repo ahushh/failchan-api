@@ -10,9 +10,9 @@ import { ThreadRepository } from '../../src/infra/repository/thread.repo';
 import { getTestApplicationServer } from '../../src/server.test';
 
 // tslint:disable-next-line: max-line-length
-export const replyToThreadFactory = container => async (thread, body, referencies: number[] = []) => {
+export const replyToThreadFactory = container => async (thread, body, references: number[] = []) => {
   const postService = container.get(IOC_TYPE.PostService);
-  const post = { body, referencies, attachmentIds: [] };
+  const post = { body, references, attachmentIds: [] };
   const request = { ...post, threadId: thread.id };
   return postService.replyToThread(request);
 };
@@ -67,29 +67,29 @@ describe('Posts updating', () => {
         }).catch(done);
       });
   });
-  it('updates post by replacing all referencies', (done) => {
+  it('updates post by replacing all references', (done) => {
     supertest(app).patch('/posts/3')
-      .send({ post: { referencies: [2] } })
+      .send({ post: { references: [2] } })
       .end((err, res) => {
         chai.expect(res.status).to.eq(204);
         const repo = getRepository(Post);
         repo.findOne(3, {
-          relations: ['referencies'],
+          relations: ['references'],
         }).then((post) => {
           // tslint:disable-next-line:no-parameter-reassignment
           post = post as Post;
           chai.expect(post).not.to.be.undefined;
-          chai.expect(post.referencies).to.have.lengthOf(1);
-          chai.expect(post.referencies[0].id).to.be.eq(2);
+          chai.expect(post.references).to.have.lengthOf(1);
+          chai.expect(post.references[0].id).to.be.eq(2);
           done();
         }).catch(done);
       });
   });
   it(
-    'correctly updates replies of removed and added referencies',
+    'correctly updates replies of removed and added references',
     (done) => {
       supertest(app).patch('/posts/6')
-        .send({ post: { referencies: [4] } })
+        .send({ post: { references: [4] } })
         .end((err, res) => {
           chai.expect(res.status).to.eq(204);
           const repo = getRepository(Post);

@@ -4,7 +4,7 @@ import { IReply } from './reply';
 
 export interface IDomainPostService {
   replyToThread(reply: IReply): { post: Post, thread: Thread, refs: Post[] };
-  syncReferencies(post: Post, newReferencies: Post[]): Post[];
+  syncReferences(post: Post, newReferences: Post[]): Post[];
 }
 
 export interface IPostService {
@@ -12,7 +12,7 @@ export interface IPostService {
     threadId: number;
     body: string;
     attachmentIds: number[];
-    referencies: number[];
+    references: number[];
   }): Promise<Post>;
 
   updatePost(request: {
@@ -20,6 +20,6 @@ export interface IPostService {
     threadId: number | null;
     body: string | null;
     attachmentIds: number[] | null;
-    referencies: number[] | null;
+    references: number[] | null;
   }): Promise<void>;
 }

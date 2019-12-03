@@ -27,7 +27,7 @@ export class Post {
 
   @ManyToMany(type => Post)
   @JoinTable()
-  referencies: Post[];
+  references: Post[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
@@ -42,9 +42,9 @@ export class Post {
     this.body = obj.body;
   }
 
-  static create(body: string, referencies: Post[], attachments: Attachment[]) {
+  static create(body: string, references: Post[], attachments: Attachment[]) {
     const post = new Post({ body });
-    post.referencies = referencies;
+    post.references = references;
     post.attachments = attachments;
     return post;
   }
@@ -64,18 +64,18 @@ export class Post {
   }
 
   /***
-   * Updates referencies by adding the Post to their replies
+   * Updates references by adding the Post to their replies
    */
   addPostToRefsReplies() {
-    this.referencies.forEach((ref: Post) => ref.addReply(this));
+    this.references.forEach((ref: Post) => ref.addReply(this));
   }
   /***
-   * Removes referencies and returns removed
+   * Removes references and returns removed
    */
-  removeReferenciesByIds(ids: number[]): Post[] {
-    const removedRefs = this.referencies.filter(p => ids.includes(p.id));
+  removeReferencesByIds(ids: number[]): Post[] {
+    const removedRefs = this.references.filter(p => ids.includes(p.id));
     removedRefs.forEach(ref => ref.removeReply(this.id));
-    this.referencies = this.referencies.filter(p => !ids.includes(p.id));
+    this.references = this.references.filter(p => !ids.includes(p.id));
     return removedRefs;
   }
 }

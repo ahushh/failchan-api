@@ -8,7 +8,7 @@ import { PostService } from '../../service/post.service';
 interface IRequest {
   body: string;
   attachment: string;
-  referencies: number[];
+  references: number[];
   threadId: number;
 }
 
@@ -26,7 +26,7 @@ export class CreatePostAction implements IAction {
     const newRequest = {
       attachmentIds,
       body: request.body,
-      referencies: request.referencies,
+      references: request.references,
       threadId: request.threadId,
     };
     return this.postService.replyToThread(newRequest);

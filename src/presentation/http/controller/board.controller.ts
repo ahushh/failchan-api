@@ -73,7 +73,7 @@ export class BoardController implements interfaces.Controller {
         boardSlug,
         body: request.body.post.body,
         attachment: request.body.post.attachment,
-        referencies: request.body.post.referencies,
+        references: request.body.post.references,
         threadId: request.body.post.threadId,
       });
       response.json({ thread });

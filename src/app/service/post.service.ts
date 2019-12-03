@@ -21,15 +21,15 @@ export class PostService implements IPostService {
     threadId: number;
     body: string;
     attachmentIds: number[];
-    referencies: number[];
+    references: number[];
   }): Promise<Post> {
     const thread = await this.threadRepo.findOneOrFail(request.threadId);
     const attachments = await this.attachmentRepo.findByIds(request.attachmentIds);
-    const referencies = await this.postRepo.findByIds(request.referencies, {
+    const references = await this.postRepo.findByIds(request.references, {
       relations: ['replies'],
     });
     const { post, thread: newThread, refs } = this.postService.replyToThread({
-      thread, attachments, referencies, body: request.body,
+      thread, attachments, references, body: request.body,
     });
     await getManager().transaction(async (manager) => {
       await manager.save(newThread);
@@ -37,7 +37,7 @@ export class PostService implements IPostService {
       await manager.save(refs);
     });
     return this.postRepo.findOneOrFail(post.id, {
-      relations: ['referencies', 'attachments', 'replies'],
+      relations: ['references', 'attachments', 'replies'],
     });
   }
 
@@ -46,10 +46,10 @@ export class PostService implements IPostService {
     threadId: number | null;
     body: string | null;
     attachmentIds: number[] | null;
-    referencies: number[] | null;
+    references: number[] | null;
   }): Promise<void> {
     const post = await this.postRepo.findOneOrFail(request.postId, {
-      relations: ['referencies', 'referencies.replies'],
+      relations: ['references', 'references.replies'],
     });
     if (request.threadId) {
       const thread = await this.threadRepo.findOneOrFail(request.threadId);
@@ -58,11 +58,11 @@ export class PostService implements IPostService {
     if (request.body) {
       post.body = request.body;
     }
-    if (request.referencies) {
-      const newReferencies = await this.postRepo.findByIds(request.referencies, {
+    if (request.references) {
+      const newReferences = await this.postRepo.findByIds(request.references, {
         relations: ['replies'],
       });
-      const syncedRefs = this.postService.syncReferencies(post, newReferencies);
+      const syncedRefs = this.postService.syncReferences(post, newReferences);
       await this.postRepo.save(syncedRefs);
     }
     if (request.attachmentIds) {
@@ -73,7 +73,7 @@ export class PostService implements IPostService {
 
   async findOneById(id: number): Promise<Post> {
     return this.postRepo.findOneOrFail(id, {
-      relations: ['referencies', 'attachments', 'replies'],
+      relations: ['references', 'attachments', 'replies'],
     });
   }
 }

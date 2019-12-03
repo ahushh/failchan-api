@@ -21,7 +21,7 @@ export class ThreadRepository extends Repository<Thread> implements IThreadRepos
       order: {
         updatedAt: 'DESC',
       },
-      relations: ['posts', 'posts.attachments', 'posts.replies', 'posts.referencies'],
+      relations: ['posts', 'posts.attachments', 'posts.replies', 'posts.references'],
     });
     threads.forEach((thread: Thread) => {
       thread.sortPosts();
@@ -33,7 +33,7 @@ export class ThreadRepository extends Repository<Thread> implements IThreadRepos
   }
   async getThreadWithRelations(id: number): Promise<Thread> {
     return await this.findOneOrFail(id, {
-      relations: ['posts', 'posts.attachments', 'posts.replies', 'posts.referencies'],
+      relations: ['posts', 'posts.attachments', 'posts.replies', 'posts.references'],
     });
   }
 }

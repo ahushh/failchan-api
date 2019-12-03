@@ -32,7 +32,7 @@ describe('Posts creation', () => {
 
   it('creates a new post and bumps thread', (done) => {
     supertest(app).post(`/threads/${thread.id}/posts`)
-      .send({ post: { body: 'should not fail', attachments: [], referencies: [] } })
+      .send({ post: { body: 'should not fail', attachments: [], references: [] } })
       .end((err, res) => {
         chai.expect(res.status).to.eq(200);
         const repo = getCustomRepository(ThreadRepository);
@@ -48,7 +48,7 @@ describe('Posts creation', () => {
   });
   it('does not allow to reply to non-existent thread', (done) => {
     supertest(app).post('/threads/666/posts')
-      .send({ post: { body: 'should fail', attachments: [], referencies: [] } })
+      .send({ post: { body: 'should fail', attachments: [], references: [] } })
       .end((err, res) => {
         chai.expect(res.status).to.eq(404);
         chai.expect(res.body).to.include({
