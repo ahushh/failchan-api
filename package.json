@@ -16,7 +16,7 @@
     "e2e:one": "NODE_ENV=test mocha --opts src/__e2e__/mocha.opts",
     "e2e": "NODE_ENV=test mocha --opts src/__e2e__/mocha.opts 'src/__e2e__/integration/**/*.ts'",
     "e2e:coverage": "NODE_ENV=test nyc mocha --opts src/__e2e__/mocha.opts 'src/__e2e__/integration/**/*.ts'",
-    "db:run": "docker-compose up",
+    "db:run": "docker-compose up -d",
     "db:stop": "docker-compose down",
     "test:db:create": "docker-compose exec postgres createdb -Upostgres test",
     "test:db:drop": "docker-compose exec postgres dropdb -Upostgres test"

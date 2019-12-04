@@ -6,7 +6,7 @@ import { Attachment } from '../../domain/entity/attachment';
 import { Post } from '../../domain/entity/post';
 import { Thread } from '../../domain/entity/thread';
 import { IPostService } from '../../domain/interfaces/post.service';
-import { IDomainPostService } from '../../domain/services/post.service';
+import { DomainPostService } from '../../domain/services/post.service';
 import { IThreadRepository } from '../interfaces/thread.repo';
 import { IAttachmentRepository } from '../interfaces/attachment.repo';
 import { IPostRepository } from '../interfaces/post.repo';
@@ -17,7 +17,7 @@ export class PostService implements IPostService {
     @inject(IOC_TYPE.PostRepository) private postRepo: IPostRepository,
     @inject(IOC_TYPE.ThreadRepository) private threadRepo: IThreadRepository,
     @inject(IOC_TYPE.AttachmentRepository) private attachmentRepo: IAttachmentRepository,
-    @inject(IOC_TYPE.DomainPostService) private postService: IDomainPostService,
+    @inject(IOC_TYPE.DomainPostService) private postService: DomainPostService,
   ) { }
 
   async replyToThread(request: {

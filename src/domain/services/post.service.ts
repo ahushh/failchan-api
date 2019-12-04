@@ -3,13 +3,14 @@ import { IOC_TYPE } from '../../config/type';
 import { Post } from '../entity/post';
 import { Thread } from '../entity/thread';
 
-export interface IDomainPostService {
-  replyToThread(post: Post, thread: Thread): void;
-  syncReferences(post: Post, newReferences: Post[]): Post[];
-}
+// TODO: do we need it at all?
+// export interface IDomainPostService {
+//   replyToThread(post: Post, thread: Thread): void;
+//   syncReferences(post: Post, newReferences: Post[]): Post[];
+// }
 
 @provide(IOC_TYPE.DomainPostService)
-export class DomainPostService implements IDomainPostService {
+export class DomainPostService {
   constructor() { }
 
   replyToThread(post: Post, thread: Thread) {

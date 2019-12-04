@@ -1,6 +1,6 @@
 # What is it?
 
-Yet Another Imageboard (forum with pictures) API which I'm trying to build during researching in backend development, software design and DDD in particular, OOP and DB.
+Yet Another Imageboard (forum with pictures) API which I'm trying to build during researching in backend development, databases, software design and DDD/Onion/Hexagonal/Clean architectures in particular, OOP and FP paradigmes.
 
 # Initial setup
 
@@ -30,11 +30,21 @@ Yet Another Imageboard (forum with pictures) API which I'm trying to build duri
 
 # Troubles during e2e tests
 
-- Some tests fails with output `QueryFailedError: duplicate key value violates unique constraint`
+- All tests failed with output `error: database "test" does not exist`
+
+-- Need to create test DB first
+
+`npm run test:db:create`
+
+- Some or all tests failed with output `QueryFailedError: duplicate key value violates unique constraint`
 
 -- Try to recreate DB
 
 `npm run test:db:drop && npm run test:db:create`
+
+-- Try to stop and run Docker
+
+`npm run db:stop && npm run db:start`
 
 -- Run tests again
 
@@ -42,19 +52,17 @@ Yet Another Imageboard (forum with pictures) API which I'm trying to build duri
 
 # TODO
 
-* заменить сущности (сервисы, репозитории) на интерфейсы
-* нужно ли экшены класть в контейнер?
-* обновить пакеты
-* заменить tslint на eslint
-* добавить логирование, например через morgan
-* Перенести интерфейсы (например репозиторий) в слой домена
-* разделить тесты на unit и e2e
-* дописать изначальные условия в тест-кейсах, типа дано: ...
-* interfaces refactoring: IAttachmentFile
+* [WIP] заменить сущности (сервисы, репозитории) на интерфейсы
+* (?) should actions (use cases) be placed in IoC
+* update deps
+* tslint -> eslint
+* add logging, (?) use morgan 
+* add unit tests
+* (?) use BDD
 * attachments create - transaction & rollback
 * Events and websockets
 * Event bus
-* слой обработки ошибок
+* Error handling layer
 
 
 # Inspired by
@@ -66,8 +74,6 @@ https://github.com/citerus/dddsample-core
 https://github.com/dmiseev/ddd-node-starter
 
 https://github.com/inversify/inversify-express-example
-
-https://stackoverflow.com/questions/37534890/inversify-js-reflect-hasownmetadata-is-not-a-function
 
 https://github.com/joshuaalpuerto/node-ddd-boilerplate
 
