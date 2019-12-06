@@ -3,6 +3,8 @@ import { provide } from 'inversify-binding-decorators';
 import { IOC_TYPE } from '../../../config/type';
 import { IAction } from '../action';
 import { ThreadService } from '../../service/thread.service';
+import { AppErrorActionRequestValidation } from '../../errors/action';
+import { ValidationError } from '../../errors/validation';
 
 @provide(IOC_TYPE.ListThreadsByBoardAction)
 export class ListThreadsByBoardAction implements IAction {
@@ -30,7 +32,7 @@ export class ListThreadsByBoardAction implements IAction {
     this.take = take || this.take;
     this.skip = skip || this.skip;
     if (!boardSlug) {
-      throw new Error('Board slug must be specified');
+      throw new AppErrorActionRequestValidation('boardSlug', ValidationError.Required, boardSlug);
     }
 
     const request = {

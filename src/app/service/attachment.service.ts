@@ -13,6 +13,7 @@ import { IFile } from '../interfaces/file';
 import { IFileFactory } from '../interfaces/file.factory';
 import { IFileRepository } from '../interfaces/file.repo';
 import { ExpiredAttachmentService } from '../listeners/expired-attachments';
+import { AppErrorAttachmentCacheRecordNotFound } from '../errors/attachment';
 
 @fluentProvide(IOC_TYPE.AttachmentService).inSingletonScope().done(true)
 export class AttachmentService implements IAttachmentService {
@@ -67,9 +68,7 @@ export class AttachmentService implements IAttachmentService {
     const cacheEntry = await this.redis.get(cacheKey) as string;
     const dataEntry = await this.redis.get(dataKey) as string;
     if (cacheEntry === null || dataEntry === null) {
-      const error = new Error(`File bunch ${uid} not found`);
-      error.name = 'CacheRecordNotFound';
-      throw error;
+      throw new AppErrorAttachmentCacheRecordNotFound(uid);
     }
     try {
       return JSON.parse(dataEntry);

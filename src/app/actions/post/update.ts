@@ -3,6 +3,8 @@ import { provide } from 'inversify-binding-decorators';
 import { IOC_TYPE } from '../../../config/type';
 import { IAction } from '../action';
 import { PostService } from '../../service/post.service';
+import { AppErrorActionRequestValidation } from '../../errors/action';
+import { ValidationError } from '../../errors/validation';
 
 interface IRequest {
   postId: number;
@@ -21,8 +23,11 @@ export class UpdatePostAction implements IAction {
     const request = { ...originalRequest };
 
     request.postId = +request.postId;
-    if (!request.postId || isNaN(request.postId)) {
-      throw new Error('postId must be specified');
+    if (!request.postId) {
+      throw new AppErrorActionRequestValidation('postId', ValidationError.Required, request.postId);
+    }
+    if (isNaN(request.postId)) {
+      throw new AppErrorActionRequestValidation('postId', ValidationError.ShouldBeNumber, request.postId);
     }
     request.threadId = request.threadId ? +request.threadId : null;
     request.body = request.body === undefined ? null : request.body;

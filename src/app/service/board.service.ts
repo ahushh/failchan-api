@@ -4,8 +4,9 @@ import { provide } from 'inversify-binding-decorators';
 import { IOC_TYPE } from '../../config/type';
 import { Board } from '../../domain/entity/board';
 import { IBoardService } from '../../domain/interfaces/board.service';
-import { BOARD_ERRORS } from '../errors/board';
+import { BOARD_ERRORS, AppErrorBoardAlreadyExist } from '../errors/board';
 import { IBoardRepository } from '../interfaces/board.repo';
+import { AppErrorUnexpected } from '../errors/unexpected';
 
 @provide(IOC_TYPE.BoardService)
 export class BoardService implements IBoardService {
@@ -19,11 +20,9 @@ export class BoardService implements IBoardService {
       return await this.repo.save(board);
     } catch (e) {
       if (e.message.match('duplicate key value violates unique constraint')) {
-        const error = new Error(BOARD_ERRORS.ALREADY_EXISTS);
-        error.name = 'AlreadyExists';
-        throw error;
+        throw new AppErrorBoardAlreadyExist(e);
       }
-      throw e;
+      throw new AppErrorUnexpected(e);
     }
   }
   list(): Promise<Board[]> {

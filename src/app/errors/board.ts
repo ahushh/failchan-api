@@ -1,6 +1,9 @@
-// TODO: add well done error systems, .e.g. Either monad and ADT
+import { IAppError } from './error.interface';
 
-// tslint:disable-next-line:variable-name
-export const BOARD_ERRORS = {
-  ALREADY_EXISTS: 'Board with such slug already exists',
-};
+export class AppErrorBoardAlreadyExist implements IAppError {
+  name = 'AlreadyExist';
+  message = 'Board with such slug already exists';
+
+  constructor(public error) { }
+}
+
