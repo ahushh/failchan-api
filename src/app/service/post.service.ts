@@ -10,6 +10,7 @@ import { DomainPostService } from '../../domain/services/post.service';
 import { IThreadRepository } from '../interfaces/thread.repo';
 import { IAttachmentRepository } from '../interfaces/attachment.repo';
 import { IPostRepository } from '../interfaces/post.repo';
+import { TransactionService } from './transaction.service';
 
 @provide(IOC_TYPE.PostService)
 export class PostService implements IPostService {
@@ -18,6 +19,7 @@ export class PostService implements IPostService {
     @inject(IOC_TYPE.ThreadRepository) private threadRepo: IThreadRepository,
     @inject(IOC_TYPE.AttachmentRepository) private attachmentRepo: IAttachmentRepository,
     @inject(IOC_TYPE.DomainPostService) private postService: DomainPostService,
+    @inject(IOC_TYPE.TransactionService) private transactionService: TransactionService,
   ) { }
 
   async replyToThread(request: {
@@ -35,11 +37,12 @@ export class PostService implements IPostService {
     const post = Post.create({ references, attachments, body: request.body });
     this.postService.replyToThread(post, thread);
 
-    await getManager().transaction(async (manager) => {
+    await this.transactionService.run(async (manager) => {
       await manager.save(thread);
       await manager.save(post);
       await manager.save(post.references);
     });
+
     return this.postRepo.findOneOrFail(post.id, {
       relations: ['references', 'attachments', 'replies'],
     });

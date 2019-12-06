@@ -29,6 +29,7 @@ export const IOC_TYPE = {
   ThreadService: Symbol.for('ThreadService'),
 
   ExpiredAttachmentService: Symbol.for('ExpiredAttachmentService'),
+  TransactionService: Symbol.for('TransactionService'),
   // domain
   DomainPostService: Symbol.for('DomainPostService'),
 };
