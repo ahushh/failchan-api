@@ -4,7 +4,7 @@ import 'reflect-metadata';
 
 import { InversifyExpressServer } from 'inversify-express-utils';
 import { IOC_TYPE } from './config/type';
-import { createContainer } from './container';
+import { createContainer } from './config/container';
 import { ApplicationServer } from './presentation/http/server';
 
 export const createApplicationServer = async () => {

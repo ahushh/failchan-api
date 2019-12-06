@@ -12,6 +12,7 @@ export const IOC_TYPE = {
   ThreadRepository: Symbol.for('ThreadRepository'),
   PostRepository: Symbol.for('PostRepository'),
 
+  // app
   CreateAttachmentAction: Symbol.for('CreateAttachmentAction'),
   DeleteAttachmentAction: Symbol.for('DeleteAttachmentAction'),
   CreateBoardAction: Symbol.for('CreateBoardAction'),
@@ -21,10 +22,9 @@ export const IOC_TYPE = {
   CreateThreadAction: Symbol.for('CreateThreadAction'),
   ListThreadsByBoardAction: Symbol.for('ListThreadsByBoardAction'),
 
-  // app
   AttachmentService: Symbol.for('AttachmentService'),
   BoardService: Symbol.for('BoardService'),
-  PostService: Symbol.for('yoba peka PostService'),
+  PostService: Symbol.for('PostService'),
   PubSubService: Symbol.for('PubSubService'),
   ThreadService: Symbol.for('ThreadService'),
 

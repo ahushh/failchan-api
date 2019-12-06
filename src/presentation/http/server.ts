@@ -5,13 +5,14 @@ import { Application } from 'express';
 import { IORMConnection } from '../../infra/utils/create-orm-connection';
 import { checkTmpDir } from '../utils/check-tmp-dir';
 import { configAppFactory, errorConfigAppFactory } from './express';
+import { Container } from 'inversify';
 
 export class ApplicationServer {
   private port: any;
   connection: IORMConnection;
 
   app: Application;
-  container: any;
+  container: Container;
 
   constructor({
     createHttpServer,

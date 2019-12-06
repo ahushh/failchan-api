@@ -1,24 +1,24 @@
 import { AsyncContainerModule, interfaces } from 'inversify';
 import { getCustomRepository, Repository } from 'typeorm';
 
-import { IOC_TYPE } from './config/type';
+import { IOC_TYPE } from './type';
 
-import { Attachment } from './domain/entity/attachment';
-import { Board } from './domain/entity/board';
-import { Post } from './domain/entity/post';
-import { Thread } from './domain/entity/thread';
+import { Attachment } from '../domain/entity/attachment';
+import { Board } from '../domain/entity/board';
+import { Post } from '../domain/entity/post';
+import { Thread } from '../domain/entity/thread';
 
-import { AttachmentRepository } from './infra/repository/attachment.repo';
-import { BoardRepository } from './infra/repository/board.repo';
-import { AWSFileRepository } from './infra/repository/file/aws.repo';
-import { IFileRepository } from './app/interfaces/file.repo';
-import { TestFileRepository } from './infra/repository/file/test.repo';
-import { PostRepository } from './infra/repository/post.repo';
-import { ThreadRepository } from './infra/repository/thread.repo';
-import { createORMConnection, IORMConnection } from './infra/utils/create-orm-connection';
-import { createPubSubConnection } from './infra/utils/create-pubsub-connection';
-import { IPubSubConnection } from "./app/interfaces/IPubSubConnection";
-import { createRedisConnection, IRedisConnection } from './infra/utils/create-redis-connection';
+import { AttachmentRepository } from '../infra/repository/attachment.repo';
+import { BoardRepository } from '../infra/repository/board.repo';
+import { AWSFileRepository } from '../infra/repository/file/aws.repo';
+import { IFileRepository } from '../app/interfaces/file.repo';
+import { TestFileRepository } from '../infra/repository/file/test.repo';
+import { PostRepository } from '../infra/repository/post.repo';
+import { ThreadRepository } from '../infra/repository/thread.repo';
+import { createORMConnection, IORMConnection } from '../infra/utils/create-orm-connection';
+import { createPubSubConnection } from '../infra/utils/create-pubsub-connection';
+import { IPubSubConnection } from "../app/interfaces/IPubSubConnection";
+import { createRedisConnection, IRedisConnection } from '../infra/utils/create-redis-connection';
 
 export const bindings = new AsyncContainerModule(
   async (bind: interfaces.Bind, unbind: interfaces.Unbind) => {
