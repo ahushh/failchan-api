@@ -4,7 +4,7 @@ import { provide } from 'inversify-binding-decorators';
 import { IOC_TYPE } from '../../config/type';
 import { Board } from '../../domain/entity/board';
 import { IBoardService } from '../../domain/interfaces/board.service';
-import { BOARD_ERRORS, AppErrorBoardAlreadyExist } from '../errors/board';
+import { AppErrorBoardAlreadyExist } from '../errors/board';
 import { IBoardRepository } from '../interfaces/board.repo';
 import { AppErrorUnexpected } from '../errors/unexpected';
 
