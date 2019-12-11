@@ -23,10 +23,10 @@ import { createRedisConnection, IRedisConnection } from '../infra/utils/create-r
 export const bindings = new AsyncContainerModule(
   async (bind: interfaces.Bind, unbind: interfaces.Unbind) => {
 
-    await require('./presentation/http/controller/attachment.controller');
-    await require('./presentation/http/controller/board.controller');
-    await require('./presentation/http/controller/post.controller');
-    await require('./presentation/http/controller/thread.controller');
+    await require('../presentation/http/controller/attachment.controller');
+    await require('../presentation/http/controller/board.controller');
+    await require('../presentation/http/controller/post.controller');
+    await require('../presentation/http/controller/thread.controller');
 
     bind<Repository<Attachment>>(IOC_TYPE.AttachmentRepository).toDynamicValue(() => {
       return getCustomRepository(AttachmentRepository);
