@@ -52,6 +52,8 @@ Yet Another Imageboard (forum with pictures) API which I'm trying to build duri
 
 # TODO
 
+* POST /attachments: add to response expiresAt field
+* calculate file size
 * [WIP] заменить сущности (сервисы, репозитории) на интерфейсы
 * (?) should actions (use cases) be placed in IoC
 * update deps

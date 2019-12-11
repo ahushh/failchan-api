@@ -7,20 +7,20 @@ import { IFileRepository } from '../../../app/interfaces/file.repo';
 
 export type Body = Buffer | Uint8Array | Blob | string | Readable;
 
-export class AWSFileRepository implements IFileRepository {
+export class AWSS3FileRepository implements IFileRepository {
   bucket: S3;
 
   constructor() {
     this.bucket = new S3({
-      accessKeyId: process.env.AWS_KEY,
-      secretAccessKey: process.env.AWS_SECRET,
+      accessKeyId: process.env.AWSS3_KEY,
+      secretAccessKey: process.env.AWSS3_SECRET,
       region: 'eu-central-1',
     });
   }
 
   async uploadBuffer(buffer: Body, key: string): Promise<string> {
     return await this.bucket.upload({
-      Bucket: process.env.AWS_BUCKET as string,
+      Bucket: process.env.AWSS3_BUCKET as string,
       Key: key,
       Body: buffer,
       ACL: 'public-read',
@@ -30,7 +30,7 @@ export class AWSFileRepository implements IFileRepository {
   }
 
   /**
-   * Saves file and its thumbnail to AWS.
+   * Saves file and its thumbnail to AWSS3.
    * Fills in uri and thumbnail fields.
    * @param file IFile
    */
@@ -45,7 +45,7 @@ export class AWSFileRepository implements IFileRepository {
 
   async delete(keys: string[]): Promise<any> {
     return await this.bucket.deleteObjects({
-      Bucket: process.env.AWS_BUCKET as string,
+      Bucket: process.env.AWSS3_BUCKET as string,
       Delete: {
         Objects: keys.map(k => ({ Key: k })),
         Quiet: false,
