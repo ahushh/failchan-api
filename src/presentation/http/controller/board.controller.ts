@@ -37,7 +37,7 @@ export class BoardController implements interfaces.Controller {
       response.json({ board });
     } catch (e) {
       if (e.name === 'AlreadyExists') {
-        response.status(400).json({ error: e.message });
+        return response.status(400).json({ error: e.message });
       }
       next(e);
     }

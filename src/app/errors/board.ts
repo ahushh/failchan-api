@@ -1,7 +1,7 @@
 import { IAppError } from './error.interface';
 
 export class AppErrorBoardAlreadyExist implements IAppError {
-  name = 'AlreadyExist';
+  name = 'AlreadyExists';
   message = 'Board with such slug already exists';
 
   constructor(public error) { }
