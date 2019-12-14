@@ -20,7 +20,7 @@ export class TestFileRepository implements IFileRepository {
     const rs = fs.createReadStream(file.path);
     file.uri = await this.uploadBuffer(rs, file.storageKey);
     if (file.thumbnail) {
-      file.thumbnailUri = await this.uploadBuffer(file.thumbnail, file.md5);
+      file.thumbnailUri = await this.uploadBuffer(file.thumbnail, file.thumbnailStorageKey);
     }
     return file;
   }

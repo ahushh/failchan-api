@@ -29,6 +29,10 @@ export class GenericFile implements IFile {
     return `${this.md5}/${this.name}`;
   }
 
+  get thumbnailStorageKey() {
+    return `${this.md5}/t${this.name}`;
+  }
+
   async getExif(): Promise<void> {
     const ep = new exiftool.ExiftoolProcess(exiftoolBin);
     this.exif = await ep.open()

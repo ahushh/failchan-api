@@ -10,7 +10,7 @@ import { Thread } from '../domain/entity/thread';
 
 import { AttachmentRepository } from '../infra/repository/attachment.repo';
 import { BoardRepository } from '../infra/repository/board.repo';
-import { AWSS3FileRepository } from '../infra/repository/file/aws.repo';
+import { AwsS3FileRepository } from '../infra/repository/file/aws.repo';
 import { IFileRepository } from '../app/interfaces/file.repo';
 import { TestFileRepository } from '../infra/repository/file/test.repo';
 import { PostRepository } from '../infra/repository/post.repo';
@@ -48,7 +48,7 @@ export const bindings = new AsyncContainerModule(
       if (process.env.NODE_ENV === 'test') {
         return new TestFileRepository();
       }
-      return new AWSS3FileRepository();
+      return new AwsS3FileRepository();
     }).inRequestScope();
 
     const pubsubConnection = await createPubSubConnection();

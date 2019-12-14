@@ -5,6 +5,7 @@ export interface IFile {
   md5: string;
   uri: string;
   thumbnailUri: string;
+  thumbnailStorageKey: string;
   storageKey: string;
   thumbnail: Buffer | null;
   name: string;
