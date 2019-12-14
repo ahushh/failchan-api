@@ -1,5 +1,6 @@
 import S3 from 'aws-sdk/clients/s3';
 import { Blob } from 'aws-sdk/lib/dynamodb/document_client';
+import * as R from 'ramda';
 import fs from 'fs';
 import { Readable } from 'stream';
 import { IFile } from '../../../app/interfaces/file';
@@ -7,20 +8,24 @@ import { IFileRepository } from '../../../app/interfaces/file.repo';
 
 export type Body = Buffer | Uint8Array | Blob | string | Readable;
 
+interface IAwsConfig {
+  accessKeyId: string;
+  secretAccessKey: string;
+  region: string;
+}
+
 export class AwsS3FileRepository implements IFileRepository {
   bucket: S3;
 
-  constructor() {
-    this.bucket = new S3({
-      accessKeyId: process.env.AWS_S3_KEY,
-      secretAccessKey: process.env.AWS_S3_SECRET,
-      region: process.env.AWS_S3_REGION,
-    });
+  constructor(config: IAwsConfig, private bucketName: string)  {
+    this.bucket = new S3(
+      R.pickAll(['accessKeyId', 'secretAccessKey', 'region'], config),
+    );
   }
 
   async uploadBuffer(buffer: Body, key: string): Promise<string> {
     return await this.bucket.upload({
-      Bucket: process.env.AWS_S3_BUCKET as string,
+      Bucket: this.bucketName,
       Key: key,
       Body: buffer,
       ACL: 'public-read',
@@ -45,7 +50,7 @@ export class AwsS3FileRepository implements IFileRepository {
 
   async delete(keys: string[]): Promise<any> {
     return await this.bucket.deleteObjects({
-      Bucket: process.env.AWS_S3_BUCKET as string,
+      Bucket: this.bucketName,
       Delete: {
         Objects: keys.map(k => ({ Key: k })),
         Quiet: false,

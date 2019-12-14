@@ -13,7 +13,7 @@ describe('ImageFile class', () => {
   });
 
   it('creates a thumbnail without error', async () => {
-    const size: number = Number(process.env.THUMBNAIL_SIZE);
+    const size = 200;
     await file.generateThumbnail(size);
     await promisify(fs.writeFile)('/tmp/test-thumbnail.jpg', file.thumbnail);
   });

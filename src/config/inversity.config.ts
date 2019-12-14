@@ -20,6 +20,8 @@ import { createPubSubConnection } from '../infra/utils/create-pubsub-connection'
 import { IPubSubConnection } from "../app/interfaces/IPubSubConnection";
 import { createRedisConnection, IRedisConnection } from '../infra/utils/create-redis-connection';
 
+import { AppConfigService } from '../app/service/app-config.service';
+
 export const bindings = new AsyncContainerModule(
   async (bind: interfaces.Bind, unbind: interfaces.Unbind) => {
 
@@ -27,6 +29,18 @@ export const bindings = new AsyncContainerModule(
     await require('../presentation/http/controller/board.controller');
     await require('../presentation/http/controller/post.controller');
     await require('../presentation/http/controller/thread.controller');
+
+    bind<any>(IOC_TYPE.AppConfigService).toDynamicValue(() => {
+      return new AppConfigService({
+        ENV: (process.env.NODE_ENV as any),
+        AWS_S3_KEY: (process.env.AWS_S3_KEY as string),
+        AWS_S3_SECRET: (process.env.AWS_S3_SECRET as string),
+        AWS_S3_BUCKET: (process.env.AWS_S3_BUCKET as string),
+        AWS_S3_REGION: (process.env.AWS_S3_REGION as string),
+        THUMBNAIL_SIZE: +(process.env.THUMBNAIL_SIZE as string),
+        ATTACHMENT_TTL: +(process.env.ATTACHMENT_TTL as string),
+      });
+    }).inSingletonScope();
 
     bind<Repository<Attachment>>(IOC_TYPE.AttachmentRepository).toDynamicValue(() => {
       return getCustomRepository(AttachmentRepository);
@@ -44,11 +58,20 @@ export const bindings = new AsyncContainerModule(
       return getCustomRepository(PostRepository);
     }).inRequestScope();
 
-    bind<IFileRepository>(IOC_TYPE.FileRepository).toDynamicValue(() => {
-      if (process.env.NODE_ENV === 'test') {
+    bind<IFileRepository>(IOC_TYPE.FileRepository).toDynamicValue((context: interfaces.Context) => {
+      const configService = context.container.get<AppConfigService>(IOC_TYPE.AppConfigService);
+      const config = configService.getConfig();
+      if (config.ENV === 'test') {
         return new TestFileRepository();
       }
-      return new AwsS3FileRepository();
+      return new AwsS3FileRepository(
+        {
+          accessKeyId: config.AWS_S3_KEY,
+          secretAccessKey: config.AWS_S3_SECRET,
+          region: config.AWS_S3_REGION,
+        },
+        config.AWS_S3_BUCKET,
+      );
     }).inRequestScope();
 
     const pubsubConnection = await createPubSubConnection();

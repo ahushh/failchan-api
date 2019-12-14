@@ -7,12 +7,15 @@ import { Container } from 'inversify';
 import rimraf from 'rimraf';
 import { ApplicationServer } from '../../../presentation/http/server';
 import { getTestApplicationServer } from '../../../server.test';
+import { IOC_TYPE } from '../../../config/type';
+import { AppConfigService } from '../../../app/service/app-config.service';
 
 const TEMP_DIR = process.env.TEMP_DIR = '/tmp/failchan-test';
 
 let app: Application;
 let container: Container;
 let testApplicationServer: ApplicationServer;
+let ATTACHMENT_TTL;
 
 describe('Attachment creation', () => {
   before(async () => {
@@ -21,6 +24,9 @@ describe('Attachment creation', () => {
 
     app = testApplicationServer.app;
     container = testApplicationServer.container;
+
+    ATTACHMENT_TTL = container.get<AppConfigService>(IOC_TYPE.AppConfigService)
+      .getConfig().ATTACHMENT_TTL;
   });
   beforeEach(() => {
     rimraf.sync(TEMP_DIR);
@@ -36,7 +42,7 @@ describe('Attachment creation', () => {
       .end((err, res) => {
         chai.expect(res.status).to.eq(200);
         chai.expect(res.body).to.include.keys(['expiresAt']);
-        const expiresAt = (1000 * +(process.env.ATTACHMENT_TTL as string)) + +new Date();
+        const expiresAt = (1000 * ATTACHMENT_TTL) + +new Date();
         chai.expect(Math.round(res.body.expiresAt / 1000)).to
           .be.equal(Math.round(expiresAt / 1000));
         done();
@@ -67,7 +73,9 @@ describe('Attachment creation', () => {
       });
   });
   it('clears uploaded file when it expires', (done) => {
-    process.env.ATTACHMENT_TTL = '1';
+    container.get<AppConfigService>(IOC_TYPE.AppConfigService).setConfig({
+      ATTACHMENT_TTL: 1,
+    });
     supertest(app).post('/attachments')
       .attach('attachments', `${__dirname}/test-image.jpg`)
       .end((err, res) => {

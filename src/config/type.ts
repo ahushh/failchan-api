@@ -13,6 +13,8 @@ export const IOC_TYPE = {
   PostRepository: Symbol.for('PostRepository'),
 
   // app
+  AppConfigService: Symbol.for('AppConfigService'),
+
   CreateAttachmentAction: Symbol.for('CreateAttachmentAction'),
   DeleteAttachmentAction: Symbol.for('DeleteAttachmentAction'),
   CreateBoardAction: Symbol.for('CreateBoardAction'),
