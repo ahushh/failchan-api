@@ -50,7 +50,7 @@ export class GenericFile implements IFile {
       });
     });
   }
-  generateThumbnail() {
+  generateThumbnail(size = 200) {
     return Promise.resolve<void>(void (0));
   }
   toJSON() {

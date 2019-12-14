@@ -15,6 +15,6 @@ export interface IFile {
   getExif(): Promise<void>;
 
   calculateMd5(): Promise<void>;
-  generateThumbnail(): Promise<void>;
+  generateThumbnail(size?: number): Promise<void>;
   toJSON(): INewAttachment;
 }
