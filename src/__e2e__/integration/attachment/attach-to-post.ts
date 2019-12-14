@@ -4,7 +4,7 @@ import { Container } from 'inversify';
 import supertest from 'supertest';
 import { getCustomRepository } from 'typeorm';
 
-import { IAction } from '../../../app/interfaces/action';
+import { IAction } from '../../../app/actions/action';
 import { IOC_TYPE } from '../../../config/type';
 import { Board } from '../../../domain/entity/board';
 import { Thread } from '../../../domain/entity/thread';
@@ -38,12 +38,13 @@ describe('Attachment and posts', () => {
     await replyToThreadFactory(container)(thread, 'op');
 
     const action: IAction = container.get(IOC_TYPE.CreateAttachmentAction);
-    uuid = await action.execute([{
+    const response = await action.execute([{
       mimetype: 'image/jpeg',
       size: 1000,
       path: `${__dirname}/test-image.jpg`,
       originalname: 'test-image.jpg',
     }]);
+    uuid = response.uid;
   });
   after(async () => {
     await testApplicationServer.connection.synchronize(true);

@@ -1,4 +1,9 @@
-// tslint:disable-next-line:variable-name
-export const BOARD_ERRORS = {
-  ALREADY_EXISTS: 'Board with such slug already exists',
-};
+import { IAppError } from './error.interface';
+
+export class AppErrorBoardAlreadyExist implements IAppError {
+  name = 'AlreadyExists';
+  message = 'Board with such slug already exists';
+
+  constructor(public error) { }
+}
+

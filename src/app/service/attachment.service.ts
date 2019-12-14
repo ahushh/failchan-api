@@ -7,34 +7,43 @@ import { inject } from 'inversify';
 import { fluentProvide, provide } from 'inversify-binding-decorators';
 import { IOC_TYPE } from '../../config/type';
 import { IAttachmentFile } from '../../domain/interfaces/attachment-file';
-import { FileFactory, IFileFactory } from '../../infra/class/file/file.factory';
-import { IFile } from '../../infra/class/file/file.interface';
-import { IFileRepository } from '../../infra/repository/file/file.repo.interface';
+import { IAttachmentService } from '../../domain/interfaces/attachment.service';
+import { IAttachmentRepository } from '../interfaces/attachment.repo';
+import { IFile } from '../interfaces/file';
+import { IFileFactory } from '../interfaces/file.factory';
+import { IFileRepository } from '../interfaces/file.repo';
 import { ExpiredAttachmentService } from '../listeners/expired-attachments';
+import { AppErrorAttachmentCacheRecordNotFound } from '../errors/attachment';
+import { AppConfigService } from './app-config.service';
 
-// @provide(IOC_TYPE.AttachmentService)
 @fluentProvide(IOC_TYPE.AttachmentService).inSingletonScope().done(true)
-export class AttachmentService {
+export class AttachmentService implements IAttachmentService {
   constructor(
+    // TODO: move interface declarations
     @inject(IOC_TYPE.FileFactory) public fileFactory: IFileFactory,
-    @inject(IOC_TYPE.AttachmentRepository) public repo: Repository<Attachment>,
+    @inject(IOC_TYPE.AttachmentRepository) public repo: IAttachmentRepository,
+    // TODO: add interface for cache
     @inject(IOC_TYPE.RedisConnection) public redis: Redis,
     @inject(IOC_TYPE.ExpiredAttachmentService) public expiredAttachment: ExpiredAttachmentService,
     @inject(IOC_TYPE.FileRepository) public fileRepo: IFileRepository,
+    @inject(IOC_TYPE.AppConfigService) public appConfig: AppConfigService,
   ) {
     expiredAttachment.listen();
+  }
+
+  private getExpiresAt(): Date {
+    const now = +new Date();
+    return new Date(now + (1000 * this.appConfig.getConfig().ATTACHMENT_TTL));
   }
 
   private create = async (request: IAttachmentFile): Promise<Attachment> => {
     const file: IFile = this.fileFactory.create(request);
     await file.calculateMd5();
-    await file.generateThumbnail();
+    await file.generateThumbnail(this.appConfig.getConfig().THUMBNAIL_SIZE);
     await file.getExif();
     await this.fileRepo.save(file);
-    const { uri, thumbnailUri, exif, md5, mime, name, size } = await file.toJSON();
-    return Attachment.create(
-      exif, md5, mime, name, thumbnailUri, uri, size,
-    );
+    const json = await file.toJSON();
+    return Attachment.create(json);
   }
 
   async createFromCache(id: string): Promise<number[]> {
@@ -47,9 +56,10 @@ export class AttachmentService {
     const uid = uuidv4();
     const cacheKey = `attachment:cache:${uid}`;
     const dataKey = `attachment:data:${uid}`;
-    await this.redis.set(cacheKey, 1, 'EX', process.env.ATTACHMENT_TTL);
+    const expiresAt = this.getExpiresAt();
+    await this.redis.set(cacheKey, 1, 'EX', this.appConfig.getConfig().ATTACHMENT_TTL);
     await this.redis.set(dataKey, JSON.stringify(files));
-    return uid;
+    return { uid, expiresAt };
   }
 
   async delete(ids: number[]) {
@@ -66,9 +76,7 @@ export class AttachmentService {
     const cacheEntry = await this.redis.get(cacheKey) as string;
     const dataEntry = await this.redis.get(dataKey) as string;
     if (cacheEntry === null || dataEntry === null) {
-      const error = new Error(`File bunch ${uid} not found`);
-      error.name = 'CacheRecordNotFound';
-      throw error;
+      throw new AppErrorAttachmentCacheRecordNotFound(uid);
     }
     try {
       return JSON.parse(dataEntry);

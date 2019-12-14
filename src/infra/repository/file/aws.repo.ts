@@ -1,26 +1,31 @@
 import S3 from 'aws-sdk/clients/s3';
 import { Blob } from 'aws-sdk/lib/dynamodb/document_client';
+import * as R from 'ramda';
 import fs from 'fs';
 import { Readable } from 'stream';
-import { IFile } from '../../class/file/file.interface';
-import { IFileRepository } from './file.repo.interface';
+import { IFile } from '../../../app/interfaces/file';
+import { IFileRepository } from '../../../app/interfaces/file.repo';
 
 export type Body = Buffer | Uint8Array | Blob | string | Readable;
 
-export class AWSFileRepository implements IFileRepository {
+interface IAwsConfig {
+  accessKeyId: string;
+  secretAccessKey: string;
+  region: string;
+}
+
+export class AwsS3FileRepository implements IFileRepository {
   bucket: S3;
 
-  constructor() {
-    this.bucket = new S3({
-      accessKeyId: process.env.AWS_KEY,
-      secretAccessKey: process.env.AWS_SECRET,
-      region: 'eu-central-1',
-    });
+  constructor(config: IAwsConfig, private bucketName: string)  {
+    this.bucket = new S3(
+      R.pickAll(['accessKeyId', 'secretAccessKey', 'region'], config),
+    );
   }
 
   async uploadBuffer(buffer: Body, key: string): Promise<string> {
     return await this.bucket.upload({
-      Bucket: process.env.AWS_BUCKET as string,
+      Bucket: this.bucketName,
       Key: key,
       Body: buffer,
       ACL: 'public-read',
@@ -30,7 +35,7 @@ export class AWSFileRepository implements IFileRepository {
   }
 
   /**
-   * Saves file and its thumbnail to AWS.
+   * Saves file and its thumbnail to AWS S3
    * Fills in uri and thumbnail fields.
    * @param file IFile
    */
@@ -38,14 +43,14 @@ export class AWSFileRepository implements IFileRepository {
     const rs = fs.createReadStream(file.path);
     file.uri = await this.uploadBuffer(rs, file.storageKey);
     if (file.thumbnail) {
-      file.thumbnailUri = await this.uploadBuffer(file.thumbnail, file.md5);
+      file.thumbnailUri = await this.uploadBuffer(file.thumbnail, file.thumbnailStorageKey);
     }
     return file;
   }
 
   async delete(keys: string[]): Promise<any> {
     return await this.bucket.deleteObjects({
-      Bucket: process.env.AWS_BUCKET as string,
+      Bucket: this.bucketName,
       Delete: {
         Objects: keys.map(k => ({ Key: k })),
         Quiet: false,

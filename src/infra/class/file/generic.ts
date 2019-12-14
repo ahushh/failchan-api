@@ -3,8 +3,8 @@ import fs from 'fs';
 import md5 from 'md5';
 import exiftool from 'node-exiftool';
 import R from 'ramda';
+import { IFile } from '../../../app/interfaces/file';
 import { IAttachmentFile } from '../../../domain/interfaces/attachment-file';
-import { IFile } from './file.interface';
 export class GenericFile implements IFile {
   path: string;
   name: string;
@@ -29,6 +29,10 @@ export class GenericFile implements IFile {
     return `${this.md5}/${this.name}`;
   }
 
+  get thumbnailStorageKey() {
+    return `${this.md5}/t${this.name}`;
+  }
+
   async getExif(): Promise<void> {
     const ep = new exiftool.ExiftoolProcess(exiftoolBin);
     this.exif = await ep.open()
@@ -46,7 +50,7 @@ export class GenericFile implements IFile {
       });
     });
   }
-  generateThumbnail() {
+  generateThumbnail(size = 200) {
     return Promise.resolve<void>(void (0));
   }
   toJSON() {
@@ -56,7 +60,7 @@ export class GenericFile implements IFile {
       uri: this.uri,
       thumbnailUri: this.thumbnailUri,
       mime: this.mime,
-      name: this.name,
+      originalName: this.name,
       size: this.size,
     };
   }

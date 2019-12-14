@@ -1,0 +1,1 @@
+Set of interfaces (or ports) which describe how this domain will be used

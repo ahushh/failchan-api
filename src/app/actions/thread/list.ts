@@ -1,8 +1,11 @@
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import { IOC_TYPE } from '../../../config/type';
-import { IAction } from '../../interfaces/action';
+import { AppErrorActionRequestValidation } from '../../errors/action';
+import { ValidationError } from '../../errors/validation';
 import { ThreadService } from '../../service/thread.service';
+import { IAction } from '../action';
+import { AppConfigService } from '../../service/app-config.service';
 
 @provide(IOC_TYPE.ListThreadsByBoardAction)
 export class ListThreadsByBoardAction implements IAction {
@@ -10,17 +13,21 @@ export class ListThreadsByBoardAction implements IAction {
   static TEST_THREADS_LISTING_PREVIEW_POSTS = 2;
 
   boardSlug: string;
-  previewPosts = process.env.NODE_ENV === 'test'
-    ? ListThreadsByBoardAction.TEST_THREADS_LISTING_PREVIEW_POSTS
-    : 5;
-  take = process.env.NODE_ENV === 'test'
-    ? ListThreadsByBoardAction.TEST_THREADS_LISTING_TAKE
-    : 10;
+  previewPosts = 5;
+  take = 10;
   skip = 0;
 
   constructor(
     @inject(IOC_TYPE.ThreadService) public service: ThreadService,
-  ) {}
+    @inject(IOC_TYPE.AppConfigService) public appConfig: AppConfigService,
+  ) {
+    this.previewPosts = this.appConfig.getConfig().ENV === 'test'
+    ? ListThreadsByBoardAction.TEST_THREADS_LISTING_PREVIEW_POSTS
+    : 5;
+    this.take = this.appConfig.getConfig().ENV === 'test'
+    ? ListThreadsByBoardAction.TEST_THREADS_LISTING_TAKE
+    : 10;
+  }
 
   execute(request: { boardSlug: string, previewPosts?: number, take?: number, skip?: number });
 
@@ -30,7 +37,7 @@ export class ListThreadsByBoardAction implements IAction {
     this.take = take || this.take;
     this.skip = skip || this.skip;
     if (!boardSlug) {
-      throw new Error('Board slug must be specified');
+      throw new AppErrorActionRequestValidation('boardSlug', ValidationError.Required, boardSlug);
     }
 
     const request = {
