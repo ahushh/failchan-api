@@ -38,12 +38,13 @@ describe('Attachment and posts', () => {
     await replyToThreadFactory(container)(thread, 'op');
 
     const action: IAction = container.get(IOC_TYPE.CreateAttachmentAction);
-    uuid = await action.execute([{
+    const response = await action.execute([{
       mimetype: 'image/jpeg',
       size: 1000,
       path: `${__dirname}/test-image.jpg`,
       originalname: 'test-image.jpg',
     }]);
+    uuid = response.uid;
   });
   after(async () => {
     await testApplicationServer.connection.synchronize(true);

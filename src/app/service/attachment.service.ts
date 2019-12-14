@@ -29,6 +29,11 @@ export class AttachmentService implements IAttachmentService {
     expiredAttachment.listen();
   }
 
+  private getExpiresAt(): Date {
+    const now = +new Date();
+    return new Date(now + (1000 * +(process.env.ATTACHMENT_TTL as string)));
+  }
+
   private create = async (request: IAttachmentFile): Promise<Attachment> => {
     const file: IFile = this.fileFactory.create(request);
     await file.calculateMd5();
@@ -49,9 +54,10 @@ export class AttachmentService implements IAttachmentService {
     const uid = uuidv4();
     const cacheKey = `attachment:cache:${uid}`;
     const dataKey = `attachment:data:${uid}`;
+    const expiresAt = this.getExpiresAt();
     await this.redis.set(cacheKey, 1, 'EX', process.env.ATTACHMENT_TTL);
     await this.redis.set(dataKey, JSON.stringify(files));
-    return uid;
+    return { uid, expiresAt };
   }
 
   async delete(ids: number[]) {

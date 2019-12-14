@@ -38,8 +38,8 @@ export class AttachmentController implements interfaces.Controller {
         R.pick(['path', 'originalname', 'mimetype', 'size']),
       ),
     );
-    const uid = await this.createAttachmentAction.execute(filesPrepared);
-    response.json({ uid });
+    const { uid, expiresAt } = await this.createAttachmentAction.execute(filesPrepared);
+    response.json({ uid, expiresAt: +expiresAt });
   }
 
   @httpDelete('/')

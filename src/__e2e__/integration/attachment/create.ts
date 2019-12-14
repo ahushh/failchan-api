@@ -30,12 +30,24 @@ describe('Attachment creation', () => {
     await testApplicationServer.connection.synchronize(true);
   });
 
+  it('returns correct expiresAt field accurate to second', (done) => {
+    supertest(app).post('/attachments')
+      .attach('attachments', `${__dirname}/test-image.jpg`)
+      .end((err, res) => {
+        chai.expect(res.status).to.eq(200);
+        chai.expect(res.body).to.include.keys(['expiresAt']);
+        const expiresAt = (1000 * +(process.env.ATTACHMENT_TTL as string)) + +new Date();
+        chai.expect(Math.round(res.body.expiresAt / 1000)).to
+          .be.equal(Math.round(expiresAt / 1000));
+        done();
+      });
+  });
   it('stores file in a tmp subdir keeping original name', (done) => {
     supertest(app).post('/attachments')
       .attach('attachments', `${__dirname}/test-image.jpg`)
       .end((err, res) => {
         chai.expect(res.status).to.eq(200);
-        chai.expect(res.body).to.have.keys(['uid']);
+        chai.expect(res.body).to.include.keys(['uid']);
         fs.readdir(TEMP_DIR, (err, files) => {
           chai.expect(err).to.be.null;
           chai.expect(
@@ -60,7 +72,7 @@ describe('Attachment creation', () => {
       .attach('attachments', `${__dirname}/test-image.jpg`)
       .end((err, res) => {
         chai.expect(res.status).to.eq(200);
-        chai.expect(res.body).to.have.keys(['uid']);
+        chai.expect(res.body).to.include.keys(['uid']);
         let watcher;
         watcher = fs.watch(TEMP_DIR, (eventType, filename) => {
           if (eventType !== 'rename') {
