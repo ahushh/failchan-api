@@ -13,14 +13,15 @@
     "clean": "rm -fr dist",
     "build": "npm run clean && tsc",
     "typeorm": "ts-node ./node_modules/.bin/typeorm",
+    "db:start": "docker-compose up -d",
+    "db:stop": "docker-compose down",
     "test": "NODE_ENV=test mocha --opts src/__e2e__/mocha.opts 'src/**/*.test.ts'",
     "e2e:one": "NODE_ENV=test mocha --opts src/__e2e__/mocha.opts",
     "e2e": "NODE_ENV=test mocha --opts src/__e2e__/mocha.opts 'src/__e2e__/integration/**/*.ts'",
     "e2e:coverage": "NODE_ENV=test nyc mocha --opts src/__e2e__/mocha.opts 'src/__e2e__/integration/**/*.ts'",
-    "db:run": "docker-compose up -d",
-    "db:stop": "docker-compose down",
-    "test:db:create": "docker-compose exec postgres createdb -Upostgres test",
-    "test:db:drop": "docker-compose exec postgres dropdb -Upostgres test"
+    "e2e:db:create": "docker-compose exec postgres createdb -Upostgres test",
+    "e2e:db:drop": "docker-compose exec postgres dropdb -Upostgres test",
+    "e2e:db:reset": "npm run test:db:drop && npm run test:db:create"
   },
   "dependencies": {
     "@types/aws-sdk": "^2.7.0",

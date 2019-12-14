@@ -34,13 +34,13 @@ Yet Another Imageboard (forum with pictures) API which I'm trying to build duri
 
 -- Need to create test DB first
 
-`npm run test:db:create`
+`npm run e2e:db:create`
 
 - Some or all tests failed with output `QueryFailedError: duplicate key value violates unique constraint`
 
 -- Try to recreate DB
 
-`npm run test:db:drop && npm run test:db:create`
+`npm run e2e:reset`
 
 -- Try to stop and run Docker
 
