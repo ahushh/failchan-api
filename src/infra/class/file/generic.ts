@@ -1,10 +1,14 @@
-import exiftoolBin from 'dist-exiftool';
+import { promisify } from 'util';
 import fs from 'fs';
-import md5 from 'md5';
+
+import exiftoolBin from 'dist-exiftool';
 import exiftool from 'node-exiftool';
+import md5 from 'md5';
 import R from 'ramda';
+
 import { IFile } from '../../../app/interfaces/file';
 import { IAttachmentFile } from '../../../domain/interfaces/attachment-file';
+
 export class GenericFile implements IFile {
   path: string;
   name: string;
@@ -37,18 +41,14 @@ export class GenericFile implements IFile {
     const ep = new exiftool.ExiftoolProcess(exiftoolBin);
     this.exif = await ep.open()
       .then(() => ep.readMetadata(this.path, ['-File:all']))
-      .then(result => R.omit(['SourceFile'], result.data[0]))
+      .then(R.prop('data'))
+      .then(R.head)
+      .then(R.omit(['SourceFile']))
       .catch(() => ep.close());
   }
   async calculateMd5(): Promise<void> {
-    this.md5 = await new Promise<string>((resolve, reject) => {
-      fs.readFile(this.path, (err, buff) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(md5(buff));
-      });
-    });
+    const buff = await promisify(fs.readFile)(this.path);
+    this.md5 = md5(buff);
   }
   generateThumbnail(size = 200) {
     return Promise.resolve<void>(void (0));
