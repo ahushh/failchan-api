@@ -38,10 +38,19 @@ export class AttachmentService implements IAttachmentService {
 
   private create = async (request: IAttachmentFile): Promise<Attachment> => {
     const file: IFile = this.fileFactory.create(request);
+    console.log('anus');
+    console.time('calculateMd5');
     await file.calculateMd5();
+    console.timeEnd('calculateMd5');
+    console.time('thumbnail');
     await file.generateThumbnail(this.appConfig.getConfig().THUMBNAIL_SIZE);
+    console.timeEnd('thumbnail');
+    console.time('exif');
     await file.getExif();
+    console.timeEnd('exif');
+    console.time('repo');
     await this.fileRepo.save(file);
+    console.timeEnd('repo');
     const json = await file.toJSON();
     return Attachment.create(json);
   }

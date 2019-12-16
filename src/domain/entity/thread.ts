@@ -38,4 +38,17 @@ export class Thread {
   bump() {
     this.bumpCount = (this.bumpCount || 0) + 1;
   }
+
+  /**
+   * @description Bumps thread, makes this thread to be parent of given post, updates post's references
+   * @date 2019-12-16
+   * @param {Post} post
+   * @memberof Thread
+   */
+  replyWith(post: Post) {
+    this.bump();
+    post.thread = this;
+    // thread.posts = [post];
+    post.addPostToRefsReplies();
+  }
 }

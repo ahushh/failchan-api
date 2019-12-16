@@ -6,7 +6,6 @@ import { Attachment } from '../../domain/entity/attachment';
 import { Post } from '../../domain/entity/post';
 import { Thread } from '../../domain/entity/thread';
 import { IPostService } from '../../domain/interfaces/post.service';
-import { DomainPostService } from '../../domain/services/post.service';
 import { IThreadRepository } from '../interfaces/thread.repo';
 import { IAttachmentRepository } from '../interfaces/attachment.repo';
 import { IPostRepository } from '../interfaces/post.repo';
@@ -18,7 +17,6 @@ export class PostService implements IPostService {
     @inject(IOC_TYPE.PostRepository) private postRepo: IPostRepository,
     @inject(IOC_TYPE.ThreadRepository) private threadRepo: IThreadRepository,
     @inject(IOC_TYPE.AttachmentRepository) private attachmentRepo: IAttachmentRepository,
-    @inject(IOC_TYPE.DomainPostService) private postService: DomainPostService,
     @inject(IOC_TYPE.TransactionService) private transactionService: TransactionService,
   ) { }
 
@@ -35,7 +33,7 @@ export class PostService implements IPostService {
     });
 
     const post = Post.create({ references, attachments, body: request.body });
-    this.postService.replyToThread(post, thread);
+    thread.replyWith(post);
 
     await this.transactionService.run(async (manager) => {
       await manager.save(thread);
@@ -69,8 +67,8 @@ export class PostService implements IPostService {
       const newReferences = await this.postRepo.findByIds(request.references, {
         relations: ['replies'],
       });
-      const syncedRefs = this.postService.syncReferences(post, newReferences);
-      await this.postRepo.save(syncedRefs);
+      const refsToUpdate = post.updateReferences(newReferences);
+      await this.postRepo.save(Object.values(refsToUpdate).reduce((a, c) => [...a, ...c], []));
     }
     if (request.attachmentIds) {
       post.attachments = await this.attachmentRepo.findByIds(request.attachmentIds);
