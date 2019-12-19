@@ -11,7 +11,7 @@ export interface INewAttachment {
   originalName: string;
   thumbnailUri: string;
   uri: string;
-  size: string | number;
+  size: number;
 }
 @Entity()
 export class Attachment {
@@ -48,6 +48,16 @@ export class Attachment {
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 
+  private toHumanReadableSize(len: number): string {
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    let order = 0;
+    while (len >= 1024 && order < sizes.length - 1) {
+      order++;
+      len = len/1024;
+    }
+    return `${len.toFixed(2)}${sizes[order]}`;
+  }
+
   constructor(obj?: INewAttachment) {
     if (!obj) {
       return;
@@ -58,7 +68,7 @@ export class Attachment {
     this.name = obj.originalName;
     this.thumbnailUri = obj.thumbnailUri;
     this.uri = obj.uri;
-    this.size = `${obj.size}`;
+    this.size = this.toHumanReadableSize(obj.size);
   }
 
   static create(props: INewAttachment) {
