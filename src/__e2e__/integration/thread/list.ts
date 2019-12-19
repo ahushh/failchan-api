@@ -3,7 +3,7 @@ import { Application } from 'express';
 import { Container } from 'inversify';
 import supertest from 'supertest';
 import { getCustomRepository } from 'typeorm';
-import { ListThreadsByBoardAction } from '../../../app/actions/thread/list';
+import { ListThreadsByBoardAction } from '../../../presentation/actions/thread/list';
 import { Board } from '../../../domain/entity/board';
 import { BoardRepository } from '../../../infra/repository/board.repo';
 import { ApplicationServer } from '../../../presentation/http/server';

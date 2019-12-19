@@ -1,11 +1,11 @@
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import { IOC_TYPE } from '../../../config/type';
-import { AppErrorActionRequestValidation } from '../../errors/action';
-import { ValidationError } from '../../errors/validation';
-import { ThreadService } from '../../service/thread.service';
-import { IAction } from '../action';
-import { AppConfigService } from '../../service/app-config.service';
+import { AppErrorActionRequestValidation } from '../../../app/errors/action';
+import { ValidationError } from '../../../app/errors/validation';
+import { ThreadService } from '../../../app/service/thread.service';
+import { IAction } from '../../../app/interfaces/action';
+import { AppConfigService } from '../../../app/service/app-config.service';
 
 @provide(IOC_TYPE.ListThreadsByBoardAction)
 export class ListThreadsByBoardAction implements IAction {
@@ -37,6 +37,7 @@ export class ListThreadsByBoardAction implements IAction {
     this.take = take || this.take;
     this.skip = skip || this.skip;
     if (!boardSlug) {
+      // TODO: add presentation errors
       throw new AppErrorActionRequestValidation('boardSlug', ValidationError.Required, boardSlug);
     }
 

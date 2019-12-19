@@ -17,8 +17,8 @@ import { fileUploadMiddleware } from '../middleware/file-upload';
 
 import { inject } from 'inversify';
 import R from 'ramda';
-import { CreateAttachmentAction } from '../../../app/actions/attachments/create';
-import { DeleteAttachmentAction } from '../../../app/actions/attachments/delete';
+import { CreateAttachmentAction } from '../../actions/attachments/create';
+import { DeleteAttachmentAction } from '../../actions/attachments/delete';
 import { IOC_TYPE } from '../../../config/type';
 
 @controller('/attachments')

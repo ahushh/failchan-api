@@ -12,7 +12,7 @@ import {
   requestParam,
   response,
 } from 'inversify-express-utils';
-import { UpdatePostAction } from '../../../app/actions/post/update';
+import { UpdatePostAction } from '../../actions/post/update';
 import { IOC_TYPE } from '../../../config/type';
 
 @controller('/posts')

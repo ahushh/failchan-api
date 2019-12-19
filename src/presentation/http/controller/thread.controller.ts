@@ -12,8 +12,8 @@ import {
   requestParam,
   response,
 } from 'inversify-express-utils';
-import { CreatePostAction } from '../../../app/actions/post/create';
-import { UpdatePostAction } from '../../../app/actions/post/update';
+import { CreatePostAction } from '../../actions/post/create';
+import { UpdatePostAction } from '../../actions/post/update';
 import { ThreadService } from '../../../app/service/thread.service';
 import { IOC_TYPE } from '../../../config/type';
 

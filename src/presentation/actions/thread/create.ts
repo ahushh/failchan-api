@@ -1,9 +1,9 @@
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import { IOC_TYPE } from '../../../config/type';
-import { IAction } from '../action';
-import { AttachmentService } from '../../service/attachment.service';
-import { ThreadService } from '../../service/thread.service';
+import { IAction } from '../../../app/interfaces/action';
+import { AttachmentService } from '../../../app/service/attachment.service';
+import { ThreadService } from '../../../app/service/thread.service';
 
 interface IRequest {
   body: string;

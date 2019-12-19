@@ -4,7 +4,7 @@ import { Container } from 'inversify';
 import supertest from 'supertest';
 import { getCustomRepository } from 'typeorm';
 
-import { IAction } from '../../../app/actions/action';
+import { IAction } from '../../../app/interfaces/action';
 import { IOC_TYPE } from '../../../config/type';
 import { Board } from '../../../domain/entity/board';
 import { Thread } from '../../../domain/entity/thread';
