@@ -31,6 +31,13 @@ export class AttachmentService implements IAttachmentService {
     expiredAttachment.listen();
   }
 
+  private getCacheKey(uid: string) {
+    return `attachment:cache:${uid}`;
+  }
+  private getDataKey(uid: string) {
+    return `attachment:data:${uid}`;
+  }
+
   private getExpiresAt(): Date {
     const now = +new Date();
     return new Date(now + (1000 * this.appConfig.getConfig().ATTACHMENT_TTL));
@@ -38,19 +45,10 @@ export class AttachmentService implements IAttachmentService {
 
   private create = async (request: IAttachmentFile): Promise<Attachment> => {
     const file: IFile = this.fileFactory.create(request);
-    console.log('anus');
-    console.time('calculateMd5');
     await file.calculateMd5();
-    console.timeEnd('calculateMd5');
-    console.time('thumbnail');
     await file.generateThumbnail(this.appConfig.getConfig().THUMBNAIL_SIZE);
-    console.timeEnd('thumbnail');
-    console.time('exif');
     await file.getExif();
-    console.timeEnd('exif');
-    console.time('repo');
     await this.fileRepo.save(file);
-    console.timeEnd('repo');
     const json = await file.toJSON();
     return Attachment.create(json);
   }
@@ -63,8 +61,8 @@ export class AttachmentService implements IAttachmentService {
   }
   async saveToCache(files: IAttachmentFile[]) {
     const uid = uuidv4();
-    const cacheKey = `attachment:cache:${uid}`;
-    const dataKey = `attachment:data:${uid}`;
+    const cacheKey = this.getCacheKey(uid);
+    const dataKey = this.getDataKey(uid);
     const expiresAt = this.getExpiresAt();
     await this.redis.set(cacheKey, 1, 'EX', this.appConfig.getConfig().ATTACHMENT_TTL);
     await this.redis.set(dataKey, JSON.stringify(files));
@@ -73,15 +71,14 @@ export class AttachmentService implements IAttachmentService {
 
   async delete(ids: number[]) {
     const attachments = await this.repo.findByIds(ids);
-    const deleteAttachment = async (a: Attachment) => {
-      await this.fileRepo.delete([a.storageKey, a.thumbStorageKey].filter(Boolean));
-    };
+    const deleteAttachment = (a: Attachment) =>
+      this.fileRepo.delete([a.storageKey, a.thumbStorageKey].filter(Boolean));
     await Promise.all(attachments.map(deleteAttachment));
     await this.repo.delete(ids);
   }
   private async getFromCache(uid: string): Promise<IAttachmentFile[]> {
-    const cacheKey = `attachment:cache:${uid}`;
-    const dataKey = `attachment:data:${uid}`;
+    const cacheKey = this.getCacheKey(uid);
+    const dataKey = this.getDataKey(uid);
     const cacheEntry = await this.redis.get(cacheKey) as string;
     const dataEntry = await this.redis.get(dataKey) as string;
     if (cacheEntry === null || dataEntry === null) {
