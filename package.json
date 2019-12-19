@@ -21,7 +21,13 @@
     "e2e:coverage": "NODE_ENV=test nyc mocha --opts src/__e2e__/mocha.opts 'src/__e2e__/integration/**/*.ts'",
     "e2e:db:create": "docker-compose exec postgres createdb -Upostgres test",
     "e2e:db:drop": "docker-compose exec postgres dropdb -Upostgres test",
-    "e2e:db:reset": "npm run test:db:drop && npm run test:db:create"
+    "e2e:db:reset": "npm run test:db:drop && npm run test:db:create",
+    "release-patch": "npm version patch -m 'chore(*): patch version'",
+    "release-minor": "npm version minor -m 'chore(*): minor version'",
+    "release-major": "npm version major -m 'chore(*): major version'",
+    "release-prerelease": "npm version prerelease -m 'chore(*): prerelease version'",
+    "preversion": "git fetch --tags && git checkout master",
+    "postversion": "git push origin master && git push --tags"
   },
   "dependencies": {
     "@types/aws-sdk": "^2.7.0",

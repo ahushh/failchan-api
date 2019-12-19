@@ -11,10 +11,10 @@ import {
   requestParam,
   response,
 } from 'inversify-express-utils';
-import { CreateBoardAction } from '../../../app/actions/board/create';
-import { ListBoardAction } from '../../../app/actions/board/list';
-import { CreateThreadAction } from '../../../app/actions/thread/create';
-import { ListThreadsByBoardAction } from '../../../app/actions/thread/list';
+import { CreateBoardAction } from '../../actions/board/create';
+import { ListBoardAction } from '../../actions/board/list';
+import { CreateThreadAction } from '../../actions/thread/create';
+import { ListThreadsByBoardAction } from '../../actions/thread/list';
 import { IOC_TYPE } from '../../../config/type';
 
 @controller('/boards')

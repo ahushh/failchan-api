@@ -1,10 +1,10 @@
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import { IOC_TYPE } from '../../../config/type';
-import { IAction } from '../action';
-import { PostService } from '../../service/post.service';
-import { AppErrorActionRequestValidation } from '../../errors/action';
-import { ValidationError } from '../../errors/validation';
+import { IAction } from '../../../app/interfaces/action';
+import { PostService } from '../../../app/service/post.service';
+import { AppErrorActionRequestValidation } from '../../../app/errors/action';
+import { ValidationError } from '../../../app/errors/validation';
 
 interface IRequest {
   postId: number;
