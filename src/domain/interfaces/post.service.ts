@@ -7,7 +7,8 @@ export interface IPostService {
     body: string;
     attachmentIds: number[];
     references: number[];
-  }): Promise<Post>;
+    token?: string;
+  }): Promise<{ post: Post; token?: string }>;
 
   updatePost(request: {
     postId: number;

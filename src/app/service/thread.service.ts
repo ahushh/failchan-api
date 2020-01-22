@@ -24,16 +24,19 @@ export class ThreadService implements IThreadService {
       threadId: number;
     };
     boardSlug: string;
-  }): Promise<Thread> {
+    token?: string;
+  }): Promise<{ thread: Thread; token?: string }> {
     const board = await this.boardRepo.getBySlug(request.boardSlug);
     const thread = Thread.create(board);
     const { id: threadId } = await this.threadRepo.save(thread);
     const replyRequest = {
       ...request.post,
       threadId,
+      token: request.token,
     };
-    await this.postService.replyToThread(replyRequest);
-    return this.getThreadWithPosts(threadId);
+    const { token } = await this.postService.replyToThread(replyRequest);
+    const resultThread = await this.getThreadWithPosts(threadId);
+    return { thread: resultThread, token };
   }
 
   async listThreadsByBoard(params: {

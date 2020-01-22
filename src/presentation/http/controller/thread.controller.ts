@@ -30,12 +30,12 @@ export class ThreadController implements interfaces.Controller {
     @request() request: Request, @response() response: Response, @next() next: Function,
   ) {
     try {
-      const post = await this.createPostAction.execute({
+      const { post, token } = await this.createPostAction.execute({
         threadId,
         ...request.body.post,
       });
 
-      response.json({ post });
+      response.json({ post, token });
     } catch (e) {
       if (e.name === 'CacheRecordNotFound') {
         return response.status(400).json({ error: e.message });

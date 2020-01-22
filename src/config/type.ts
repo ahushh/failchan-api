@@ -11,6 +11,7 @@ export const IOC_TYPE = {
   BoardRepository: Symbol.for('BoardRepository'),
   ThreadRepository: Symbol.for('ThreadRepository'),
   PostRepository: Symbol.for('PostRepository'),
+  AuthorRepository: Symbol.for('AuthorRepository'),
 
   // app
   AppConfigService: Symbol.for('AppConfigService'),

@@ -11,6 +11,7 @@ interface IRequest {
   references: number[];
   threadId: number;
   boardSlug: string;
+  token?: string;
 }
 
 @provide(IOC_TYPE.CreateThreadAction)
@@ -28,6 +29,7 @@ export class CreateThreadAction implements IAction {
       : [];
 
     return this.service.create({
+      token: request.token,
       post: {
         attachmentIds,
         body: request.body,

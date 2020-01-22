@@ -10,6 +10,16 @@ import { IThreadRepository } from '../interfaces/thread.repo';
 import { IAttachmentRepository } from '../interfaces/attachment.repo';
 import { IPostRepository } from '../interfaces/post.repo';
 import { TransactionService } from './transaction.service';
+import { IAuthorRepository } from '../interfaces/author.repo';
+import { Author } from '../../domain/entity/author';
+
+interface IReplyToThread {
+  threadId: number;
+  body: string;
+  attachmentIds: number[];
+  references: number[];
+  token?: string;
+}
 
 @provide(IOC_TYPE.PostService)
 export class PostService implements IPostService {
@@ -17,23 +27,31 @@ export class PostService implements IPostService {
     @inject(IOC_TYPE.PostRepository) private postRepo: IPostRepository,
     @inject(IOC_TYPE.ThreadRepository) private threadRepo: IThreadRepository,
     @inject(IOC_TYPE.AttachmentRepository) private attachmentRepo: IAttachmentRepository,
+    @inject(IOC_TYPE.AuthorRepository) private authorRepo: IAuthorRepository,
     @inject(IOC_TYPE.TransactionService) private transactionService: TransactionService,
   ) { }
 
-  async replyToThread(request: {
-    threadId: number;
-    body: string;
-    attachmentIds: number[];
-    references: number[];
-  }): Promise<Post> {
+  async replyToThread(request: IReplyToThread): Promise<{ post: Post; token?: string }> {
     const thread = await this.threadRepo.findOneOrFail(request.threadId);
     const attachments = await this.attachmentRepo.findByIds(request.attachmentIds);
     const references = await this.postRepo.findByIds(request.references, {
       relations: ['replies'],
     });
 
+    let author;
+    let newAuthor = false;
+    if (request.token) {
+      const { authorId } = Author.verifyToken(request.token);
+      author = await this.authorRepo.findOneOrFail(authorId);
+    } else {
+      const authorVO = new Author();
+      author = await this.authorRepo.save(authorVO);
+      newAuthor = true;
+    }
+
     const post = Post.create({ references, attachments, body: request.body });
     thread.replyWith(post);
+    post.author = author;
 
     await this.transactionService.run(async (manager) => {
       await manager.save(thread);
@@ -41,9 +59,20 @@ export class PostService implements IPostService {
       await manager.save(post.references);
     });
 
-    return this.postRepo.findOneOrFail(post.id, {
+    const responsePost = await this.postRepo.findOneOrFail(post.id, {
       relations: ['references', 'attachments', 'replies'],
     });
+    const result = { 
+      post: responsePost,
+      token: undefined,
+    };
+    if (newAuthor) {
+      return {
+        ...result,
+        token: author.generateToken()
+      }
+    }
+    return result;
   }
 
   async updatePost(request: {

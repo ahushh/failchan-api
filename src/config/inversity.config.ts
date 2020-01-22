@@ -21,6 +21,8 @@ import { IPubSubConnection } from "../app/interfaces/IPubSubConnection";
 import { createRedisConnection, IRedisConnection } from '../infra/utils/create-redis-connection';
 
 import { AppConfigService } from '../app/service/app-config.service';
+import { AuthorRepository } from '../infra/repository/author.repo';
+import { Author } from '../domain/entity/author';
 
 export const bindings = new AsyncContainerModule(
   async (bind: interfaces.Bind, unbind: interfaces.Unbind) => {
@@ -56,6 +58,10 @@ export const bindings = new AsyncContainerModule(
 
     bind<Repository<Post>>(IOC_TYPE.PostRepository).toDynamicValue(() => {
       return getCustomRepository(PostRepository);
+    }).inRequestScope();
+
+    bind<Repository<Author>>(IOC_TYPE.AuthorRepository).toDynamicValue(() => {
+      return getCustomRepository(AuthorRepository);
     }).inRequestScope();
 
     bind<IFileRepository>(IOC_TYPE.FileRepository).toDynamicValue((context: interfaces.Context) => {

@@ -35,7 +35,16 @@ describe('Posts creation', () => {
     thread = Thread.create(board);
     thread = await getCustomRepository(ThreadRepository).save(thread);
   });
-
+  it('creates a new post and generates a new token', (done) => {
+    supertest(app).post(`/threads/${thread.id}/posts`)
+      .send({ post: { body: 'should not fail', attachments: [], references: [] } })
+      .end((err, res) => {
+        chai.expect(res.status).to.eq(200);
+        chai.expect(res.body.token).not.to.be.empty;
+        console.log(res.body.token);
+        done();
+      });
+  });
   it('creates a new post and bumps thread', (done) => {
     supertest(app).post(`/threads/${thread.id}/posts`)
       .send({ post: { body: 'should not fail', attachments: [], references: [] } })

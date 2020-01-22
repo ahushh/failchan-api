@@ -10,6 +10,7 @@ interface IRequest {
   attachment: string;
   references: number[];
   threadId: number;
+  token?: string;
 }
 
 @provide(IOC_TYPE.CreatePostAction)
@@ -28,6 +29,7 @@ export class CreatePostAction implements IAction {
       body: request.body,
       references: request.references,
       threadId: request.threadId,
+      token: request.token,
     };
     return this.postService.replyToThread(newRequest);
   }
