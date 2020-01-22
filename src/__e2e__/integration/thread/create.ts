@@ -117,7 +117,7 @@ describe('Threads creation', () => {
     .end((err, res) => {
       chai.expect(res.status).to.eq(404);
       chai.expect(res.body).to.include({
-        message: 'Board d not found',
+        error: 'Board d not found',
       });
     });
   });

@@ -27,14 +27,18 @@ export class PostController implements interfaces.Controller {
     @request() request: Request, @response() response: Response, @next() next: Function,
   ) {
     try {
-      await this.updatePostAction.execute({ ...request.body.post, postId, token: request.body.token });
+      await this.updatePostAction.execute({
+        ...request.body.post,
+        postId,
+        token: request.body.token,
+      });
       response.sendStatus(204);
     } catch (e) {
       if (e.name === 'EntityNotFound') {
-        response.status(404).json({ message: `Post ${postId} not found` });
+        response.status(404).json({ error: `Post ${postId} not found` });
       }
       if (e.name === 'InvalidToken') {
-        response.status(403).json({ message: e.message });
+        response.status(403).json({ error: e.message });
       }
       next(e);
     }

@@ -59,7 +59,7 @@ describe('Posts updating', () => {
       .end((err, res) => {
         chai.expect(res.status).to.eq(403);
         chai.expect(res.body).to.include({
-          message: 'Supplied token is invalid',
+          error: 'Supplied token is invalid',
         });
         done();
       });

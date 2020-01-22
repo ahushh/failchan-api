@@ -86,7 +86,7 @@ export class BoardController implements interfaces.Controller {
         return response.status(400).json({ error: e.message });
       }
       if (e.name === 'EntityNotFound') {
-        return response.status(404).json({ message: `Board ${boardSlug} not found` });
+        return response.status(404).json({ error: `Board ${boardSlug} not found` });
       }
       next(e);
     }
