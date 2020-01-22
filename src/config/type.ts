@@ -30,6 +30,7 @@ export const IOC_TYPE = {
   PostService: Symbol.for('PostService'),
   PubSubService: Symbol.for('PubSubService'),
   ThreadService: Symbol.for('ThreadService'),
+  AuthorService: Symbol.for('AuthorService'),
 
   ExpiredAttachmentService: Symbol.for('ExpiredAttachmentService'),
   TransactionService: Symbol.for('TransactionService'),

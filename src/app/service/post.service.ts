@@ -13,6 +13,7 @@ import { TransactionService } from './transaction.service';
 import { IAuthorRepository } from '../interfaces/author.repo';
 import { Author } from '../../domain/entity/author';
 import { AppErrorInvalidToken } from '../errors/token';
+import { IAuthorService } from '../../domain/interfaces/author.service';
 
 interface IReplyToThread {
   threadId: number;
@@ -28,7 +29,7 @@ export class PostService implements IPostService {
     @inject(IOC_TYPE.PostRepository) private postRepo: IPostRepository,
     @inject(IOC_TYPE.ThreadRepository) private threadRepo: IThreadRepository,
     @inject(IOC_TYPE.AttachmentRepository) private attachmentRepo: IAttachmentRepository,
-    @inject(IOC_TYPE.AuthorRepository) private authorRepo: IAuthorRepository,
+    @inject(IOC_TYPE.AuthorService) private authorService: IAuthorService,
     @inject(IOC_TYPE.TransactionService) private transactionService: TransactionService,
   ) { }
 
@@ -39,20 +40,7 @@ export class PostService implements IPostService {
       relations: ['replies'],
     });
 
-    let author;
-    let newAuthor = false;
-    if (request.token) {
-      try {
-      const { authorId } = Author.verifyToken(request.token);
-      author = await this.authorRepo.findOneOrFail(authorId);
-      } catch (e) {
-        throw new AppErrorInvalidToken(e);
-      }
-    } else {
-      const authorVO = new Author();
-      author = await this.authorRepo.save(authorVO);
-      newAuthor = true;
-    }
+    const { isNew, author } = await this.authorService.getAuthorByToken(request.token);
 
     const post = Post.create({ references, attachments, body: request.body });
     thread.replyWith(post);
@@ -71,7 +59,8 @@ export class PostService implements IPostService {
       post: responsePost,
       token: undefined,
     };
-    if (newAuthor) {
+
+    if (isNew) {
       return {
         ...result,
         token: author.generateToken()
