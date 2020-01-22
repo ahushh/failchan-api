@@ -63,12 +63,19 @@ describe('Posts creation', () => {
   });
   it('returns an error trying to create a new post using an invalid token', (done) => {
     supertest(app).post(`/threads/${thread.id}/posts`)
-      .send({ token: 'shouldfail', post: { body: 'should not fail', attachments: [], references: [] } })
+      .send({
+        token: 'shouldfail',
+        post: {
+          body: 'should not fail',
+          attachments: [],
+          references: []
+        }
+      })
       .end((err, res) => {
-        chai.expect(res.status).to.eq(400);
+        chai.expect(res.status).to.eq(403);
         chai.expect(res.body).to.include({
           error: 'Supplied token is invalid',
-        });       
+        });
         done();
       });
   });

@@ -34,7 +34,7 @@ export class PostController implements interfaces.Controller {
         response.status(404).json({ message: `Post ${postId} not found` });
       }
       if (e.name === 'InvalidToken') {
-        response.status(400).json({ message: e.message });
+        response.status(403).json({ message: e.message });
       }
       next(e);
     }

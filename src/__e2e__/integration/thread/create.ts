@@ -93,7 +93,7 @@ describe('Threads creation', () => {
     supertest(app).post(`/boards/b/threads`)
     .send({ token: 'shouldfail', post: { body: 'new message' } })
     .end((err, res) => {
-      chai.expect(res.status).to.eq(400);
+      chai.expect(res.status).to.eq(403);
       chai.expect(res.body).to.include({
         error: 'Supplied token is invalid',
       });

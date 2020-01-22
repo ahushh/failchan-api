@@ -80,7 +80,7 @@ export class BoardController implements interfaces.Controller {
       response.json({ thread, token });
     } catch (e) {
       if (e.name === 'InvalidToken') {
-        return response.status(400).json({ error: e.message });
+        return response.status(403).json({ error: e.message });
       }
       if (e.name === 'CacheRecordNotFound') {
         return response.status(400).json({ error: e.message });

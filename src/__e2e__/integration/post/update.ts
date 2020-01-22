@@ -17,7 +17,7 @@ let app: Application;
 let container: Container;
 let testApplicationServer: ApplicationServer;
 
-describe.only('Posts updating', () => {
+describe('Posts updating', () => {
   let thread;
   let board;
   let token;
@@ -53,6 +53,17 @@ describe.only('Posts updating', () => {
     await testApplicationServer.connection.synchronize(true);
   });
 
+  it('does not allow to update post using incorrect token', (done) => {
+    supertest(app).patch('/posts/1')
+      .send({ post: { body: 'new body' }, token: 'shouldfail' })
+      .end((err, res) => {
+        chai.expect(res.status).to.eq(403);
+        chai.expect(res.body).to.include({
+          message: 'Supplied token is invalid',
+        });
+        done();
+      });
+  });
   it('updates post with new body correctly', (done) => {
     supertest(app).patch('/posts/1')
       .send({ post: { body: 'new body' }, token })
