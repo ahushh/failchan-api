@@ -12,6 +12,7 @@ import { IPostRepository } from '../interfaces/post.repo';
 import { TransactionService } from './transaction.service';
 import { IAuthorRepository } from '../interfaces/author.repo';
 import { Author } from '../../domain/entity/author';
+import { AppErrorInvalidToken } from '../errors/token';
 
 interface IReplyToThread {
   threadId: number;
@@ -41,8 +42,12 @@ export class PostService implements IPostService {
     let author;
     let newAuthor = false;
     if (request.token) {
+      try {
       const { authorId } = Author.verifyToken(request.token);
       author = await this.authorRepo.findOneOrFail(authorId);
+      } catch (e) {
+        throw new AppErrorInvalidToken(e);
+      }
     } else {
       const authorVO = new Author();
       author = await this.authorRepo.save(authorVO);

@@ -9,6 +9,8 @@ import { BoardRepository } from '../../../infra/repository/board.repo';
 import { ThreadRepository } from '../../../infra/repository/thread.repo';
 import { ApplicationServer } from '../../../presentation/http/server';
 import { getTestApplicationServer } from '../../../server.test';
+import { Author } from '../../../domain/entity/author';
+import { AuthorRepository } from '../../../infra/repository/author.repo';
 
 let app: Application;
 let container: Container;
@@ -17,6 +19,7 @@ let testApplicationServer: ApplicationServer;
 describe('Posts creation', () => {
   let thread;
   let board;
+  let token;
   before(async () => {
     testApplicationServer = await getTestApplicationServer;
     await testApplicationServer.connection.synchronize(true);
@@ -27,6 +30,11 @@ describe('Posts creation', () => {
     board = new Board({ name: 'bred', slug: 'b' });
     const repo = getCustomRepository(BoardRepository);
     board = await repo.save(board);
+
+    const author = new Author();
+    const authorRepo = getCustomRepository(AuthorRepository);
+    await authorRepo.save(author);
+    token = author.generateToken();
   });
   after(async () => {
     await testApplicationServer.connection.synchronize(true);
@@ -41,7 +49,26 @@ describe('Posts creation', () => {
       .end((err, res) => {
         chai.expect(res.status).to.eq(200);
         chai.expect(res.body.token).not.to.be.empty;
-        console.log(res.body.token);
+        done();
+      });
+  });
+  it('creates a new post using an existing token, new token is not returned', (done) => {
+    supertest(app).post(`/threads/${thread.id}/posts`)
+      .send({ token, post: { body: 'should not fail', attachments: [], references: [] } })
+      .end((err, res) => {
+        chai.expect(res.status).to.eq(200);
+        chai.expect(res.body.token).not.to.exist;
+        done();
+      });
+  });
+  it('returns an error trying to create a new post using an invalid token', (done) => {
+    supertest(app).post(`/threads/${thread.id}/posts`)
+      .send({ token: 'shouldfail', post: { body: 'should not fail', attachments: [], references: [] } })
+      .end((err, res) => {
+        chai.expect(res.status).to.eq(400);
+        chai.expect(res.body).to.include({
+          error: 'Supplied token is invalid',
+        });       
         done();
       });
   });
