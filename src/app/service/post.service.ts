@@ -23,6 +23,15 @@ interface IReplyToThread {
   token?: string;
 }
 
+interface IUpdatePost {
+  postId: number;
+  threadId: number | null;
+  body: string | null;
+  attachmentIds: number[] | null;
+  references: number[] | null;
+  token: string;
+}
+
 @provide(IOC_TYPE.PostService)
 export class PostService implements IPostService {
   constructor(
@@ -69,16 +78,12 @@ export class PostService implements IPostService {
     return result;
   }
 
-  async updatePost(request: {
-    postId: number;
-    threadId: number | null;
-    body: string | null;
-    attachmentIds: number[] | null;
-    references: number[] | null;
-  }): Promise<void> {
+  async updatePost(request: IUpdatePost): Promise<void> {
     const post = await this.postRepo.findOneOrFail(request.postId, {
-      relations: ['references', 'references.replies'],
+      relations: ['references', 'references.replies', 'author'],
     });
+    this.authorService.checkAuthorshipByToken(request.token, post.author);
+
     if (request.threadId) {
       const thread = await this.threadRepo.findOneOrFail(request.threadId);
       post.thread = thread;

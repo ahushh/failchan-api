@@ -8,7 +8,8 @@ import { IBoardRepository } from '../interfaces/board.repo';
 import { AppErrorUnexpected } from '../errors/unexpected';
 import { IAuthorRepository } from '../interfaces/author.repo';
 import { Author } from '../../domain/entity/author';
-import { AppErrorInvalidToken } from '../errors/token';
+import { AppErrorInvalidToken, AppErrorNotAuthorized } from '../errors/token';
+import { Post } from '../../domain/entity/post';
 
 @provide(IOC_TYPE.AuthorService)
 export class AuthorService implements IAuthorService {
@@ -32,5 +33,16 @@ export class AuthorService implements IAuthorService {
       isNew = true;
     }
     return { author, isNew };
+  }
+
+  checkAuthorshipByToken(token: string, author: Author) {
+    try {
+        const { authorId } = Author.verifyToken(token);
+        if (authorId !== author.id) {
+            throw new AppErrorNotAuthorized();
+        }
+      } catch (e) {
+        throw new AppErrorInvalidToken(e);
+      }
   }
 }
