@@ -5,5 +5,5 @@ export interface IAttachmentService {
 
   saveToCache(files: IAttachmentFile[]): Promise<{ uid: string, expiresAt: Date }>;
 
-  delete(ids: number[]): void;
+  delete(ids: number[], token: string): void;
 }
