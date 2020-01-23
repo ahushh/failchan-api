@@ -1,3 +1,6 @@
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
 import chai from 'chai';
 import { Application } from 'express';
 import { Container } from 'inversify';
@@ -14,6 +17,10 @@ import { ApplicationServer } from '../../../presentation/http/server';
 import { getTestApplicationServer } from '../../../server.test';
 import { replyToThreadFactory } from '../../support/reply-to-thread';
 import { CreatePostAction } from '../../../presentation/actions/post/create';
+
+const testFileDir = `${__dirname}/test`;
+const originalFilePath = `${__dirname}/test-image.jpg`;
+const testFilePath = `${testFileDir}/test-image.jpg`;
 
 let app: Application;
 let container: Container;
@@ -41,11 +48,17 @@ describe('Attachment deletion', () => {
     const data = await replyToThreadFactory(container)(thread, 'op');
     token = data.token;
 
+    try {
+      await promisify(exec)(`mkdir ${testFileDir} && cp ${originalFilePath} ${testFilePath}`);
+    } catch (e) {
+
+    }
+
     const action: IAction = container.get(IOC_TYPE.CreateAttachmentAction);
     const response = await action.execute([{
       mimetype: 'image/jpeg',
       size: 1000,
-      path: `${__dirname}/test-image.jpg`,
+      path: testFilePath,
       originalname: 'test-image.jpg',
     }]);
     uuid = response.uid;
