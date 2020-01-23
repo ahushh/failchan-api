@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "start": "nodemon",
+    "start:cli": "NODE_ENV=production ts-node src/cli.ts",
+    "start:cli:dev": "NODE_ENV=development ts-node src/cli.ts",
     "start:dev": "NODE_ENV=development ts-node src/index.ts",
     "start:test": "NODE_ENV=test ts-node src/index.ts",
     "start:prod": "NODE_ENV=production node dist/src/index.js",
