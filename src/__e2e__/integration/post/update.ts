@@ -20,6 +20,7 @@ let testApplicationServer: ApplicationServer;
 describe('Posts updating', () => {
   let thread;
   let board;
+  let token;
   before(async () => {
     testApplicationServer = await getTestApplicationServer;
     await testApplicationServer.connection.synchronize(true);
@@ -36,23 +37,36 @@ describe('Posts updating', () => {
     const replyToThread = replyToThreadFactory(container);
 
     try {
-      await replyToThread(thread, 'op'); // id 1
-      await replyToThread(thread, 'reply 1', []); // id 2
-      await replyToThread(thread, 'reply 2', [1]); // id 3
-      await replyToThread(thread, 'reply 3', []); // id 4
-      await replyToThread(thread, 'reply 4', []); // id 5
-      await replyToThread(thread, 'reply 5', [5]); // id 6
+      const result = await replyToThread(thread, 'op'); // id 1
+      token = result.token;
+
+      await replyToThread(thread, 'reply 1', [], token); // id 2
+      await replyToThread(thread, 'reply 2', [1], token); // id 3
+      await replyToThread(thread, 'reply 3', [], token); // id 4
+      await replyToThread(thread, 'reply 4', [], token); // id 5
+      await replyToThread(thread, 'reply 5', [5], token); // id 6
     } catch (e) {
-      console.log(e);
+      console.log('Error before: ', e);
     }
   });
   after(async () => {
     await testApplicationServer.connection.synchronize(true);
   });
 
+  it('does not allow to update post using incorrect token', (done) => {
+    supertest(app).patch('/posts/1')
+      .send({ post: { body: 'new body' }, token: 'shouldfail' })
+      .end((err, res) => {
+        chai.expect(res.status).to.eq(403);
+        chai.expect(res.body).to.include({
+          error: 'Supplied token is invalid',
+        });
+        done();
+      });
+  });
   it('updates post with new body correctly', (done) => {
     supertest(app).patch('/posts/1')
-      .send({ post: { body: 'new body' } })
+      .send({ post: { body: 'new body' }, token })
       .end((err, res) => {
         chai.expect(res.status).to.eq(204);
         const repo = getRepository(Post);
@@ -67,7 +81,7 @@ describe('Posts updating', () => {
   });
   it('updates post by replacing all references', (done) => {
     supertest(app).patch('/posts/3')
-      .send({ post: { references: [2] } })
+      .send({ post: { references: [2] }, token })
       .end((err, res) => {
         chai.expect(res.status).to.eq(204);
         const repo = getRepository(Post);
@@ -87,7 +101,7 @@ describe('Posts updating', () => {
     'correctly updates replies of removed and added references',
     (done) => {
       supertest(app).patch('/posts/6')
-        .send({ post: { references: [4] } })
+        .send({ post: { references: [4] }, token })
         .end((err, res) => {
           chai.expect(res.status).to.eq(204);
           const repo = getRepository(Post);

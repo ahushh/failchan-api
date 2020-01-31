@@ -69,20 +69,24 @@ export class BoardController implements interfaces.Controller {
     @request() request: Request, @response() response: Response, @next() next: Function,
   ) {
     try {
-      const thread = await this.createThreadAction.execute({
+      const { thread, token } = await this.createThreadAction.execute({
         boardSlug,
         body: request.body.post.body,
         attachment: request.body.post.attachment,
         references: request.body.post.references,
         threadId: request.body.post.threadId,
+        token: request.body.token,
       });
-      response.json({ thread });
+      response.json({ thread, token });
     } catch (e) {
+      if (e.name === 'InvalidToken') {
+        return response.status(403).json({ error: e.message });
+      }
       if (e.name === 'CacheRecordNotFound') {
         return response.status(400).json({ error: e.message });
       }
       if (e.name === 'EntityNotFound') {
-        return response.status(404).json({ message: `Board ${boardSlug} not found` });
+        return response.status(404).json({ error: `Board ${boardSlug} not found` });
       }
       next(e);
     }

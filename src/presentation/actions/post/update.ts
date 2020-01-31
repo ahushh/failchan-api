@@ -12,6 +12,7 @@ interface IRequest {
   body: string | null;
   attachmentIds: number[] | null;
   references: number[] | null;
+  token: string;
 }
 
 @provide(IOC_TYPE.UpdatePostAction)
@@ -24,6 +25,7 @@ export class UpdatePostAction implements IAction {
 
     request.postId = +request.postId;
     if (!request.postId) {
+      // TODO: move to presentation layer
       throw new AppErrorActionRequestValidation('postId', ValidationError.Required, request.postId);
     }
     if (isNaN(request.postId)) {
@@ -33,6 +35,7 @@ export class UpdatePostAction implements IAction {
     request.body = request.body === undefined ? null : request.body;
     request.attachmentIds = request.attachmentIds || null;
     request.references = request.references || null;
+    request.token = request.token;
 
     return this.postService.updatePost(request);
   }

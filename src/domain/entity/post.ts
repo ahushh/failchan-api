@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { Attachment } from './attachment';
 import { Thread } from './thread';
+import { Author } from './author';
 
 export interface INewPost {
   body: string;
@@ -44,6 +45,9 @@ export class Post {
   @ManyToMany(type => Post)
   @JoinTable()
   references: Post[];
+
+  @ManyToOne(type => Author, author => author.posts)
+  author: Author;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

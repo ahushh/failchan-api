@@ -10,6 +10,7 @@ export const createContainer = async () => {
   await require('../app/service/post.service');
   await require('../app/service/pub-sub.service');
   await require('../app/service/thread.service');
+  await require('../app/service/author.service');
   await require('../app/listeners/expired-attachments');
 
   await require('../infra/class/file/file.factory');

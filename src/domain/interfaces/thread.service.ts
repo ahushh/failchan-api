@@ -9,7 +9,7 @@ export interface IThreadService {
       threadId: number;
     };
     boardSlug: string;
-  }): Promise<Thread>;
+  }): Promise<{ thread: Thread; token?: string }>;
   listThreadsByBoard(params: {
     boardSlug: string,
     previewPosts: number,

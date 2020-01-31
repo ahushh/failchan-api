@@ -1,3 +1,4 @@
+src/__e2e__/integration/attachment/test
 .DS_STORE
 dist
 # Logs

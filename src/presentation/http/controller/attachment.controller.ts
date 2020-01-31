@@ -47,7 +47,15 @@ export class AttachmentController implements interfaces.Controller {
     @request() request: Request, @response() response: Response, @next() next: Function,
   ) {
     const ids = request.query.ids;
-    await this.deleteAttachmentAction.execute(ids);
-    response.sendStatus(204);
+    const token = request.query.token;
+    try {
+      await this.deleteAttachmentAction.execute({ ids, token });
+      response.sendStatus(204);
+    } catch (e) {
+      if (e.name === 'InvalidToken') {
+        response.status(403).json({ error: e.message });
+      }
+      next(e);
+    }
   }
 }

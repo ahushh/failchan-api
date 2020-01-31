@@ -11,6 +11,7 @@ export const IOC_TYPE = {
   BoardRepository: Symbol.for('BoardRepository'),
   ThreadRepository: Symbol.for('ThreadRepository'),
   PostRepository: Symbol.for('PostRepository'),
+  AuthorRepository: Symbol.for('AuthorRepository'),
 
   // app
   AppConfigService: Symbol.for('AppConfigService'),
@@ -29,6 +30,7 @@ export const IOC_TYPE = {
   PostService: Symbol.for('PostService'),
   PubSubService: Symbol.for('PubSubService'),
   ThreadService: Symbol.for('ThreadService'),
+  AuthorService: Symbol.for('AuthorService'),
 
   ExpiredAttachmentService: Symbol.for('ExpiredAttachmentService'),
   TransactionService: Symbol.for('TransactionService'),

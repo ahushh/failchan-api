@@ -15,6 +15,7 @@ import { IFileRepository } from '../interfaces/file.repo';
 import { ExpiredAttachmentService } from '../listeners/expired-attachments';
 import { AppErrorAttachmentCacheRecordNotFound } from '../errors/attachment';
 import { AppConfigService } from './app-config.service';
+import { IAuthorService } from '../../domain/interfaces/author.service';
 
 @fluentProvide(IOC_TYPE.AttachmentService).inSingletonScope().done(true)
 export class AttachmentService implements IAttachmentService {
@@ -27,6 +28,7 @@ export class AttachmentService implements IAttachmentService {
     @inject(IOC_TYPE.ExpiredAttachmentService) public expiredAttachment: ExpiredAttachmentService,
     @inject(IOC_TYPE.FileRepository) public fileRepo: IFileRepository,
     @inject(IOC_TYPE.AppConfigService) public appConfig: AppConfigService,
+    @inject(IOC_TYPE.AuthorService) public authorService: IAuthorService,
   ) {
     expiredAttachment.listen();
   }
@@ -69,8 +71,14 @@ export class AttachmentService implements IAttachmentService {
     return { uid, expiresAt };
   }
 
-  async delete(ids: number[]) {
-    const attachments = await this.repo.findByIds(ids);
+  async delete(ids: number[], token: string) {
+    const attachments = await this.repo.findByIds(ids, {
+      relations: ['post', 'post.author'],
+    });
+    attachments.forEach(a => {
+      this.authorService.checkAuthorshipByToken(token, a.post.author);
+    });
+
     const deleteAttachment = (a: Attachment) =>
       this.fileRepo.delete([a.storageKey, a.thumbStorageKey].filter(Boolean));
     await Promise.all(attachments.map(deleteAttachment));
