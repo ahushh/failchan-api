@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "start": "nodemon",
+    "start:cli": "NODE_ENV=production node dist/src/cli.js",
+    "start:cli:dev": "NODE_ENV=development ts-node src/cli.ts",
     "start:dev": "NODE_ENV=development ts-node src/index.ts",
     "start:test": "NODE_ENV=test ts-node src/index.ts",
     "start:prod": "NODE_ENV=production node dist/src/index.js",
@@ -49,6 +51,7 @@
     "inversify-binding-decorators": "^4.0.0",
     "inversify-express-utils": "^6.3.2",
     "ioredis": "^4.2.0",
+    "json-beautify": "^1.1.1",
     "jsonwebtoken": "^8.5.1",
     "md5": "^2.2.1",
     "mocha": "^5.2.0",

@@ -1,4 +1,3 @@
-require('dotenv').config();
 const debug = require('debug')('express:server');
 
 import { Application } from 'express';

@@ -15,8 +15,18 @@ interface IRequest {
   token: string;
 }
 
-@provide(IOC_TYPE.UpdatePostAction)
+@provide(IOC_TYPE.UpdatePostAction, true)
+@provide('action', true)
 export class UpdatePostAction implements IAction {
+  payloadExample = `
+    "postId": 123,
+    "threadId"?: 1234,
+    "body"?: "new body",
+    "attachmentIds"?: [1,2],
+    "references"?: [1,3],
+    "token": "verysecret,
+  `;
+  description = ''
   constructor(
     @inject(IOC_TYPE.PostService) public postService: PostService,
   ) { }

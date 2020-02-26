@@ -13,8 +13,17 @@ interface IRequest {
   token?: string;
 }
 
-@provide(IOC_TYPE.CreatePostAction)
+@provide(IOC_TYPE.CreatePostAction, true)
+@provide('action', true)
 export class CreatePostAction implements IAction {
+  payloadExample = `
+  "body": "new post",
+  "attachment": "attachmentid",
+  "references": [1,2,3],
+  "threadId": 123,
+  "token"?: "verysecret"
+  `;
+  description = ''
   constructor(
     @inject(IOC_TYPE.AttachmentService) public attachmentService: AttachmentService,
     @inject(IOC_TYPE.PostService) public postService: PostService,

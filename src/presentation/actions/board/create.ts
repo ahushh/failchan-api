@@ -4,8 +4,11 @@ import { IOC_TYPE } from '../../../config/type';
 import { IAction } from '../../../app/interfaces/action';
 import { BoardService } from '../../../app/service/board.service';
 
-@provide(IOC_TYPE.CreateBoardAction)
+@provide(IOC_TYPE.CreateBoardAction, true)
+@provide('action', true)
 export class CreateBoardAction implements IAction {
+  payloadExample = `"slug": "b", "name": "random"`
+  description = ''
   constructor(
     @inject(IOC_TYPE.BoardService) public service: BoardService,
   ) { }

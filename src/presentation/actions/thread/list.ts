@@ -1,4 +1,4 @@
-import { inject } from 'inversify';
+import { inject, named } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import { IOC_TYPE } from '../../../config/type';
 import { AppErrorActionRequestValidation } from '../../../app/errors/action';
@@ -7,8 +7,11 @@ import { ThreadService } from '../../../app/service/thread.service';
 import { IAction } from '../../../app/interfaces/action';
 import { AppConfigService } from '../../../app/service/app-config.service';
 
-@provide(IOC_TYPE.ListThreadsByBoardAction)
+@provide(IOC_TYPE.ListThreadsByBoardAction, true)
+@provide('action', true)
 export class ListThreadsByBoardAction implements IAction {
+  payloadExample = `"boardSlug": "b", "previewPosts"?: 5, "take"?: 10, "skip"?: 15`
+  description = ''
   static TEST_THREADS_LISTING_TAKE = 2;
   static TEST_THREADS_LISTING_PREVIEW_POSTS = 2;
 

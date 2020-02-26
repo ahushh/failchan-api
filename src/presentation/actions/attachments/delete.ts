@@ -5,8 +5,11 @@ import { IAction } from '../../../app/interfaces/action';
 import { AttachmentService } from '../../../app/service/attachment.service';
 import { AuthorService } from '../../../app/service/author.service';
 
-@provide(IOC_TYPE.DeleteAttachmentAction)
+@provide(IOC_TYPE.DeleteAttachmentAction, true)
+@provide('action', true)
 export class DeleteAttachmentAction implements IAction {
+  payloadExample = `"ids": [1, 2], "token": "verysecret"`
+  description = ''
   constructor(
     @inject(IOC_TYPE.AttachmentService) public service: AttachmentService,
   ) {}
