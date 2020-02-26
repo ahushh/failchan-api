@@ -10,7 +10,8 @@ import { AppConfigService } from '../../../app/service/app-config.service';
 @provide(IOC_TYPE.ListThreadsByBoardAction, true)
 @provide('action', true)
 export class ListThreadsByBoardAction implements IAction {
-  request = `{ boardSlug: string, previewPosts?: number, take?: number, skip?: number }`
+  payloadExample = `"boardSlug": "b", "previewPosts"?: 5, "take"?: 10, "skip"?: 15`
+  description = ''
   static TEST_THREADS_LISTING_TAKE = 2;
   static TEST_THREADS_LISTING_PREVIEW_POSTS = 2;
 

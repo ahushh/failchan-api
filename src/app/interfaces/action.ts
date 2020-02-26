@@ -2,9 +2,16 @@
 export interface IAction {
   execute: Function;
   /**
-   * @description Description of execute payload
+   * @description Description of execute payload for CLI
    * @type {string}
    * @memberof IAction
    */
-  request?: string;
+  payloadExample?: string;
+  /**
+   * Description displayed on CLI
+   *
+   * @type {string}
+   * @memberof IAction
+   */
+  description?: string;
 }

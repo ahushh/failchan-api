@@ -7,6 +7,7 @@ import { AttachmentService } from '../../../app/service/attachment.service';
 import { ValidationError } from '../../../app/errors/validation';
 import { AppErrorActionRequestValidation } from '../../../app/errors/action';
 
+// TODO: add CLI interface
 @provide(IOC_TYPE.CreateAttachmentAction)
 export class CreateAttachmentAction implements IAction {
   constructor(

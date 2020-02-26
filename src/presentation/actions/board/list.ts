@@ -7,7 +7,8 @@ import { BoardService } from '../../../app/service/board.service';
 @provide(IOC_TYPE.ListBoardAction, true)
 @provide('action', true)
 export class ListBoardAction implements IAction  {
-  request = ``
+  payloadExample = ``
+  description = ''
   constructor(
     @inject(IOC_TYPE.BoardService) public service: BoardService,
   ) {}
