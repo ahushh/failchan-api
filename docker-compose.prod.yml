@@ -2,6 +2,7 @@ version: "3.7"
 services:
   app:
     build: .
+    image: ahushh/failchan-api_app:latest
     ports:
       - "3000:3000"
     depends_on:
