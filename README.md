@@ -14,7 +14,9 @@ https://documenter.getpostman.com/view/5005722/RzZ4qh3t?version=latest
 
 **Do not forget about .env file!**
 
-# Run in dev mode
+# Run in dev watch mode
+
+Update `.env` file to point `REDIS_HOST` to `localhost`
 
 `npm run db:run`
 
@@ -28,9 +30,13 @@ https://documenter.getpostman.com/view/5005722/RzZ4qh3t?version=latest
 
 `npm e2e`
 
+# Run in production mode
+
+`npm run start:prod`
+
 # Run in production mode through Docker
 
-`npm run start:docker`
+`npm run docker:start`
 
 # Troubles during e2e tests
 
@@ -57,8 +63,7 @@ https://documenter.getpostman.com/view/5005722/RzZ4qh3t?version=latest
 # TODO
 
 * calculate file size
-* [WIP] заменить сущности (сервисы, репозитории) на интерфейсы
-* (?) should actions (use cases) be placed in IoC
+* [WIP] use interfaces everywhere if possible
 * update deps
 * tslint -> eslint
 * add logging, (?) use morgan 
@@ -68,7 +73,11 @@ https://documenter.getpostman.com/view/5005722/RzZ4qh3t?version=latest
 * Events and websockets
 * Event bus
 * Error handling layer
-
+* Auth token both in query and headers
+* User entity and role system
+* CI/CD
+* Better config managment, (?) use "config" package
+* mocha -> jest
 
 # Inspired by
 
