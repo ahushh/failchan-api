@@ -1,19 +1,17 @@
+import Joi from '@hapi/joi';
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
-import { getManager, Repository } from 'typeorm';
+
 import { IOC_TYPE } from '../../config/type';
-import { Attachment } from '../../domain/entity/attachment';
 import { Post } from '../../domain/entity/post';
-import { Thread } from '../../domain/entity/thread';
+import { IAuthorService } from '../../domain/interfaces/author.service';
 import { IPostService } from '../../domain/interfaces/post.service';
-import { IThreadRepository } from '../interfaces/thread.repo';
+import { logCall } from '../../infra/utils/log-call';
+import { validate } from '../errors/validate';
 import { IAttachmentRepository } from '../interfaces/attachment.repo';
 import { IPostRepository } from '../interfaces/post.repo';
+import { IThreadRepository } from '../interfaces/thread.repo';
 import { TransactionService } from './transaction.service';
-import { IAuthorRepository } from '../interfaces/author.repo';
-import { Author } from '../../domain/entity/author';
-import { AppErrorInvalidToken } from '../errors/token';
-import { IAuthorService } from '../../domain/interfaces/author.service';
 
 interface IReplyToThread {
   threadId: number;
@@ -34,6 +32,15 @@ interface IUpdatePost {
 
 @provide(IOC_TYPE.PostService)
 export class PostService implements IPostService {
+  static updateValidationAtLeastOneField = (post: object, helpers) => {
+    const keys = ['threadId', 'body', 'attachmentIds', 'references'];
+    const isValid = keys.some(k => post[k] !== null);
+    if (isValid) {
+      return post;
+    }
+    throw new Error(`at least one of ${keys.join(', ')} must be presented`);
+  }
+
   constructor(
     @inject(IOC_TYPE.PostRepository) private postRepo: IPostRepository,
     @inject(IOC_TYPE.ThreadRepository) private threadRepo: IThreadRepository,
@@ -42,6 +49,13 @@ export class PostService implements IPostService {
     @inject(IOC_TYPE.TransactionService) private transactionService: TransactionService,
   ) { }
 
+  @validate(Joi.object({
+    threadId: Joi.number().required(),
+    body: Joi.string().required(),
+    attachmentIds: Joi.array().min(0).items(Joi.number()).required(),
+    references: Joi.array().min(0).items(Joi.number()).required(),
+    token: Joi.string(),
+  }))
   async replyToThread(request: IReplyToThread): Promise<{ post: Post; token?: string }> {
     const thread = await this.threadRepo.findOneOrFail(request.threadId);
     const attachments = await this.attachmentRepo.findByIds(request.attachmentIds);
@@ -64,7 +78,7 @@ export class PostService implements IPostService {
     const responsePost = await this.postRepo.findOneOrFail(post.id, {
       relations: ['references', 'attachments', 'replies'],
     });
-    const result = { 
+    const result = {
       post: responsePost,
       token: undefined,
     };
@@ -72,12 +86,23 @@ export class PostService implements IPostService {
     if (isNew) {
       return {
         ...result,
-        token: author.generateToken()
-      }
+        token: author.generateToken(),
+      };
     }
     return result;
   }
 
+  @validate(
+    Joi.object({
+      threadId: Joi.number().allow(null),
+      body: Joi.string().allow(null),
+      attachmentIds: Joi.array().items(Joi.number()).allow(null),
+      references: Joi.array().items(Joi.number()).allow(null),
+
+      postId: Joi.number().required(),
+      token: Joi.string().required(),
+    }).custom(PostService.updateValidationAtLeastOneField),
+  )
   async updatePost(request: IUpdatePost): Promise<void> {
     const post = await this.postRepo.findOneOrFail(request.postId, {
       relations: ['references', 'references.replies', 'author'],

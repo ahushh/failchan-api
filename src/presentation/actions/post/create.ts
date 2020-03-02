@@ -36,7 +36,7 @@ export class CreatePostAction implements IAction {
     const newRequest = {
       attachmentIds,
       body: request.body,
-      references: request.references,
+      references: request.references || [],
       threadId: request.threadId,
       token: request.token,
     };

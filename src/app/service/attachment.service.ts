@@ -1,5 +1,5 @@
+import Joi from '@hapi/joi';
 import { Redis } from 'ioredis';
-import { Repository } from 'typeorm';
 import uuidv4 from 'uuid/v4';
 import { Attachment } from '../../domain/entity/attachment';
 
@@ -8,14 +8,15 @@ import { fluentProvide, provide } from 'inversify-binding-decorators';
 import { IOC_TYPE } from '../../config/type';
 import { IAttachmentFile } from '../../domain/interfaces/attachment-file';
 import { IAttachmentService } from '../../domain/interfaces/attachment.service';
+import { IAuthorService } from '../../domain/interfaces/author.service';
+import { AppErrorAttachmentCacheRecordNotFound } from '../errors/attachment';
+import { validate } from '../errors/validate';
 import { IAttachmentRepository } from '../interfaces/attachment.repo';
 import { IFile } from '../interfaces/file';
 import { IFileFactory } from '../interfaces/file.factory';
 import { IFileRepository } from '../interfaces/file.repo';
 import { ExpiredAttachmentService } from '../listeners/expired-attachments';
-import { AppErrorAttachmentCacheRecordNotFound } from '../errors/attachment';
 import { AppConfigService } from './app-config.service';
-import { IAuthorService } from '../../domain/interfaces/author.service';
 
 @fluentProvide(IOC_TYPE.AttachmentService).inSingletonScope().done(true)
 export class AttachmentService implements IAttachmentService {
@@ -54,36 +55,6 @@ export class AttachmentService implements IAttachmentService {
     const json = await file.toJSON();
     return Attachment.create(json);
   }
-
-  async createFromCache(id: string): Promise<number[]> {
-    const files = await this.getFromCache(id);
-    const entities = await Promise.all(files.map(f => this.create(f)));
-    const saved = await this.repo.save(entities);
-    return saved.map(({ id }) => id);
-  }
-  async saveToCache(files: IAttachmentFile[]) {
-    const uid = uuidv4();
-    const cacheKey = this.getCacheKey(uid);
-    const dataKey = this.getDataKey(uid);
-    const expiresAt = this.getExpiresAt();
-    await this.redis.set(cacheKey, 1, 'EX', this.appConfig.getConfig().ATTACHMENT_TTL);
-    await this.redis.set(dataKey, JSON.stringify(files));
-    return { uid, expiresAt };
-  }
-
-  async delete(ids: number[], token: string) {
-    const attachments = await this.repo.findByIds(ids, {
-      relations: ['post', 'post.author'],
-    });
-    attachments.forEach(a => {
-      this.authorService.checkAuthorshipByToken(token, a.post.author);
-    });
-
-    const deleteAttachment = (a: Attachment) =>
-      this.fileRepo.delete([a.storageKey, a.thumbStorageKey].filter(Boolean));
-    await Promise.all(attachments.map(deleteAttachment));
-    await this.repo.delete(ids);
-  }
   private async getFromCache(uid: string): Promise<IAttachmentFile[]> {
     const cacheKey = this.getCacheKey(uid);
     const dataKey = this.getDataKey(uid);
@@ -97,5 +68,42 @@ export class AttachmentService implements IAttachmentService {
     } catch (e) {
       throw e;
     }
+  }
+
+  @validate(Joi.string().required())
+  async createFromCache(id: string): Promise<number[]> {
+    const files = await this.getFromCache(id);
+    const entities = await Promise.all(files.map(f => this.create(f)));
+    const saved = await this.repo.save(entities);
+    return saved.map(({ id }) => id);
+  }
+
+  @validate(Joi.array().min(1).required())
+  async saveToCache(files: IAttachmentFile[]) {
+    const uid = uuidv4();
+    const cacheKey = this.getCacheKey(uid);
+    const dataKey = this.getDataKey(uid);
+    const expiresAt = this.getExpiresAt();
+    await this.redis.set(cacheKey, 1, 'EX', this.appConfig.getConfig().ATTACHMENT_TTL);
+    await this.redis.set(dataKey, JSON.stringify(files));
+    return { uid, expiresAt };
+  }
+
+  @validate(
+    Joi.array().min(1).items(Joi.number()).required(),
+    Joi.string().required(),
+  )
+  async delete(ids: number[], token: string) {
+    const attachments = await this.repo.findByIds(ids, {
+      relations: ['post', 'post.author'],
+    });
+    attachments.forEach(a => {
+      this.authorService.checkAuthorshipByToken(token, a.post.author);
+    });
+
+    const deleteAttachment = (a: Attachment) =>
+      this.fileRepo.delete([a.storageKey, a.thumbStorageKey].filter(Boolean));
+    await Promise.all(attachments.map(deleteAttachment));
+    await this.repo.delete(ids);
   }
 }

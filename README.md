@@ -50,11 +50,15 @@ Update `.env` file to point `REDIS_HOST` to `localhost`
 
 -- Try to recreate DB
 
-`npm run e2e:reset`
+`npm run e2e:db:reset`
 
 -- Try to stop and run Docker
 
 `npm run db:stop && npm run db:start`
+
+-- Try to remove postgres volume
+
+`docker volume rm failchan-api_postgres`
 
 -- Run tests again
 

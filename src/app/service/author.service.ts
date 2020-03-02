@@ -1,15 +1,11 @@
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
+
 import { IOC_TYPE } from '../../config/type';
-import { Board } from '../../domain/entity/board';
-import { IAuthorService } from '../../domain/interfaces/author.service';
-import { AppErrorBoardAlreadyExist } from '../errors/board';
-import { IBoardRepository } from '../interfaces/board.repo';
-import { AppErrorUnexpected } from '../errors/unexpected';
-import { IAuthorRepository } from '../interfaces/author.repo';
 import { Author } from '../../domain/entity/author';
+import { IAuthorService } from '../../domain/interfaces/author.service';
 import { AppErrorInvalidToken, AppErrorNotAuthorized } from '../errors/token';
-import { Post } from '../../domain/entity/post';
+import { IAuthorRepository } from '../interfaces/author.repo';
 
 @provide(IOC_TYPE.AuthorService)
 export class AuthorService implements IAuthorService {
@@ -37,12 +33,12 @@ export class AuthorService implements IAuthorService {
 
   checkAuthorshipByToken(token: string, author: Author) {
     try {
-        const { authorId } = Author.verifyToken(token);
-        if (authorId !== author.id) {
-            throw new AppErrorNotAuthorized();
-        }
-      } catch (e) {
-        throw new AppErrorInvalidToken(e);
+      const { authorId } = Author.verifyToken(token);
+      if (authorId !== author.id) {
+        throw new AppErrorNotAuthorized();
       }
+    } catch (e) {
+      throw new AppErrorInvalidToken(e);
+    }
   }
 }

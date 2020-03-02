@@ -46,7 +46,9 @@ export class AttachmentController implements interfaces.Controller {
   private async delete(
     @request() request: Request, @response() response: Response, @next() next: Function,
   ) {
-    const ids = request.query.ids;
+    const ids = Array.isArray(request.query.ids)
+      ? request.query.ids.map(Number)
+      : [+request.query.ids];
     const token = request.query.token;
     try {
       await this.deleteAttachmentAction.execute({ ids, token });

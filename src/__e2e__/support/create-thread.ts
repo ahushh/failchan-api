@@ -10,7 +10,7 @@ export const createThreadFactory = container => async (board) => {
 
   const replyToThread = replyToThreadFactory(container);
 
-  await replyToThread(thread, 1);
-  await replyToThread(thread, 2);
-  await replyToThread(thread, 3);
+  await replyToThread(thread, '1');
+  await replyToThread(thread, '2');
+  await replyToThread(thread, '3');
 };
