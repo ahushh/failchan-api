@@ -10,13 +10,14 @@ import { IAttachmentFile } from '../../domain/interfaces/attachment-file';
 import { IAttachmentService } from '../../domain/interfaces/attachment.service';
 import { IAuthorService } from '../../domain/interfaces/author.service';
 import { AppErrorAttachmentCacheRecordNotFound } from '../errors/attachment';
-import { validate } from '../errors/validate';
+import { validate } from '../errors/validation';
 import { IAttachmentRepository } from '../interfaces/attachment.repo';
 import { IFile } from '../interfaces/file';
 import { IFileFactory } from '../interfaces/file.factory';
 import { IFileRepository } from '../interfaces/file.repo';
 import { ExpiredAttachmentService } from '../listeners/expired-attachments';
 import { AppConfigService } from './app-config.service';
+import { AppErrorUnexpected } from '../errors/unexpected';
 
 @fluentProvide(IOC_TYPE.AttachmentService).inSingletonScope().done(true)
 export class AttachmentService implements IAttachmentService {
@@ -66,10 +67,18 @@ export class AttachmentService implements IAttachmentService {
     try {
       return JSON.parse(dataEntry);
     } catch (e) {
-      throw e;
+      throw new AppErrorUnexpected(e);
     }
   }
 
+  /**
+   * @throws {AppErrorAttachmentCacheRecordNotFound}
+   * @throws {AppErrorUnexpected}
+   * @throws {AppValidationError}
+   * @param {string} id
+   * @returns {Promise<number[]>}
+   * @memberof AttachmentService
+   */
   @validate(Joi.string().required())
   async createFromCache(id: string): Promise<number[]> {
     const files = await this.getFromCache(id);

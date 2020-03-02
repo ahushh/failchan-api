@@ -103,7 +103,7 @@ describe('Attachment creation', () => {
       .attach('dudeweed', `${__dirname}/test-image.jpg`)
       .end((err, res) => {
         chai.expect(res.status).to.eq(422);
-        chai.expect(res.body).to.have.keys(['error']);
+        chai.expect(res.body).to.have.keys(['name', 'message', 'details']);
         done();
       });
   });

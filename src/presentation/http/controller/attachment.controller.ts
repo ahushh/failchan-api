@@ -20,6 +20,7 @@ import R from 'ramda';
 import { CreateAttachmentAction } from '../../actions/attachments/create';
 import { DeleteAttachmentAction } from '../../actions/attachments/delete';
 import { IOC_TYPE } from '../../../config/type';
+import { ERROR2STATUS_CODE } from '../constants/errors';
 
 @controller('/attachments')
 export class AttachmentController implements interfaces.Controller {
@@ -54,8 +55,9 @@ export class AttachmentController implements interfaces.Controller {
       await this.deleteAttachmentAction.execute({ ids, token });
       response.sendStatus(204);
     } catch (e) {
-      if (e.name === 'InvalidToken') {
-        response.status(403).json({ error: e.message });
+      const code = ERROR2STATUS_CODE[e.name];
+      if (code) {
+        return response.status(code).json(e.json());
       }
       next(e);
     }

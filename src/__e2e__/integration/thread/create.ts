@@ -89,13 +89,13 @@ describe('Threads creation', () => {
       done();
     });
   });
-  it('returns an error trying to create a thread using an invalid token', (done) => {
+  it('returns an error trying to create a thread using a malformed token', (done) => {
     supertest(app).post(`/boards/b/threads`)
     .send({ token: 'shouldfail', post: { body: 'new message' } })
     .end((err, res) => {
       chai.expect(res.status).to.eq(403);
       chai.expect(res.body).to.include({
-        error: 'Supplied token is invalid',
+        name: 'InvalidToken',
       });
       done();
     });
@@ -117,7 +117,7 @@ describe('Threads creation', () => {
     .end((err, res) => {
       chai.expect(res.status).to.eq(404);
       chai.expect(res.body).to.include({
-        error: 'Board d not found',
+        name: 'EntityNotFound',
       });
     });
   });

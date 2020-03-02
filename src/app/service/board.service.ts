@@ -7,7 +7,7 @@ import { Board } from '../../domain/entity/board';
 import { IBoardService } from '../../domain/interfaces/board.service';
 import { AppErrorBoardAlreadyExist } from '../errors/board';
 import { AppErrorUnexpected } from '../errors/unexpected';
-import { validate } from '../errors/validate';
+import { validate } from '../errors/validation';
 import { IBoardRepository } from '../interfaces/board.repo';
 
 @provide(IOC_TYPE.BoardService)
@@ -16,6 +16,14 @@ export class BoardService implements IBoardService {
     @inject(IOC_TYPE.BoardRepository) private repo: IBoardRepository,
   ) { }
 
+  /**
+   * @param {*} { slug, name }
+   * @returns {Promise<Board>}
+   * @throws {AppErrorBoardAlreadyExist}
+   * @throws {AppValidationError}
+   * @throws {AppErrorUnexpected}
+   * @memberof BoardService
+   */
   @validate(Joi.object({
     slug: Joi.string().required(),
     name: Joi.string().required(),

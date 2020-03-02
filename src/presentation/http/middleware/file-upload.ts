@@ -1,5 +1,6 @@
 import multer from 'multer';
 import { diskStorage } from './file-upload/disk-storage';
+import { APP_ERRORS } from '../../../app/errors/error.interface';
 
 const files = process.env.MAX_UPLOAD_FILES
   ? +process.env.MAX_UPLOAD_FILES
@@ -18,7 +19,7 @@ export const fileUploadMiddleware = (req, res, next) => multer({
   },
 }).array('attachments')(req, res, (err) => {
   if (err) {
-    res.status(422).json({ error: err.message });
+    res.status(422).json({ name: APP_ERRORS.UploadError, message: err.message, details: err });
   } else {
     next();
   }

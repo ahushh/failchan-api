@@ -53,13 +53,13 @@ describe('Posts updating', () => {
     await testApplicationServer.connection.synchronize(true);
   });
 
-  it('does not allow to update post using incorrect token', (done) => {
+  it('does not allow to update post using a malformed token', (done) => {
     supertest(app).patch('/posts/1')
       .send({ post: { body: 'new body' }, token: 'shouldfail' })
       .end((err, res) => {
         chai.expect(res.status).to.eq(403);
         chai.expect(res.body).to.include({
-          error: 'Supplied token is invalid',
+          name: 'InvalidToken',
         });
         done();
       });

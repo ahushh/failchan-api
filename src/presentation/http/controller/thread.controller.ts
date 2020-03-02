@@ -16,6 +16,8 @@ import { CreatePostAction } from '../../actions/post/create';
 import { UpdatePostAction } from '../../actions/post/update';
 import { ThreadService } from '../../../app/service/thread.service';
 import { IOC_TYPE } from '../../../config/type';
+import { APP_ERRORS } from '../../../app/errors/error.interface';
+import { ERROR2STATUS_CODE } from '../constants/errors';
 
 @controller('/threads')
 export class ThreadController implements interfaces.Controller {
@@ -33,19 +35,14 @@ export class ThreadController implements interfaces.Controller {
       const { post, token } = await this.createPostAction.execute({
         threadId,
         ...request.body.post,
-        token: request.body.token
+        token: request.body.token,
       });
 
       response.json({ post, token });
     } catch (e) {
-      if (e.name === 'InvalidToken') {
-        return response.status(403).json({ error: e.message });
-      }
-      if (e.name === 'CacheRecordNotFound') {
-        return response.status(400).json({ error: e.message });
-      }
-      if (e.name === 'EntityNotFound') {
-        return response.status(404).json({ error: `Thread ${request.params.threadId} not found` });
+      const code = ERROR2STATUS_CODE[e.name];
+      if (code) {
+        return response.status(code).json(e.json());
       }
       next(e);
     }

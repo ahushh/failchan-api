@@ -16,6 +16,8 @@ import { ListBoardAction } from '../../actions/board/list';
 import { CreateThreadAction } from '../../actions/thread/create';
 import { ListThreadsByBoardAction } from '../../actions/thread/list';
 import { IOC_TYPE } from '../../../config/type';
+import { APP_ERRORS } from '../../../app/errors/error.interface';
+import { ERROR2STATUS_CODE } from '../constants/errors';
 
 @controller('/boards')
 export class BoardController implements interfaces.Controller {
@@ -26,7 +28,7 @@ export class BoardController implements interfaces.Controller {
     // tslint:disable-next-line: max-line-length
     @inject(IOC_TYPE.ListThreadsByBoardAction) public listThreadsByBoardAction: ListThreadsByBoardAction,
     @inject(IOC_TYPE.CreateThreadAction) public createThreadAction: CreateThreadAction,
-  ) {}
+  ) { }
 
   @httpPost('/')
   private async create(
@@ -36,8 +38,8 @@ export class BoardController implements interfaces.Controller {
       const board = await this.createBoardAction.execute(request.body);
       response.json({ board });
     } catch (e) {
-      if (e.name === 'AlreadyExists') {
-        return response.status(400).json({ error: e.message });
+      if ([APP_ERRORS.BoardAlreadyExists, APP_ERRORS.ValidationError].includes(e.name)) {
+        return response.status(400).json(e.json());
       }
       next(e);
     }
@@ -56,11 +58,19 @@ export class BoardController implements interfaces.Controller {
     @queryParam('skip') skip: number, @requestParam('boardSlug') boardSlug: string,
     @request() request: Request, @response() response: Response, @next() next: Function,
   ) {
-    const threads = await this.listThreadsByBoardAction.execute({
-      boardSlug,
-      skip,
-    });
-    response.json({ threads });
+    try {
+      const threads = await this.listThreadsByBoardAction.execute({
+        boardSlug,
+        skip,
+      });
+      response.json({ threads });
+    } catch (e) {
+      const code = ERROR2STATUS_CODE[e.name];
+      if (code) {
+        return response.status(code).json(e.json());
+      }
+      next(e);
+    }
   }
 
   @httpPost('/:boardSlug/threads')
@@ -79,14 +89,9 @@ export class BoardController implements interfaces.Controller {
       });
       response.json({ thread, token });
     } catch (e) {
-      if (e.name === 'InvalidToken') {
-        return response.status(403).json({ error: e.message });
-      }
-      if (e.name === 'CacheRecordNotFound') {
-        return response.status(400).json({ error: e.message });
-      }
-      if (e.name === 'EntityNotFound') {
-        return response.status(404).json({ error: `Board ${boardSlug} not found` });
+      const code = ERROR2STATUS_CODE[e.name];
+      if (code) {
+        return response.status(code).json(e.json());
       }
       next(e);
     }

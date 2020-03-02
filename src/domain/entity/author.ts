@@ -15,6 +15,13 @@ export class Author {
     return jwt.sign({ authorId: this.id }, process.env.TOKEN_SECRET);
   }
 
+  /**
+   * @throws {JsonWebTokenError}
+   * @static
+   * @param {string} token
+   * @returns
+   * @memberof Author
+   */
   static verifyToken(token: string) {
     return jwt.verify(token, process.env.TOKEN_SECRET);
   }

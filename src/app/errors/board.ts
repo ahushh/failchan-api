@@ -1,9 +1,10 @@
-import { IAppError } from './error.interface';
+import {  APP_ERRORS, AppErrorAbstract } from './error.interface';
 
-export class AppErrorBoardAlreadyExist implements IAppError {
-  name = 'AlreadyExists';
+export class AppErrorBoardAlreadyExist extends AppErrorAbstract {
+  name = APP_ERRORS.BoardAlreadyExists;
   message = 'Board with such slug already exists';
 
-  constructor(public error) { }
+  constructor(public error) {
+    super();
+  }
 }
-

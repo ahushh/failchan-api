@@ -65,7 +65,21 @@ describe('Boards listing', () => {
       .end((err, res) => {
         chai.expect(res.status).to.eq(400);
         chai.expect(res.body).to.include({
-          error: 'Board with such slug already exists',
+          name: 'BoardAlreadyExists',
+          message: 'Board with such slug already exists',
+          details: null,
+        });
+        done();
+      });
+  });
+  it('returns a validation error', (done) => {
+    supertest(app).post('/boards')
+      .send({ name: 1 })
+      .end((err, res) => {
+        chai.expect(res.status).to.eq(400);
+        chai.expect(res.body).to.include({
+          name: 'ValidationError',
+          message: 'Passed arguments do not match the schema',
         });
         done();
       });

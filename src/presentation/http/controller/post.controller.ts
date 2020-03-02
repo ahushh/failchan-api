@@ -14,6 +14,7 @@ import {
 } from 'inversify-express-utils';
 import { UpdatePostAction } from '../../actions/post/update';
 import { IOC_TYPE } from '../../../config/type';
+import { ERROR2STATUS_CODE } from '../constants/errors';
 
 @controller('/posts')
 export class PostController implements interfaces.Controller {
@@ -34,11 +35,9 @@ export class PostController implements interfaces.Controller {
       });
       response.sendStatus(204);
     } catch (e) {
-      if (e.name === 'EntityNotFound') {
-        response.status(404).json({ error: `Post ${postId} not found` });
-      }
-      if (e.name === 'InvalidToken') {
-        response.status(403).json({ error: e.message });
+      const code = ERROR2STATUS_CODE[e.name];
+      if (code) {
+        return response.status(code).json(e.json());
       }
       next(e);
     }

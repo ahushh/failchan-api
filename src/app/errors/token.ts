@@ -1,15 +1,18 @@
-import { IAppError } from "./error.interface";
+import { APP_ERRORS, AppErrorAbstract } from './error.interface';
 
-export class AppErrorInvalidToken implements IAppError {
-  name = 'InvalidToken';
+export class AppErrorInvalidToken extends AppErrorAbstract {
+  name = APP_ERRORS.InvalidToken;
   message = 'Supplied token is invalid';
 
-  constructor(public error) { }
+  constructor(public error) { 
+    super();
+  }
 }
-  
-  
-export class AppErrorNotAuthorized implements IAppError {
-  name = 'NotAuthorized'
-  message = 'You are not authorized to do it'
-  constructor(public error?) {}
+
+export class AppErrorNotAuthorized extends AppErrorAbstract {
+  name = APP_ERRORS.NotAuthorized;
+  message = 'You are not authorized to do it';
+  constructor(public error?) {
+    super();
+  }
 }

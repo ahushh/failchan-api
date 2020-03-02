@@ -32,13 +32,15 @@ export class AuthorService implements IAuthorService {
   }
 
   checkAuthorshipByToken(token: string, author: Author) {
+    let authorId;
     try {
-      const { authorId } = Author.verifyToken(token);
-      if (authorId !== author.id) {
-        throw new AppErrorNotAuthorized();
-      }
+      const data = Author.verifyToken(token);
+      authorId = data.authorId;
     } catch (e) {
       throw new AppErrorInvalidToken(e);
+    }
+    if (authorId !== author.id) {
+      throw new AppErrorNotAuthorized();
     }
   }
 }

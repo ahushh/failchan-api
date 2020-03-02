@@ -15,7 +15,11 @@ export const configAppFactory = ({ port }) => (app: Application) => {
 export const errorConfigAppFactory = () => (app: Application) => {
   app.use((err, req, res, next) => {
     // tslint:disable-next-line: prefer-template
-    console.error('Error: ' + JSON.stringify(err));
-    res.status(res.statusCode).json({ error: err });
+    console.error('Unhandled error: ' + JSON.stringify(err));
+    res.status(500).json({
+      code: 'UnhandledError',
+      message: 'WTF',
+      details: JSON.stringify(err),
+    });
   });
 };

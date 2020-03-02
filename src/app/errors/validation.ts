@@ -1,13 +1,14 @@
 import Joi from '@hapi/joi';
 import { prop } from 'ramda';
 
-import { IAppError } from './error.interface';
+import { APP_ERRORS, AppErrorAbstract } from './error.interface';
 
-export class ValidationError implements IAppError {
-  name = 'ValidationError';
+export class AppValidationError extends AppErrorAbstract<Joi.ValidationError[]> {
+  name = APP_ERRORS.ValidationError;
   message = 'Passed arguments do not match the schema';
-  constructor(public errors: Joi.ValidationError[]) { }
-
+  constructor(public details: Joi.ValidationError[]) {
+    super();
+  }
 }
 
 export function validate(...schemas: Joi.Schema[]) {
@@ -23,7 +24,7 @@ export function validate(...schemas: Joi.Schema[]) {
         .filter(Boolean) as Joi.ValidationError[];
 
       if (errors.length) {
-        throw new ValidationError(errors);
+        throw new AppValidationError(errors);
       }
       return originalMethod.apply(this, args);
     };

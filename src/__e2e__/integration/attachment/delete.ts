@@ -76,13 +76,13 @@ describe('Attachment deletion', () => {
   after(async () => {
     await testApplicationServer.connection.synchronize(true);
   });
-  it('throws an error trying to delete an attachment using an invalid token', (done) => {
+  it('throws an error trying to delete an attachment using a malformed token', (done) => {
     supertest(app).delete('/attachments')
       .query({ token: 'fail', ids: [attachmentId] })
       .end((err, res) => {
         chai.expect(res.status).to.eq(403);
         chai.expect(res.body).to.include({
-          error: 'Supplied token is invalid',
+          name: 'InvalidToken',
         });
         done();
       });

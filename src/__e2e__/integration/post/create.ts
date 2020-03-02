@@ -61,7 +61,7 @@ describe('Posts creation', () => {
         done();
       });
   });
-  it('returns an error trying to create a new post using an invalid token', (done) => {
+  it('returns an error trying to create a new post using a malformed token', (done) => {
     supertest(app).post(`/threads/${thread.id}/posts`)
       .send({
         token: 'shouldfail',
@@ -74,7 +74,8 @@ describe('Posts creation', () => {
       .end((err, res) => {
         chai.expect(res.status).to.eq(403);
         chai.expect(res.body).to.include({
-          error: 'Supplied token is invalid',
+          message: 'Supplied token is invalid',
+          name: 'InvalidToken',
         });
         done();
       });
@@ -101,7 +102,7 @@ describe('Posts creation', () => {
       .end((err, res) => {
         chai.expect(res.status).to.eq(404);
         chai.expect(res.body).to.include({
-          error: 'Thread 666 not found',
+          name: 'EntityNotFound',
         });
         done();
       });

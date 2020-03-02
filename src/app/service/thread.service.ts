@@ -7,9 +7,12 @@ import { IOC_TYPE } from '../../config/type';
 import { Thread } from '../../domain/entity/thread';
 import { IPostService } from '../../domain/interfaces/post.service';
 import { IThreadService } from '../../domain/interfaces/thread.service';
-import { validate } from '../errors/validate';
+import { validate } from '../errors/validation';
 import { IBoardRepository } from '../interfaces/board.repo';
 import { IThreadRepository } from '../interfaces/thread.repo';
+import { AppErrorEntityNotFound } from '../errors/not-found';
+import { AppErrorUnexpected } from '../errors/unexpected';
+import { Board } from '../../domain/entity/board';
 
 @provide(IOC_TYPE.ThreadService)
 export class ThreadService implements IThreadService {
@@ -34,7 +37,13 @@ export class ThreadService implements IThreadService {
     boardSlug: string;
     token?: string;
   }): Promise<{ thread: Thread; token?: string }> {
-    const board = await this.boardRepo.getBySlug(request.boardSlug);
+    let board: Board;
+    try {
+      board = await this.boardRepo.getBySlug(request.boardSlug);
+    } catch (e) {
+      throw new AppErrorEntityNotFound(e, `Board ${request.boardSlug}`);
+    }
+
     const thread = Thread.create(board);
     const { id: threadId } = await this.threadRepo.save(thread);
     const replyRequest = {
@@ -44,9 +53,23 @@ export class ThreadService implements IThreadService {
     };
     const { token } = await this.postService.replyToThread(replyRequest);
     const resultThread = await this.getThreadWithPosts(threadId);
-    return { thread: resultThread, token };
+    return { token, thread: resultThread };
   }
 
+  /**
+   * 
+   * @throws {AppErrorNotFound}
+   * @throws {AppValidationError}
+   * @throws {AppErrorUnexpected}
+   * @param {{
+   *     boardSlug: string,
+   *     previewPosts: number,
+   *     take: number,
+   *     skip: number,
+   *   }} params
+   * @returns {Promise<Thread[]>}
+   * @memberof ThreadService
+   */
   @validate(Joi.object({
     boardSlug: Joi.string().required(),
     previewPosts: Joi.number(),
@@ -59,9 +82,21 @@ export class ThreadService implements IThreadService {
     take: number,
     skip: number,
   }): Promise<Thread[]> {
-    const board = await this.boardRepo.getBySlug(params.boardSlug);
-    return this.threadRepo
-      .getThreadsWithPreviewPosts(board.id, R.omit(['boardSlug'], params));
+    let board;
+    try {
+      board = await this.boardRepo.getBySlug(params.boardSlug);
+    } catch (e) {
+      if (e.name === 'EntityNotFound') {
+        throw new AppErrorEntityNotFound(e, `Board ${params.boardSlug}`);
+      }
+      throw new AppErrorUnexpected(e);
+    }
+    try {
+      return this.threadRepo
+        .getThreadsWithPreviewPosts(board.id, R.omit(['boardSlug'], params));
+    } catch (e) {
+      throw new AppErrorUnexpected(e);
+    }
   }
 
   @validate(Joi.number().required())

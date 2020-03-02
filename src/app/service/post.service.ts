@@ -7,11 +7,13 @@ import { Post } from '../../domain/entity/post';
 import { IAuthorService } from '../../domain/interfaces/author.service';
 import { IPostService } from '../../domain/interfaces/post.service';
 import { logCall } from '../../infra/utils/log-call';
-import { validate } from '../errors/validate';
+import { validate } from '../errors/validation';
 import { IAttachmentRepository } from '../interfaces/attachment.repo';
 import { IPostRepository } from '../interfaces/post.repo';
 import { IThreadRepository } from '../interfaces/thread.repo';
 import { TransactionService } from './transaction.service';
+import { AppErrorEntityNotFound } from '../errors/not-found';
+import { Thread } from '../../domain/entity/thread';
 
 interface IReplyToThread {
   threadId: number;
@@ -57,7 +59,13 @@ export class PostService implements IPostService {
     token: Joi.string(),
   }))
   async replyToThread(request: IReplyToThread): Promise<{ post: Post; token?: string }> {
-    const thread = await this.threadRepo.findOneOrFail(request.threadId);
+    let thread: Thread;
+    try {
+      thread = await this.threadRepo.findOneOrFail(request.threadId);
+    } catch (e) {
+      throw new AppErrorEntityNotFound(e, `Thread ${request.threadId}`);
+    }
+
     const attachments = await this.attachmentRepo.findByIds(request.attachmentIds);
     const references = await this.postRepo.findByIds(request.references, {
       relations: ['replies'],
