@@ -69,5 +69,5 @@ jobs:
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
 
-          docker tag image $IMAGE_ID:$VERSION
+          docker tag failchan-api_app $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
