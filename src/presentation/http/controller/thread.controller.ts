@@ -12,11 +12,11 @@ import {
   requestParam,
   response,
 } from 'inversify-express-utils';
-import { CreatePostAction } from '../../actions/post/create';
-import { UpdatePostAction } from '../../actions/post/update';
+import { APP_ERRORS } from '../../../app/errors/error.interface';
 import { ThreadService } from '../../../app/service/thread.service';
 import { IOC_TYPE } from '../../../config/type';
-import { APP_ERRORS } from '../../../app/errors/error.interface';
+import { CreatePostAction } from '../../actions/post/create';
+import { UpdatePostAction } from '../../actions/post/update';
 import { ERROR2STATUS_CODE } from '../constants/errors';
 
 @controller('/threads')

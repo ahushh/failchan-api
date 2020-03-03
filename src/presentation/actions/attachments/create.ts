@@ -1,9 +1,9 @@
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
-import { IOC_TYPE } from '../../../config/type';
-import { IAttachmentFile } from '../../../domain/interfaces/attachment-file';
 import { IAction } from '../../../app/interfaces/action';
 import { AttachmentService } from '../../../app/service/attachment.service';
+import { IOC_TYPE } from '../../../config/type';
+import { IAttachmentFile } from '../../../domain/interfaces/attachment-file';
 
 // TODO: add CLI interface
 @provide(IOC_TYPE.CreateAttachmentAction)

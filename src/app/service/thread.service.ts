@@ -4,15 +4,15 @@ import { provide } from 'inversify-binding-decorators';
 import R from 'ramda';
 
 import { IOC_TYPE } from '../../config/type';
+import { Board } from '../../domain/entity/board';
 import { Thread } from '../../domain/entity/thread';
 import { IPostService } from '../../domain/interfaces/post.service';
 import { IThreadService } from '../../domain/interfaces/thread.service';
+import { AppErrorEntityNotFound } from '../errors/not-found';
+import { AppErrorUnexpected } from '../errors/unexpected';
 import { validate } from '../errors/validation';
 import { IBoardRepository } from '../interfaces/board.repo';
 import { IThreadRepository } from '../interfaces/thread.repo';
-import { AppErrorEntityNotFound } from '../errors/not-found';
-import { AppErrorUnexpected } from '../errors/unexpected';
-import { Board } from '../../domain/entity/board';
 
 @provide(IOC_TYPE.ThreadService)
 export class ThreadService implements IThreadService {
@@ -57,7 +57,7 @@ export class ThreadService implements IThreadService {
   }
 
   /**
-   * 
+   *
    * @throws {AppErrorNotFound}
    * @throws {AppValidationError}
    * @throws {AppErrorUnexpected}

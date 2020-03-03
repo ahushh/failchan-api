@@ -5,10 +5,10 @@ import { Application } from 'express';
 import fs from 'fs';
 import { Container } from 'inversify';
 import rimraf from 'rimraf';
+import { AppConfigService } from '../../../app/service/app-config.service';
+import { IOC_TYPE } from '../../../config/type';
 import { ApplicationServer } from '../../../presentation/http/server';
 import { getTestApplicationServer } from '../../../server.test';
-import { IOC_TYPE } from '../../../config/type';
-import { AppConfigService } from '../../../app/service/app-config.service';
 
 const TEMP_DIR = process.env.TEMP_DIR = '/tmp/failchan-test';
 

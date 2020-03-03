@@ -40,7 +40,8 @@ export class Thread {
   }
 
   /**
-   * @description Bumps thread, makes this thread to be parent of given post, updates post's references
+   * @description Bumps thread, makes this thread to be parent of given post,
+   *  updates post's references
    * @date 2019-12-16
    * @param {Post} post
    * @memberof Thread

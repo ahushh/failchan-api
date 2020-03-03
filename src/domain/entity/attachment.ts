@@ -52,8 +52,10 @@ export class Attachment {
     const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
     let order = 0;
     while (len >= 1024 && order < sizes.length - 1) {
+      // tslint:disable-next-line: no-increment-decrement
       order++;
-      len = len/1024;
+      // tslint:disable-next-line: no-parameter-reassignment
+      len = len / 1024;
     }
     return `${len.toFixed(2)}${sizes[order]}`;
   }

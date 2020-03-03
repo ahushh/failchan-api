@@ -1,6 +1,6 @@
 import multer from 'multer';
-import { diskStorage } from './file-upload/disk-storage';
 import { APP_ERRORS } from '../../../app/errors/error.interface';
+import { diskStorage } from './file-upload/disk-storage';
 
 const files = process.env.MAX_UPLOAD_FILES
   ? +process.env.MAX_UPLOAD_FILES

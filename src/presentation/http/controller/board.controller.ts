@@ -11,12 +11,12 @@ import {
   requestParam,
   response,
 } from 'inversify-express-utils';
+import { APP_ERRORS } from '../../../app/errors/error.interface';
+import { IOC_TYPE } from '../../../config/type';
 import { CreateBoardAction } from '../../actions/board/create';
 import { ListBoardAction } from '../../actions/board/list';
 import { CreateThreadAction } from '../../actions/thread/create';
 import { ListThreadsByBoardAction } from '../../actions/thread/list';
-import { IOC_TYPE } from '../../../config/type';
-import { APP_ERRORS } from '../../../app/errors/error.interface';
 import { ERROR2STATUS_CODE } from '../constants/errors';
 
 @controller('/boards')

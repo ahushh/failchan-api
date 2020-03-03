@@ -3,14 +3,14 @@ import { Application } from 'express';
 import { Container } from 'inversify';
 import supertest from 'supertest';
 import { getCustomRepository } from 'typeorm';
+import { Author } from '../../../domain/entity/author';
 import { Board } from '../../../domain/entity/board';
 import { Thread } from '../../../domain/entity/thread';
+import { AuthorRepository } from '../../../infra/repository/author.repo';
 import { BoardRepository } from '../../../infra/repository/board.repo';
 import { ThreadRepository } from '../../../infra/repository/thread.repo';
 import { ApplicationServer } from '../../../presentation/http/server';
 import { getTestApplicationServer } from '../../../server.test';
-import { Author } from '../../../domain/entity/author';
-import { AuthorRepository } from '../../../infra/repository/author.repo';
 
 let app: Application;
 let container: Container;
@@ -68,8 +68,8 @@ describe('Posts creation', () => {
         post: {
           body: 'should not fail',
           attachments: [],
-          references: []
-        }
+          references: [],
+        },
       })
       .end((err, res) => {
         chai.expect(res.status).to.eq(403);

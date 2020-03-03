@@ -4,7 +4,7 @@ export class AppErrorInvalidToken extends AppErrorAbstract {
   name = APP_ERRORS.InvalidToken;
   message = 'Supplied token is invalid';
 
-  constructor(public error) { 
+  constructor(public error) {
     super();
   }
 }

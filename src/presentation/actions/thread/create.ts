@@ -1,9 +1,9 @@
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
-import { IOC_TYPE } from '../../../config/type';
 import { IAction } from '../../../app/interfaces/action';
 import { AttachmentService } from '../../../app/service/attachment.service';
 import { ThreadService } from '../../../app/service/thread.service';
+import { IOC_TYPE } from '../../../config/type';
 
 interface IRequest {
   body: string;
@@ -24,7 +24,7 @@ export class CreateThreadAction implements IAction {
     "boardSlug": "b",
     "token"?: "verysecret"
   `;
-  description = ''
+  description = '';
   constructor(
     @inject(IOC_TYPE.ThreadService) public service: ThreadService,
     @inject(IOC_TYPE.AttachmentService) public attachmentService: AttachmentService,

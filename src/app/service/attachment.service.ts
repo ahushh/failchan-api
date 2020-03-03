@@ -10,6 +10,7 @@ import { IAttachmentFile } from '../../domain/interfaces/attachment-file';
 import { IAttachmentService } from '../../domain/interfaces/attachment.service';
 import { IAuthorService } from '../../domain/interfaces/author.service';
 import { AppErrorAttachmentCacheRecordNotFound } from '../errors/attachment';
+import { AppErrorUnexpected } from '../errors/unexpected';
 import { validate } from '../errors/validation';
 import { IAttachmentRepository } from '../interfaces/attachment.repo';
 import { IFile } from '../interfaces/file';
@@ -17,7 +18,6 @@ import { IFileFactory } from '../interfaces/file.factory';
 import { IFileRepository } from '../interfaces/file.repo';
 import { ExpiredAttachmentService } from '../listeners/expired-attachments';
 import { AppConfigService } from './app-config.service';
-import { AppErrorUnexpected } from '../errors/unexpected';
 
 @fluentProvide(IOC_TYPE.AttachmentService).inSingletonScope().done(true)
 export class AttachmentService implements IAttachmentService {
@@ -106,7 +106,7 @@ export class AttachmentService implements IAttachmentService {
     const attachments = await this.repo.findByIds(ids, {
       relations: ['post', 'post.author'],
     });
-    attachments.forEach(a => {
+    attachments.forEach((a) => {
       this.authorService.checkAuthorshipByToken(token, a.post.author);
     });
 

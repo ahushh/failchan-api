@@ -2,9 +2,9 @@ import Joi from '@hapi/joi';
 import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 
-import { IOC_TYPE } from '../../../config/type';
 import { IAction } from '../../../app/interfaces/action';
 import { PostService } from '../../../app/service/post.service';
+import { IOC_TYPE } from '../../../config/type';
 
 interface IRequest {
   postId: number;
@@ -26,7 +26,7 @@ export class UpdatePostAction implements IAction {
     "references"?: [1,3],
     "token": "verysecret,
   `;
-  description = ''
+  description = '';
   constructor(
     @inject(IOC_TYPE.PostService) public postService: PostService,
   ) { }

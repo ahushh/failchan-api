@@ -1,7 +1,7 @@
 import S3 from 'aws-sdk/clients/s3';
 import { Blob } from 'aws-sdk/lib/dynamodb/document_client';
-import * as R from 'ramda';
 import fs from 'fs';
+import * as R from 'ramda';
 import { Readable } from 'stream';
 import { IFile } from '../../../app/interfaces/file';
 import { IFileRepository } from '../../../app/interfaces/file.repo';

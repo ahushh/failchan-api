@@ -6,8 +6,8 @@ import {
   OneToMany, PrimaryGeneratedColumn, UpdateDateColumn,
 } from 'typeorm';
 import { Attachment } from './attachment';
-import { Thread } from './thread';
 import { Author } from './author';
+import { Thread } from './thread';
 
 export interface INewPost {
   body: string;

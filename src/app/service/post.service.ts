@@ -4,16 +4,16 @@ import { provide } from 'inversify-binding-decorators';
 
 import { IOC_TYPE } from '../../config/type';
 import { Post } from '../../domain/entity/post';
+import { Thread } from '../../domain/entity/thread';
 import { IAuthorService } from '../../domain/interfaces/author.service';
 import { IPostService } from '../../domain/interfaces/post.service';
 import { logCall } from '../../infra/utils/log-call';
+import { AppErrorEntityNotFound } from '../errors/not-found';
 import { validate } from '../errors/validation';
 import { IAttachmentRepository } from '../interfaces/attachment.repo';
 import { IPostRepository } from '../interfaces/post.repo';
 import { IThreadRepository } from '../interfaces/thread.repo';
 import { TransactionService } from './transaction.service';
-import { AppErrorEntityNotFound } from '../errors/not-found';
-import { Thread } from '../../domain/entity/thread';
 
 interface IReplyToThread {
   threadId: number;

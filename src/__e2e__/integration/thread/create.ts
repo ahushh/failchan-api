@@ -3,12 +3,12 @@ import { Application } from 'express';
 import { Container } from 'inversify';
 import supertest from 'supertest';
 import { getCustomRepository } from 'typeorm';
+import { Author } from '../../../domain/entity/author';
 import { Board } from '../../../domain/entity/board';
+import { AuthorRepository } from '../../../infra/repository/author.repo';
 import { BoardRepository } from '../../../infra/repository/board.repo';
 import { ApplicationServer } from '../../../presentation/http/server';
 import { getTestApplicationServer } from '../../../server.test';
-import { Author } from '../../../domain/entity/author';
-import { AuthorRepository } from '../../../infra/repository/author.repo';
 
 let app: Application;
 let container: Container;
@@ -72,7 +72,7 @@ describe('Threads creation', () => {
     makeRequest('b', 'new message', done);
   });
   it('creates a new thread and returns new token', (done) => {
-    supertest(app).post(`/boards/b/threads`)
+    supertest(app).post('/boards/b/threads')
     .send({ post: { body: 'new message' } })
     .end((err, res) => {
       chai.expect(res.status).to.eq(200);
@@ -80,8 +80,9 @@ describe('Threads creation', () => {
       done();
     });
   });
+  // tslint:disable-next-line: max-line-length
   it('creates a new thread using an existing token without error, new token is not returned', (done) => {
-    supertest(app).post(`/boards/b/threads`)
+    supertest(app).post('/boards/b/threads')
     .send({ token, post: { body: 'new message' } })
     .end((err, res) => {
       chai.expect(res.status).to.eq(200);
@@ -90,7 +91,7 @@ describe('Threads creation', () => {
     });
   });
   it('returns an error trying to create a thread using a malformed token', (done) => {
-    supertest(app).post(`/boards/b/threads`)
+    supertest(app).post('/boards/b/threads')
     .send({ token: 'shouldfail', post: { body: 'new message' } })
     .end((err, res) => {
       chai.expect(res.status).to.eq(403);

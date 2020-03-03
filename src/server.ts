@@ -4,8 +4,8 @@ require('dotenv').config();
 import 'reflect-metadata';
 
 import { InversifyExpressServer } from 'inversify-express-utils';
-import { IOC_TYPE } from './config/type';
 import { createContainer } from './config/container';
+import { IOC_TYPE } from './config/type';
 import { ApplicationServer } from './presentation/http/server';
 
 export const createApplicationServer = async () => {

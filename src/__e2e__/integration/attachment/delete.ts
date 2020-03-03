@@ -13,10 +13,10 @@ import { Board } from '../../../domain/entity/board';
 import { Thread } from '../../../domain/entity/thread';
 import { BoardRepository } from '../../../infra/repository/board.repo';
 import { ThreadRepository } from '../../../infra/repository/thread.repo';
+import { CreatePostAction } from '../../../presentation/actions/post/create';
 import { ApplicationServer } from '../../../presentation/http/server';
 import { getTestApplicationServer } from '../../../server.test';
 import { replyToThreadFactory } from '../../support/reply-to-thread';
-import { CreatePostAction } from '../../../presentation/actions/post/create';
 
 const testFileDir = `${__dirname}/test`;
 const originalFilePath = `${__dirname}/test-image.jpg`;

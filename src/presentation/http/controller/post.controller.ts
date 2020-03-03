@@ -12,8 +12,8 @@ import {
   requestParam,
   response,
 } from 'inversify-express-utils';
-import { UpdatePostAction } from '../../actions/post/update';
 import { IOC_TYPE } from '../../../config/type';
+import { UpdatePostAction } from '../../actions/post/update';
 import { ERROR2STATUS_CODE } from '../constants/errors';
 
 @controller('/posts')

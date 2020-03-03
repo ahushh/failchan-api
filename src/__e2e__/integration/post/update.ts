@@ -66,7 +66,7 @@ describe('Posts updating', () => {
   });
   it('updates post with new body correctly', (done) => {
     supertest(app).patch('/posts/1')
-      .send({ post: { body: 'new body' }, token })
+      .send({ token, post: { body: 'new body' } })
       .end((err, res) => {
         chai.expect(res.status).to.eq(204);
         const repo = getRepository(Post);
@@ -81,7 +81,7 @@ describe('Posts updating', () => {
   });
   it('updates post by replacing all references', (done) => {
     supertest(app).patch('/posts/3')
-      .send({ post: { references: [2] }, token })
+      .send({ token, post: { references: [2] } })
       .end((err, res) => {
         chai.expect(res.status).to.eq(204);
         const repo = getRepository(Post);
@@ -101,7 +101,7 @@ describe('Posts updating', () => {
     'correctly updates replies of removed and added references',
     (done) => {
       supertest(app).patch('/posts/6')
-        .send({ post: { references: [4] }, token })
+        .send({ token, post: { references: [4] } })
         .end((err, res) => {
           chai.expect(res.status).to.eq(204);
           const repo = getRepository(Post);

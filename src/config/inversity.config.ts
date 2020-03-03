@@ -8,21 +8,21 @@ import { Board } from '../domain/entity/board';
 import { Post } from '../domain/entity/post';
 import { Thread } from '../domain/entity/thread';
 
+import { IFileRepository } from '../app/interfaces/file.repo';
+import { IPubSubConnection } from '../app/interfaces/IPubSubConnection';
 import { AttachmentRepository } from '../infra/repository/attachment.repo';
 import { BoardRepository } from '../infra/repository/board.repo';
 import { AwsS3FileRepository } from '../infra/repository/file/aws.repo';
-import { IFileRepository } from '../app/interfaces/file.repo';
 import { TestFileRepository } from '../infra/repository/file/test.repo';
 import { PostRepository } from '../infra/repository/post.repo';
 import { ThreadRepository } from '../infra/repository/thread.repo';
 import { createORMConnection, IORMConnection } from '../infra/utils/create-orm-connection';
 import { createPubSubConnection } from '../infra/utils/create-pubsub-connection';
-import { IPubSubConnection } from "../app/interfaces/IPubSubConnection";
 import { createRedisConnection, IRedisConnection } from '../infra/utils/create-redis-connection';
 
 import { AppConfigService } from '../app/service/app-config.service';
-import { AuthorRepository } from '../infra/repository/author.repo';
 import { Author } from '../domain/entity/author';
+import { AuthorRepository } from '../infra/repository/author.repo';
 
 export const bindings = new AsyncContainerModule(
   async (bind: interfaces.Bind, unbind: interfaces.Unbind) => {

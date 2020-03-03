@@ -1,9 +1,9 @@
-import { promisify } from 'util';
 import fs from 'fs';
+import { promisify } from 'util';
 
 import exiftoolBin from 'dist-exiftool';
-import exiftool from 'node-exiftool';
 import md5 from 'md5';
+import exiftool from 'node-exiftool';
 import R from 'ramda';
 
 import { IFile } from '../../../app/interfaces/file';
