@@ -15,7 +15,7 @@ on:
 
 env:
   # TODO: Change variable to your image's name.
-  IMAGE_NAME: failchan-api/failchan-api_app
+  IMAGE_NAME: failchan-api_app
 
 jobs:
   # Run tests.
@@ -69,5 +69,5 @@ jobs:
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
 
-          docker tag failchan-api/failchan-api_app $IMAGE_ID:$VERSION
+          docker tag docker.pkg.github.com/ahushh/failchan-api/failchan-api_app $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
