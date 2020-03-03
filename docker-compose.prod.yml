@@ -3,7 +3,6 @@ services:
   app:
     build: .
     image: docker.pkg.github.com/ahushh/failchan-api/failchan-api_app
-    cmd: npm runnpm run e2e
     env_file:
       - .env
     ports:
