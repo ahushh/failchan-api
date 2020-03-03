@@ -1,3 +1,5 @@
+![Docker](https://github.com/ahushh/failchan-api/workflows/Docker/badge.svg?branch=master)
+
 # What is it?
 
 Yet Another Imageboard (forum with pictures) API which I'm trying to build during researching in backend development, databases, software design and DDD/Onion/Hexagonal/Clean architectures in particular, OOP and FP paradigmes.
