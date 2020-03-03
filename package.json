@@ -10,6 +10,7 @@
     "start:test": "NODE_ENV=test ts-node src/index.ts",
     "start:prod": "NODE_ENV=production node dist/src/index.js",
     "docker": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml",
+    "docker:e2e": "npm run db:start && npm run e2e:db:reset && docker-compose -f docker-compose.yml -f docker-compose.test.yml run app",
     "docker:start": "npm run docker -- up",
     "docker:stop": "npm run docker -- down",
     "lint": "tslint --project . -c tslint.json",
