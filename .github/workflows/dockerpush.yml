@@ -27,7 +27,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Run tests
-        run: npm ci && cp .env.example .env && npm run db:start && npm run e2e:db:create && REDIS_HOST=localhost npm run e2e
+        run: npm ci && cp .env.example .env && npm run db:start && npm run e2e:db:create && REDIS_HOST=localhost npm run e2e && npm run test
 
   # Push image to GitHub Package Registry.
   # See also https://docs.docker.com/docker-hub/builds/
