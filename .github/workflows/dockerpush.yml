@@ -48,7 +48,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Build image
-        run: npm run docker -- build
+        run: cp .env.example .env && npm run docker -- build
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
