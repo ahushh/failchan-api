@@ -9,6 +9,7 @@ import {
   next,
   queryParam,
   request,
+  requestHeaders,
   requestParam,
   response,
 } from 'inversify-express-utils';
@@ -18,6 +19,7 @@ import { IOC_TYPE } from '../../../config/type';
 import { CreatePostAction } from '../../actions/post/create';
 import { UpdatePostAction } from '../../actions/post/update';
 import { ERROR2STATUS_CODE } from '../constants/errors';
+import { getTokenFromAuthHeaders } from '../utils';
 
 @controller('/threads')
 export class ThreadController implements interfaces.Controller {
@@ -29,13 +31,14 @@ export class ThreadController implements interfaces.Controller {
   @httpPost('/:threadId/posts')
   private async createPost(
     @requestParam('threadId') threadId: number,
+    @requestHeaders('Authorization') authHeader: string,
     @request() request: Request, @response() response: Response, @next() next: Function,
   ) {
     try {
       const { post, token } = await this.createPostAction.execute({
         threadId,
         ...request.body.post,
-        token: request.body.token,
+        token: getTokenFromAuthHeaders(authHeader) || request.body.token,
       });
 
       response.json({ post, token });

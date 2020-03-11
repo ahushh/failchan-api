@@ -8,6 +8,7 @@ import {
   next,
   queryParam,
   request,
+  requestHeaders,
   requestParam,
   response,
 } from 'inversify-express-utils';
@@ -21,6 +22,7 @@ import { IOC_TYPE } from '../../../config/type';
 import { CreateAttachmentAction } from '../../actions/attachments/create';
 import { DeleteAttachmentAction } from '../../actions/attachments/delete';
 import { ERROR2STATUS_CODE } from '../constants/errors';
+import { getTokenFromAuthHeaders } from '../utils';
 
 @controller('/attachments')
 export class AttachmentController implements interfaces.Controller {
@@ -46,11 +48,12 @@ export class AttachmentController implements interfaces.Controller {
   @httpDelete('/')
   private async delete(
     @request() request: Request, @response() response: Response, @next() next: Function,
+    @requestHeaders('Authorization') authHeader: string,
   ) {
     const ids = Array.isArray(request.query.ids)
       ? request.query.ids.map(Number)
       : [+request.query.ids];
-    const token = request.query.token;
+    const token = getTokenFromAuthHeaders(authHeader) || request.query.token;
     try {
       await this.deleteAttachmentAction.execute({ ids, token });
       response.sendStatus(204);

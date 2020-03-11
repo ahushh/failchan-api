@@ -9,12 +9,14 @@ import {
   next,
   queryParam,
   request,
+  requestHeaders,
   requestParam,
   response,
 } from 'inversify-express-utils';
 import { IOC_TYPE } from '../../../config/type';
 import { UpdatePostAction } from '../../actions/post/update';
 import { ERROR2STATUS_CODE } from '../constants/errors';
+import { getTokenFromAuthHeaders } from '../utils';
 
 @controller('/posts')
 export class PostController implements interfaces.Controller {
@@ -25,13 +27,14 @@ export class PostController implements interfaces.Controller {
   @httpPatch('/:postId')
   private async update(
     @requestParam('postId') postId: number,
+    @requestHeaders('Authorization') authHeader: string,
     @request() request: Request, @response() response: Response, @next() next: Function,
   ) {
     try {
       await this.updatePostAction.execute({
         ...request.body.post,
         postId,
-        token: request.body.token,
+        token: getTokenFromAuthHeaders(authHeader) || request.body.token,
       });
       response.sendStatus(204);
     } catch (e) {

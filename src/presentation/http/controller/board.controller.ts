@@ -8,6 +8,7 @@ import {
   next,
   queryParam,
   request,
+  requestHeaders,
   requestParam,
   response,
 } from 'inversify-express-utils';
@@ -18,6 +19,7 @@ import { ListBoardAction } from '../../actions/board/list';
 import { CreateThreadAction } from '../../actions/thread/create';
 import { ListThreadsByBoardAction } from '../../actions/thread/list';
 import { ERROR2STATUS_CODE } from '../constants/errors';
+import { getTokenFromAuthHeaders } from '../utils';
 
 @controller('/boards')
 export class BoardController implements interfaces.Controller {
@@ -76,6 +78,7 @@ export class BoardController implements interfaces.Controller {
   @httpPost('/:boardSlug/threads')
   private async createThread(
     @requestParam('boardSlug') boardSlug: string,
+    @requestHeaders('Authorization') authHeader: string,
     @request() request: Request, @response() response: Response, @next() next: Function,
   ) {
     try {
@@ -85,7 +88,7 @@ export class BoardController implements interfaces.Controller {
         attachment: request.body.post.attachment,
         references: request.body.post.references,
         threadId: request.body.post.threadId,
-        token: request.body.token,
+        token: getTokenFromAuthHeaders(authHeader) || request.body.token,
       });
       response.json({ thread, token });
     } catch (e) {
