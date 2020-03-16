@@ -2,8 +2,8 @@ version: "3.7"
 services:
   postgres:
     image: postgres:10
-    ports:
-      - "5432:5432"
+#    ports:
+#      - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -19,8 +19,8 @@ services:
     image: 'bitnami/redis:latest'
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
-    ports:
-      - '6379:6379'
+#    ports:
+#      - '6379:6379'
     volumes:
       - redis  
     logging:
