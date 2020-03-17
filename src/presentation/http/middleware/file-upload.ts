@@ -1,14 +1,10 @@
+import config from 'config';
 import multer from 'multer';
 import { APP_ERRORS } from '../../../app/errors/error.interface';
 import { diskStorage } from './file-upload/disk-storage';
 
-const files = process.env.MAX_UPLOAD_FILES
-  ? +process.env.MAX_UPLOAD_FILES
-  : 5;
-
-const fileSize = process.env.MAX_UPLOAD_FILE_SIZE
-  ? +process.env.MAX_UPLOAD_FILE_SIZE
-  : 1024 * 1024 * 10; // 10 MB
+const files = config.get<number>('file.maxNumber');
+const fileSize = config.get<number>('file.maxUploadSize');
 
 export const fileUploadMiddleware = (req, res, next) => multer({
   storage: diskStorage,

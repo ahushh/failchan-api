@@ -1,3 +1,4 @@
+import config from 'config';
 import Redis from 'ioredis';
 
 export interface IRedisConnection {
@@ -5,8 +6,8 @@ export interface IRedisConnection {
 }
 export const createRedisConnection = () => {
   const connection = new Redis({
-    host: process.env.REDIS_HOST as string,
-    port: +(process.env.REDIS_PORT as string),
+    host: config.get<string>('redis.host'),
+    port: config.get<number>('redis.port'),
   });
   return new Promise<IRedisConnection>((resolve, reject) => {
     connection.on('ready', () => {

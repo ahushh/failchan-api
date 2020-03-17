@@ -1,16 +1,15 @@
 import chai, { assert } from 'chai';
+import config from 'config';
 import supertest from 'supertest';
 
 import { Application } from 'express';
 import fs from 'fs';
 import { Container } from 'inversify';
 import rimraf from 'rimraf';
-import { AppConfigService } from '../../../app/service/app-config.service';
-import { IOC_TYPE } from '../../../config/type';
 import { ApplicationServer } from '../../../presentation/http/server';
 import { getTestApplicationServer } from '../../../server.test';
 
-const TEMP_DIR = process.env.TEMP_DIR = '/tmp/failchan-test';
+const TEMP_DIR = config.get<string>('file.tmpDir');
 
 let app: Application;
 let container: Container;
@@ -25,8 +24,7 @@ describe('Attachment creation', () => {
     app = testApplicationServer.app;
     container = testApplicationServer.container;
 
-    ATTACHMENT_TTL = container.get<AppConfigService>(IOC_TYPE.AppConfigService)
-      .getConfig().ATTACHMENT_TTL;
+    ATTACHMENT_TTL = config.get<string>('attachment.ttl');
   });
   beforeEach(() => {
     rimraf.sync(TEMP_DIR);
@@ -73,9 +71,8 @@ describe('Attachment creation', () => {
       });
   });
   it('clears uploaded file when it expires', (done) => {
-    container.get<AppConfigService>(IOC_TYPE.AppConfigService).setConfig({
-      ATTACHMENT_TTL: 1,
-    });
+    (config as any).attachment.ttl = 1;
+
     supertest(app).post('/attachments')
       .attach('attachments', `${__dirname}/test-image.jpg`)
       .end((err, res) => {

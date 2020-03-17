@@ -1,6 +1,7 @@
+import config from 'config';
 import fs from 'fs';
 export const checkTmpDir = () => {
-  const tmpDir = process.env.TEMP_DIR as string;
+  const tmpDir = config.get<string>('file.tmpDir');
   if (!fs.existsSync(tmpDir)) {
     fs.mkdirSync(tmpDir);
   }

@@ -1,3 +1,4 @@
+import config from 'config';
 import { AsyncContainerModule, interfaces } from 'inversify';
 import { getCustomRepository, Repository } from 'typeorm';
 
@@ -34,13 +35,7 @@ export const bindings = new AsyncContainerModule(
 
     bind<any>(IOC_TYPE.AppConfigService).toDynamicValue(() => {
       return new AppConfigService({
-        ENV: (process.env.NODE_ENV as any),
-        AWS_S3_KEY: (process.env.AWS_S3_KEY as string),
-        AWS_S3_SECRET: (process.env.AWS_S3_SECRET as string),
-        AWS_S3_BUCKET: (process.env.AWS_S3_BUCKET as string),
-        AWS_S3_REGION: (process.env.AWS_S3_REGION as string),
-        THUMBNAIL_SIZE: +(process.env.THUMBNAIL_SIZE as string),
-        ATTACHMENT_TTL: +(process.env.ATTACHMENT_TTL as string),
+
       });
     }).inSingletonScope();
 
@@ -65,18 +60,16 @@ export const bindings = new AsyncContainerModule(
     }).inRequestScope();
 
     bind<IFileRepository>(IOC_TYPE.FileRepository).toDynamicValue((context: interfaces.Context) => {
-      const configService = context.container.get<AppConfigService>(IOC_TYPE.AppConfigService);
-      const config = configService.getConfig();
-      if (config.ENV === 'test') {
+      if (process.env.NODE_ENV === 'test') {
         return new TestFileRepository();
       }
       return new AwsS3FileRepository(
         {
-          accessKeyId: config.AWS_S3_KEY,
-          secretAccessKey: config.AWS_S3_SECRET,
-          region: config.AWS_S3_REGION,
+          accessKeyId: config.get<string>('s3.key'),
+          secretAccessKey: config.get<string>('s3.secret'),
+          region: config.get<string>('s3.region'),
         },
-        config.AWS_S3_BUCKET,
+        config.get<string>('s3.bucket'),
       );
     }).inRequestScope();
 

@@ -1,8 +1,10 @@
+import config from 'config'
 import jwt from 'jsonwebtoken';
 
 import { Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Post } from './post';
 
+// TODO: do not use decorators in domain entity
 @Entity()
 export class Author {
   @PrimaryGeneratedColumn('uuid')
@@ -12,7 +14,8 @@ export class Author {
   posts: Post[];
 
   generateToken() {
-    return jwt.sign({ authorId: this.id }, process.env.TOKEN_SECRET);
+    // TODO: do not use config in domain entity
+    return jwt.sign({ authorId: this.id }, config.get<string>('tokenSecret'));
   }
 
   /**
@@ -23,6 +26,6 @@ export class Author {
    * @memberof Author
    */
   static verifyToken(token: string) {
-    return jwt.verify(token, process.env.TOKEN_SECRET);
+    return jwt.verify(token, config.get<string>('tokenSecret'));
   }
 }

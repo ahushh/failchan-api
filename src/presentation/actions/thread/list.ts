@@ -1,7 +1,6 @@
 import { inject, named } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 import { IAction } from '../../../app/interfaces/action';
-import { AppConfigService } from '../../../app/service/app-config.service';
 import { ThreadService } from '../../../app/service/thread.service';
 import { IOC_TYPE } from '../../../config/type';
 
@@ -20,12 +19,11 @@ export class ListThreadsByBoardAction implements IAction {
 
   constructor(
     @inject(IOC_TYPE.ThreadService) public service: ThreadService,
-    @inject(IOC_TYPE.AppConfigService) public appConfig: AppConfigService,
   ) {
-    this.previewPosts = this.appConfig.getConfig().ENV === 'test'
+    this.previewPosts = process.env.NODE_ENV === 'test'
     ? ListThreadsByBoardAction.TEST_THREADS_LISTING_PREVIEW_POSTS
     : 5;
-    this.take = this.appConfig.getConfig().ENV === 'test'
+    this.take = process.env.NODE_ENV === 'test'
     ? ListThreadsByBoardAction.TEST_THREADS_LISTING_TAKE
     : 10;
   }

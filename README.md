@@ -12,23 +12,17 @@ https://documenter.getpostman.com/view/5005722/RzZ4qh3t?version=latest
 
 `npm ci`
 
-`cp .env.example .env`
-
-**Do not forget about .env file!**
-
 # Run in dev watch mode
 
-Update `.env` file to point `REDIS_HOST` to `localhost`
-
-`npm run db:run`
+`npm run db:start`
 
 `npm start`
 
 # Run e2e tests to test each endpoint
 
-`npm run db:run`
+`npm run db:start`
 
-`npm run test:db:create`
+`npm run e2e:db:create`
 
 `npm e2e`
 
