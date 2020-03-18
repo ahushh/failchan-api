@@ -26,7 +26,7 @@ interface IConfig {
     secret: string;
     bucket: string;
     region: string;
-  },
+  };
 }
 
 export default {

@@ -1,4 +1,4 @@
-import config from 'config'
+import config from 'config';
 import jwt from 'jsonwebtoken';
 
 import { Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';

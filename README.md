@@ -32,6 +32,8 @@ https://documenter.getpostman.com/view/5005722/RzZ4qh3t?version=latest
 
 # Run in production mode through Docker
 
+`cp .env.example .env`
+
 `npm run docker:start`
 
 # Troubles during e2e tests
