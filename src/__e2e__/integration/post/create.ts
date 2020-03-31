@@ -16,7 +16,7 @@ let app: Application;
 let container: Container;
 let testApplicationServer: ApplicationServer;
 
-describe('Posts creation', () => {
+describe.only('Posts creation', () => {
   let thread;
   let board;
   let token;
@@ -80,7 +80,7 @@ describe('Posts creation', () => {
         done();
       });
   });
-  it('creates a new post and bumps thread', (done) => {
+  it('creates a new reply and its thread has bumpCount incremented', (done) => {
     supertest(app).post(`/threads/${thread.id}/posts`)
       .send({ post: { body: 'should not fail', attachments: [], references: [] } })
       .end((err, res) => {
@@ -89,8 +89,20 @@ describe('Posts creation', () => {
         repo.findOne(thread.id).then((newThread) => {
           // tslint:disable-next-line:no-parameter-reassignment
           newThread = newThread as Thread;
-          chai.expect(newThread).not.to.be.undefined;
           chai.expect(newThread.bumpCount).to.eq(thread.bumpCount + 1);
+          done();
+        }).catch(done);
+      });
+  });
+  it('creates a new reply and its thread has updatedAt field updated', (done) => {
+    supertest(app).post(`/threads/${thread.id}/posts`)
+      .send({ post: { body: 'should not fail', attachments: [], references: [] } })
+      .end((err, res) => {
+        chai.expect(res.status).to.eq(200);
+        const repo = getCustomRepository(ThreadRepository);
+        repo.findOne(thread.id).then((newThread) => {
+          // tslint:disable-next-line:no-parameter-reassignment
+          newThread = newThread as Thread;
           chai.expect(newThread.updatedAt).not.to.eq(thread.updatedAt);
           done();
         }).catch(done);
