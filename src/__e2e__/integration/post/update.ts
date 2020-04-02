@@ -79,6 +79,21 @@ describe('Posts updating', () => {
         }).catch(done);
       });
   });
+  it('updates post with new subject correctly', (done) => {
+    supertest(app).patch('/posts/1')
+      .send({ token, post: { subject: 'new subject' } })
+      .end((err, res) => {
+        chai.expect(res.status).to.eq(204);
+        const repo = getRepository(Post);
+        repo.findOne(1).then((post) => {
+          // tslint:disable-next-line:no-parameter-reassignment
+          post = post as Post;
+          chai.expect(post).not.to.be.undefined;
+          chai.expect(post.subject).to.eq('new subject');
+          done();
+        }).catch(done);
+      });
+  });
   it('updates post by replacing all references', (done) => {
     supertest(app).patch('/posts/3')
       .send({ token, post: { references: [2] } })

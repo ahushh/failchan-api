@@ -3,11 +3,12 @@ import { inject } from 'inversify';
 import { provide } from 'inversify-binding-decorators';
 
 import { IOC_TYPE } from '../../config/type';
-import { Post } from '../../domain/entity/post';
+import { IPostDTO, IPostMainFields, Post } from '../../domain/entity/post';
 import { Thread } from '../../domain/entity/thread';
 import { IAuthorService } from '../../domain/interfaces/author.service';
 import { IPostService } from '../../domain/interfaces/post.service';
 import { logCall } from '../../infra/utils/log-call';
+import { INullable } from '../../infra/utils/types';
 import { AppErrorEntityNotFound } from '../errors/not-found';
 import { validate } from '../errors/validation';
 import { IAttachmentRepository } from '../interfaces/attachment.repo';
@@ -15,27 +16,20 @@ import { IPostRepository } from '../interfaces/post.repo';
 import { IThreadRepository } from '../interfaces/thread.repo';
 import { TransactionService } from './transaction.service';
 
-interface IReplyToThread {
-  threadId: number;
-  body: string;
-  attachmentIds: number[];
-  references: number[];
+interface IReplyToThread extends IPostDTO {
+
   token?: string;
 }
 
-interface IUpdatePost {
+interface IUpdatePost extends INullable<IPostDTO> {
   postId: number;
-  threadId: number | null;
-  body: string | null;
-  attachmentIds: number[] | null;
-  references: number[] | null;
   token: string;
 }
 
 @provide(IOC_TYPE.PostService)
 export class PostService implements IPostService {
   static updateValidationAtLeastOneField = (post: object, helpers) => {
-    const keys = ['threadId', 'body', 'attachmentIds', 'references'];
+    const keys = ['threadId', 'body', 'subject', 'attachmentIds', 'references'];
     const isValid = keys.some(k => post[k] !== null);
     if (isValid) {
       return post;
@@ -54,6 +48,7 @@ export class PostService implements IPostService {
   @validate(Joi.object({
     threadId: Joi.number().required(),
     body: Joi.string().required(),
+    subject: Joi.string(),
     attachmentIds: Joi.array().min(0).items(Joi.number()).required(),
     references: Joi.array().min(0).items(Joi.number()).required(),
     token: Joi.string(),
@@ -73,7 +68,12 @@ export class PostService implements IPostService {
 
     const { isNew, author } = await this.authorService.getAuthorByToken(request.token);
 
-    const post = Post.create({ references, attachments, body: request.body });
+    const post = Post.create({
+      references,
+      attachments,
+      body: request.body,
+      subject: request.subject,
+    });
     thread.replyWith(post);
     post.author = author;
 
@@ -104,6 +104,7 @@ export class PostService implements IPostService {
     Joi.object({
       threadId: Joi.number().allow(null),
       body: Joi.string().allow(null),
+      subject: Joi.string().allow(null),
       attachmentIds: Joi.array().items(Joi.number()).allow(null),
       references: Joi.array().items(Joi.number()).allow(null),
 
@@ -123,6 +124,9 @@ export class PostService implements IPostService {
     }
     if (request.body) {
       post.body = request.body;
+    }
+    if (request.subject) {
+      post.subject = request.subject;
     }
     if (request.references) {
       const newReferences = await this.postRepo.findByIds(request.references, {

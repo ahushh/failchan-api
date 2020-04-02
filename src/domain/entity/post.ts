@@ -9,8 +9,18 @@ import { Attachment } from './attachment';
 import { Author } from './author';
 import { Thread } from './thread';
 
-export interface INewPost {
+export interface IPostMainFields {
   body: string;
+  subject?: string;
+}
+
+export interface IPostDTO extends IPostMainFields {
+  attachmentIds: number[];
+  references: number[];
+  threadId: number;
+}
+
+interface IPostFields extends IPostMainFields {
   references: Post[];
   attachments: Attachment[];
 }
@@ -20,8 +30,13 @@ export class Post {
 
   @PrimaryGeneratedColumn()
   id: number;
+
   @Column()
   body: string;
+
+  @Column({ nullable: true })
+  subject: string;
+
   @ManyToOne(type => Thread, thread => thread.posts)
   thread: Thread;
 
@@ -62,10 +77,10 @@ export class Post {
     this.body = obj.body;
   }
 
-  static create(props: INewPost) {
-    const { body, references, attachments } = props;
+  static create(props: IPostFields) {
+    const { body, subject, references, attachments } = props;
 
-    const post = new Post({ body });
+    const post = new Post({ body, subject });
     post.references = references;
     post.attachments = attachments;
     return post;

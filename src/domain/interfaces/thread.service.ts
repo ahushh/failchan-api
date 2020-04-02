@@ -1,13 +1,9 @@
+import { IPostDTO } from '../entity/post';
 import { Thread } from '../entity/thread';
 
 export interface IThreadService {
   create(request: {
-    post: {
-      body: string;
-      attachmentIds: number[];
-      references: number[];
-      threadId: number;
-    };
+    post: IPostDTO,
     boardSlug: string;
   }): Promise<{ thread: Thread; token?: string }>;
   listThreadsByBoard(params: {

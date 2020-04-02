@@ -5,6 +5,7 @@ import R from 'ramda';
 
 import { IOC_TYPE } from '../../config/type';
 import { Board } from '../../domain/entity/board';
+import { IPostDTO } from '../../domain/entity/post';
 import { Thread } from '../../domain/entity/thread';
 import { IPostService } from '../../domain/interfaces/post.service';
 import { IThreadService } from '../../domain/interfaces/thread.service';
@@ -28,12 +29,7 @@ export class ThreadService implements IThreadService {
     post: Joi.any(),
   }))
   async create(request: {
-    post: {
-      body: string;
-      attachmentIds: number[];
-      references: number[];
-      threadId: number;
-    };
+    post: IPostDTO,
     boardSlug: string;
     token?: string;
   }): Promise<{ thread: Thread; token?: string }> {

@@ -16,7 +16,7 @@ let app: Application;
 let container: Container;
 let testApplicationServer: ApplicationServer;
 
-describe.only('Posts creation', () => {
+describe('Posts creation', () => {
   let thread;
   let board;
   let token;
@@ -116,6 +116,16 @@ describe.only('Posts creation', () => {
         chai.expect(res.body).to.include({
           name: 'EntityNotFound',
         });
+        done();
+      });
+  });
+  it('creates a new post with subject', (done) => {
+    supertest(app).post(`/threads/${thread.id}/posts`)
+      // tslint:disable-next-line: max-line-length
+      .send({ post: { body: 'should not fail', subject: 'something', attachments: [], references: [] } })
+      .end((err, res) => {
+        chai.expect(res.status).to.eq(200);
+        chai.expect(res.body.subject).not.to.equal('something');
         done();
       });
   });

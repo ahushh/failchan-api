@@ -56,7 +56,7 @@ describe('Threads creation', () => {
       chai.expect(res.body.thread.posts).to.have.lengthOf(1);
       chai.expect(res.body.thread.posts[0]).to.keys([
         'id', 'body', 'attachments', 'createdAt', 'updatedAt',
-        'replies', 'references',
+        'replies', 'references', 'subject',
       ]);
       chai.expect(res.body.thread.posts[0]).to.include({
         body,

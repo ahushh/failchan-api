@@ -5,13 +5,11 @@ import { provide } from 'inversify-binding-decorators';
 import { IAction } from '../../../app/interfaces/action';
 import { PostService } from '../../../app/service/post.service';
 import { IOC_TYPE } from '../../../config/type';
+import { IPostDTO } from '../../../domain/entity/post';
+import { INullable } from '../../../infra/utils/types';
 
-interface IRequest {
+interface IRequest extends INullable<IPostDTO> {
   postId: number;
-  threadId: number | null;
-  body: string | null;
-  attachmentIds: number[] | null;
-  references: number[] | null;
   token: string;
 }
 
@@ -22,6 +20,7 @@ export class UpdatePostAction implements IAction {
     "postId": 123,
     "threadId"?: 1234,
     "body"?: "new body",
+    "subject"?: "new subject",
     "attachmentIds"?: [1,2],
     "references"?: [1,3],
     "token": "verysecret,
@@ -36,6 +35,7 @@ export class UpdatePostAction implements IAction {
     request.postId = +request.postId;
     request.threadId = request.threadId ? +request.threadId : null;
     request.body = request.body === undefined ? null : request.body;
+    request.subject = request.subject === undefined ? null : request.subject;
     request.attachmentIds = request.attachmentIds || null;
     request.references = request.references || null;
     request.token = request.token;

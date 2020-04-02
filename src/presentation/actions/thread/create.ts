@@ -4,12 +4,10 @@ import { IAction } from '../../../app/interfaces/action';
 import { AttachmentService } from '../../../app/service/attachment.service';
 import { ThreadService } from '../../../app/service/thread.service';
 import { IOC_TYPE } from '../../../config/type';
+import { IPostDTO } from '../../../domain/entity/post';
 
-interface IRequest {
-  body: string;
+interface IRequest extends Omit<IPostDTO, 'attachmentIds'> {
   attachment: string;
-  references: number[];
-  threadId: number;
   boardSlug: string;
   token?: string;
 }
@@ -19,6 +17,7 @@ interface IRequest {
 export class CreateThreadAction implements IAction {
   payloadExample = `
     "body": "post body",
+    "subject?": "subject",
     "attachment"?: "attachmentid",
     "references": [1,2,3],
     "boardSlug": "b",
@@ -42,6 +41,7 @@ export class CreateThreadAction implements IAction {
       post: {
         attachmentIds,
         body: request.body,
+        subject: request.subject,
         references: request.references,
         threadId: request.threadId,
       },
