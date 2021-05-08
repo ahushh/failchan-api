@@ -71,7 +71,7 @@
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
     "typedi": "^0.8.0",
-    "typeorm": "^0.2.7",
+    "typeorm": "^0.2.25",
     "typescript": "^3.1.1",
     "uuid": "^3.3.2"
   },
