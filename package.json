@@ -43,7 +43,7 @@
     "aws-sdk": "^2.336.0",
     "chai": "^4.2.0",
     "class-transformer": "^0.1.10",
-    "config": "^3.3.0",
+    "config": "^3.3.8",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "dist-exiftool": "^10.53.0",
